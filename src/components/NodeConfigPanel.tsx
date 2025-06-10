@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
-import type { WorkflowNode } from '../types/workflow';
 
 export function NodeConfigPanel() {
   const { selectedNode, nodes, updateNode } = useWorkflowStore();
@@ -8,14 +7,14 @@ export function NodeConfigPanel() {
   const selectedNodeData = nodes.find((node) => node.id === selectedNode);
 
   const handleConfigChange = useCallback(
-    (field: string, value: any) => {
+    (field: string, value: unknown) => {
       if (!selectedNode) return;
 
       updateNode(selectedNode, {
         data: {
-          ...selectedNodeData?.data,
+          ...selectedNodeData!.data,
           config: {
-            ...selectedNodeData?.data.config,
+            ...(selectedNodeData!.data.config as Record<string, unknown>),
             [field]: value,
           },
         },
@@ -62,7 +61,7 @@ export function NodeConfigPanel() {
               </label>
               <input
                 type="text"
-                value={selectedNodeData.data.config.url || ''}
+                value={(selectedNodeData.data.config.url as string | undefined) ?? ''}
                 onChange={(e) => handleConfigChange('url', e.target.value)}
                 className="input w-full"
               />
@@ -72,7 +71,7 @@ export function NodeConfigPanel() {
                 Method
               </label>
               <select
-                value={selectedNodeData.data.config.method || 'GET'}
+                value={(selectedNodeData.data.config.method as string | undefined) ?? 'GET'}
                 onChange={(e) => handleConfigChange('method', e.target.value)}
                 className="input w-full"
               >
@@ -92,7 +91,7 @@ export function NodeConfigPanel() {
             </label>
             <input
               type="number"
-              value={selectedNodeData.data.config.delay || 1000}
+              value={(selectedNodeData.data.config.delay as number | undefined) ?? 1000}
               onChange={(e) => handleConfigChange('delay', parseInt(e.target.value))}
               className="input w-full"
             />
@@ -107,7 +106,7 @@ export function NodeConfigPanel() {
               </label>
               <input
                 type="text"
-                value={selectedNodeData.data.config.variableName || ''}
+                value={(selectedNodeData.data.config.variableName as string | undefined) ?? ''}
                 onChange={(e) => handleConfigChange('variableName', e.target.value)}
                 className="input w-full"
               />
@@ -118,7 +117,7 @@ export function NodeConfigPanel() {
               </label>
               <input
                 type="text"
-                value={selectedNodeData.data.config.value || ''}
+                value={(selectedNodeData.data.config.value as string | undefined) ?? ''}
                 onChange={(e) => handleConfigChange('value', e.target.value)}
                 className="input w-full"
               />
@@ -133,7 +132,7 @@ export function NodeConfigPanel() {
             </label>
             <input
               type="text"
-              value={selectedNodeData.data.config.condition || ''}
+              value={(selectedNodeData.data.config.condition as string | undefined) ?? ''}
               onChange={(e) => handleConfigChange('condition', e.target.value)}
               className="input w-full"
               placeholder="e.g., value > 10"
@@ -148,7 +147,7 @@ export function NodeConfigPanel() {
             </label>
             <input
               type="text"
-              value={selectedNodeData.data.config.webhookUrl || ''}
+              value={(selectedNodeData.data.config.webhookUrl as string | undefined) ?? ''}
               onChange={(e) => handleConfigChange('webhookUrl', e.target.value)}
               className="input w-full"
               placeholder="https://..."

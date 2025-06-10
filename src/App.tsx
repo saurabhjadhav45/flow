@@ -1,7 +1,6 @@
 
 import { WorkflowEditor } from './components/WorkflowEditor';
 import { NodePalette } from './components/NodePalette';
-import { NodeConfigPanel } from './components/NodeConfigPanel';
 import { Toolbar } from './components/Toolbar';
 import { useWorkflowStore } from './store/workflowStore';
 import "./App.css"

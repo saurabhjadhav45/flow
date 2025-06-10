@@ -13,6 +13,7 @@ import { useWorkflowStore } from '../store/workflowStore';
 import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../types/workflow';
 import BaseNode from './nodes/BaseNode';
 import GlobalAddButton from './GlobalAddButton';
+import EdgeControls from './edges/EdgeControls';
 
 const nodeTypes = {
   httpRequest: BaseNode,
@@ -20,6 +21,10 @@ const nodeTypes = {
   setVariable: BaseNode,
   condition: BaseNode,
   webhook: BaseNode,
+};
+
+const edgeTypes = {
+  controls: EdgeControls,
 };
 
 let id = 0;
@@ -35,8 +40,10 @@ export function WorkflowEditor() {
     addEdge: addStoreEdge,
   } = useWorkflowStore();
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNodeData>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdge>(initialEdges);
+  const [nodes, setNodes, onNodesChange] =
+    useNodesState<WorkflowNodeData>(initialNodes);
+  const [edges, setEdges, onEdgesChange] =
+    useEdgesState<WorkflowEdge>(initialEdges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
 
@@ -48,6 +55,7 @@ export function WorkflowEditor() {
         id: `edge-${connection.source}-${connection.target}`,
         source: connection.source,
         target: connection.target,
+        type: 'controls',
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
@@ -102,6 +110,7 @@ export function WorkflowEditor() {
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         onInit={instance => (reactFlowInstance.current = instance)}
         onDrop={onDrop}

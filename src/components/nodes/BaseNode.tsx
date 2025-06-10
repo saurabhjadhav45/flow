@@ -8,7 +8,6 @@ import { FiGlobe, FiClock, FiSliders, FiGitBranch, FiLink } from 'react-icons/fi
 function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore((state) => state.setPendingConnection);
-  const edges = useWorkflowStore((state) => state.edges);
 
   const IconMap = {
     httpRequest: FiGlobe,
@@ -20,7 +19,6 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
 
   const Icon = IconMap[data.type];
 
-  const hasOutgoing = edges.some((edge) => edge.source === id);
 
   const onAdd = (e: React.MouseEvent) => {
     e.stopPropagation();

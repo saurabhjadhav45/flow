@@ -18,17 +18,17 @@ import type {
   WorkflowNodeData,
   NodeType,
 } from "../types/workflow";
-import BaseNode from "./nodes/BaseNode";
+import StyledNode from "./nodes/StyledNode";
 import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import { getNodeId } from "../utils/getNodeId";
 
 const nodeTypes = {
-  httpRequest: BaseNode,
-  delay: BaseNode,
-  setVariable: BaseNode,
-  condition: BaseNode,
-  webhook: BaseNode,
+  httpRequest: StyledNode,
+  delay: StyledNode,
+  setVariable: StyledNode,
+  condition: StyledNode,
+  webhook: StyledNode,
 };
 
 const edgeTypes = {

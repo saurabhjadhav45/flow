@@ -1,10 +1,10 @@
-import type { Node, Edge, Connection } from 'reactflow';
+import type { Node, Edge } from 'reactflow';
 
 export type NodeType = 'httpRequest' | 'delay' | 'setVariable' | 'condition' | 'webhook';
 
 export interface WorkflowNodeData {
   label: string;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData> & {
@@ -15,6 +15,11 @@ export type WorkflowEdge = Edge & {
   label?: string;
 };
 
+export interface PendingConnection {
+  source: string;
+  sourceHandle: string | null;
+}
+
 export interface WorkflowState {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
@@ -22,7 +27,7 @@ export interface WorkflowState {
   undoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   sidebarOpen: boolean;
-  pendingConnection: Connection | null;
+  pendingConnection: PendingConnection | null;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -39,5 +44,5 @@ export interface WorkflowStore extends WorkflowState {
   clearWorkflow: () => void;
   openSidebar: () => void;
   closeSidebar: () => void;
-  setPendingConnection: (connection: Connection | null) => void;
+  setPendingConnection: (connection: PendingConnection | null) => void;
 }

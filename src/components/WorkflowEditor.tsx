@@ -7,7 +7,7 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
 } from 'reactflow';
-import type { Connection, NodeDragHandler, ReactFlowInstance } from 'reactflow';
+import type { Connection, ReactFlowInstance } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useWorkflowStore } from '../store/workflowStore';
 import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../types/workflow';
@@ -35,9 +35,10 @@ export function WorkflowEditor() {
     nodes: initialNodes,
     edges: initialEdges,
     setNodes: setStoreNodes,
-    setEdges: setStoreEdges,
     addNode,
     addEdge: addStoreEdge,
+    pendingConnection,
+    setPendingConnection,
   } = useWorkflowStore();
 
   const [nodes, setNodes, onNodesChange] =
@@ -63,12 +64,9 @@ export function WorkflowEditor() {
     [setEdges, addStoreEdge]
   );
 
-  const onNodeDragStop: NodeDragHandler = useCallback(
-    (_, node) => {
-      setStoreNodes(nodes as WorkflowNode[]);
-    },
-    [nodes, setStoreNodes]
-  );
+  const onNodeDragStop = useCallback(() => {
+    setStoreNodes(nodes as WorkflowNode[]);
+  }, [nodes, setStoreNodes]);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -96,8 +94,21 @@ export function WorkflowEditor() {
       };
       setNodes((nds) => nds.concat(newNode));
       addNode(newNode);
+
+      if (pendingConnection) {
+        const newEdge: WorkflowEdge = {
+          id: `edge-${pendingConnection.source}-${newNode.id}`,
+          source: pendingConnection.source,
+          sourceHandle: pendingConnection.sourceHandle ?? undefined,
+          target: newNode.id,
+          type: 'controls',
+        };
+        setEdges((eds) => addEdge(newEdge, eds));
+        addStoreEdge(newEdge);
+        setPendingConnection(null);
+      }
     },
-    [setNodes, addNode]
+    [setNodes, addNode, pendingConnection, addStoreEdge, setEdges, setPendingConnection]
   );
 
   return (

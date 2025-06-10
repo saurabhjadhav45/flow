@@ -44,7 +44,7 @@ export function Toolbar() {
               nodes: workflow.nodes,
               edges: workflow.edges,
             });
-          } catch (error) {
+          } catch {
             alert('Invalid workflow file');
           }
         };

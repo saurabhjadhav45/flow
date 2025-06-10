@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { WorkflowNode, WorkflowEdge, WorkflowStore } from '../types/workflow';
+import type { WorkflowStore } from '../types/workflow';
 
 const initialState = {
   nodes: [],

@@ -8,7 +8,6 @@ const foreignObjectSize = 40;
 export default function EdgeControls({
   id,
   source,
-  target,
   sourceX,
   sourceY,
   targetX,
@@ -18,7 +17,6 @@ export default function EdgeControls({
   markerEnd,
   selected,
   sourceHandleId,
-  targetHandleId,
 }: EdgeProps) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -45,9 +43,7 @@ export default function EdgeControls({
     e.stopPropagation();
     setPendingConnection({
       source,
-      target,
       sourceHandle: sourceHandleId ?? null,
-      targetHandle: targetHandleId ?? null,
     });
     openSidebar();
   };

@@ -1,4 +1,5 @@
 import type { NodeType } from '../types/workflow';
+import { useWorkflowStore } from '../store/workflowStore';
 
 interface NodeTypeItem {
   type: NodeType;
@@ -51,8 +52,20 @@ function DraggableNode({ nodeType }: { nodeType: NodeTypeItem }) {
 }
 
 export function NodePalette() {
+  const sidebarOpen = useWorkflowStore((state) => state.sidebarOpen);
+  const closeSidebar = useWorkflowStore((state) => state.closeSidebar);
+
   return (
-    <div className="w-64 h-full bg-white border-r p-4 overflow-y-auto">
+    <div
+      className={`fixed top-14 bottom-0 left-0 w-64 bg-white border-r p-4 overflow-y-auto transform transition-transform duration-300 z-10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+    >
+      <button
+        onClick={closeSidebar}
+        className="absolute top-2 right-2 text-gray-500"
+        aria-label="Close sidebar"
+      >
+        ×
+      </button>
       <h2 className="text-lg font-semibold mb-4">Nodes</h2>
       <div className="space-y-2">
         {nodeTypes.map((nodeType) => (
@@ -61,4 +74,4 @@ export function NodePalette() {
       </div>
     </div>
   );
-} 
+}

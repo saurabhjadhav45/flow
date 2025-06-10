@@ -11,6 +11,7 @@ import ReactFlow, {
 import type { Connection, ReactFlowInstance } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useWorkflowStore } from '../store/workflowStore';
+import { FiPlus } from 'react-icons/fi';
 import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../types/workflow';
 import BaseNode from './nodes/BaseNode';
 import GlobalAddButton from './GlobalAddButton';
@@ -202,9 +203,12 @@ export function WorkflowEditor() {
       {nodes.length === 0 && (
         <button
           onClick={openSidebar}
-          className="absolute inset-0 m-auto h-10 w-44 border-2 border-dashed rounded-lg text-sm text-gray-500 dark:text-gray-300 flex items-center justify-center bg-white/70 dark:bg-gray-800/70"
+          className="absolute inset-0 m-auto flex flex-col items-center text-gray-500 dark:text-gray-300"
         >
-          + Add first step...
+          <div className="w-28 h-28 border-2 border-dashed rounded-lg flex items-center justify-center bg-white/70 dark:bg-gray-800/70">
+            <FiPlus className="w-12 h-12" />
+          </div>
+          <span className="mt-2 text-sm">Add first step…</span>
         </button>
       )}
       <GlobalAddButton />

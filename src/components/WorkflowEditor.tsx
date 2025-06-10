@@ -6,6 +6,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
+  type OnConnectStartParams,
 } from 'reactflow';
 import type { Connection, ReactFlowInstance } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -39,6 +40,7 @@ export function WorkflowEditor() {
     addEdge: addStoreEdge,
     pendingConnection,
     setPendingConnection,
+    openSidebar,
   } = useWorkflowStore();
 
   const [nodes, setNodes, onNodesChange] =
@@ -47,6 +49,7 @@ export function WorkflowEditor() {
     useEdgesState<WorkflowEdge>(initialEdges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
+  const connectStart = useRef<OnConnectStartParams | null>(null);
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -72,6 +75,30 @@ export function WorkflowEditor() {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
+
+  const onConnectStart = useCallback(
+    (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
+      connectStart.current = params;
+    },
+    []
+  );
+
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Element;
+      const droppedOnPane = target.classList.contains('react-flow__pane');
+
+      if (droppedOnPane && connectStart.current) {
+        setPendingConnection({
+          source: connectStart.current.nodeId || '',
+          sourceHandle: connectStart.current.handleId,
+        });
+        openSidebar();
+      }
+      connectStart.current = null;
+    },
+    [openSidebar, setPendingConnection]
+  );
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {
@@ -119,6 +146,8 @@ export function WorkflowEditor() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onConnectStart={onConnectStart}
+        onConnectEnd={onConnectEnd}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}

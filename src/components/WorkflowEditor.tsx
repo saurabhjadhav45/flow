@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -7,16 +7,21 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   type OnConnectStartParams,
-} from 'reactflow';
-import type { Connection, ReactFlowInstance } from 'reactflow';
-import 'reactflow/dist/style.css';
-import { useWorkflowStore } from '../store/workflowStore';
-import { FiPlus } from 'react-icons/fi';
-import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../types/workflow';
-import BaseNode from './nodes/BaseNode';
-import GlobalAddButton from './GlobalAddButton';
-import EdgeControls from './edges/EdgeControls';
-import { getNodeId } from '../utils/getNodeId';
+} from "reactflow";
+import type { Connection, ReactFlowInstance } from "reactflow";
+import "reactflow/dist/style.css";
+import { useWorkflowStore } from "../store/workflowStore";
+import { FiPlus } from "react-icons/fi";
+import type {
+  WorkflowNode,
+  WorkflowEdge,
+  WorkflowNodeData,
+  NodeType,
+} from "../types/workflow";
+import BaseNode from "./nodes/BaseNode";
+import GlobalAddButton from "./GlobalAddButton";
+import EdgeControls from "./edges/EdgeControls";
+import { getNodeId } from "../utils/getNodeId";
 
 const nodeTypes = {
   httpRequest: BaseNode,
@@ -80,14 +85,22 @@ export function WorkflowEditor() {
         id: `edge-${lastNode.id}-${newNode.id}`,
         source: lastNode.id,
         target: newNode.id,
-        type: 'controls',
+        type: "controls",
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
     }
 
     setNodeToAdd(null);
-  }, [nodeToAdd, nodes, setNodes, addNode, setEdges, addStoreEdge, setNodeToAdd]);
+  }, [
+    nodeToAdd,
+    nodes,
+    setNodes,
+    addNode,
+    setEdges,
+    addStoreEdge,
+    setNodeToAdd,
+  ]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -97,7 +110,7 @@ export function WorkflowEditor() {
         id: `edge-${connection.source}-${connection.target}`,
         source: connection.source,
         target: connection.target,
-        type: 'controls',
+        type: "controls",
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
@@ -111,7 +124,7 @@ export function WorkflowEditor() {
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   }, []);
 
   const onConnectStart = useCallback(
@@ -124,11 +137,11 @@ export function WorkflowEditor() {
   const onConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
       const target = event.target as Element;
-      const droppedOnPane = target.classList.contains('react-flow__pane');
+      const droppedOnPane = target.classList.contains("react-flow__pane");
 
       if (droppedOnPane && connectStart.current) {
         setPendingConnection({
-          source: connectStart.current.nodeId || '',
+          source: connectStart.current.nodeId || "",
           sourceHandle: connectStart.current.handleId,
         });
         openSidebar();
@@ -141,7 +154,9 @@ export function WorkflowEditor() {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData('application/reactflow') as NodeType;
+      const type = event.dataTransfer.getData(
+        "application/reactflow"
+      ) as NodeType;
       if (!type || !reactFlowInstance.current) return;
       const bounds = reactFlowWrapper.current?.getBoundingClientRect();
       const position = reactFlowInstance.current.project({
@@ -167,7 +182,7 @@ export function WorkflowEditor() {
           source: pendingConnection.source,
           sourceHandle: pendingConnection.sourceHandle ?? undefined,
           target: newNode.id,
-          type: 'controls',
+          type: "controls",
         };
         setEdges((eds) => addEdge(newEdge, eds));
         addStoreEdge(newEdge);
@@ -175,7 +190,15 @@ export function WorkflowEditor() {
       }
       closeSidebar();
     },
-    [setNodes, addNode, pendingConnection, addStoreEdge, setEdges, setPendingConnection, closeSidebar]
+    [
+      setNodes,
+      addNode,
+      pendingConnection,
+      addStoreEdge,
+      setEdges,
+      setPendingConnection,
+      closeSidebar,
+    ]
   );
 
   return (
@@ -192,7 +215,7 @@ export function WorkflowEditor() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        onInit={instance => (reactFlowInstance.current = instance)}
+        onInit={(instance) => (reactFlowInstance.current = instance)}
         onDrop={onDrop}
         onDragOver={onDragOver}
       >
@@ -203,11 +226,9 @@ export function WorkflowEditor() {
       {nodes.length === 0 && (
         <button
           onClick={openSidebar}
-          className="absolute inset-0 m-auto flex flex-col items-center text-gray-500 dark:text-gray-300"
+          className="bg-white/70 dark:bg-gray-800/70 absolute inset-0 m-auto w-28 h-28 border-2 border-dashed rounded-lg flex flex-col items-center text-gray-500 dark:text-gray-300"
         >
-          <div className="w-28 h-28 border-2 border-dashed rounded-lg flex items-center justify-center bg-white/70 dark:bg-gray-800/70">
-            <FiPlus className="w-12 h-12" />
-          </div>
+          <FiPlus className="w-12 h-12" />
           <span className="mt-2 text-sm">Add first step…</span>
         </button>
       )}

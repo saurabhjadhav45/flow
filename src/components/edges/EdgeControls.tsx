@@ -67,7 +67,7 @@ export default function EdgeControls({
             y={labelY - 10}
             requiredExtensions="http://www.w3.org/1999/xhtml"
           >
-            <div className="flex gap-1 bg-white rounded shadow px-1">
+            <div className="flex gap-1 bg-white dark:bg-gray-800 rounded shadow px-1">
               <button onClick={onAdd} className="text-xs">
                 +
               </button>

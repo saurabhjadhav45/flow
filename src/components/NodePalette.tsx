@@ -1,10 +1,13 @@
 import type { NodeType } from '../types/workflow';
 import { useWorkflowStore } from '../store/workflowStore';
+import { FiGlobe, FiClock, FiSliders, FiGitBranch, FiLink } from 'react-icons/fi';
+import type { IconType } from 'react-icons';
 
 interface NodeTypeItem {
   type: NodeType;
   label: string;
   description: string;
+  Icon: IconType;
 }
 
 const nodeTypes: NodeTypeItem[] = [
@@ -12,41 +15,65 @@ const nodeTypes: NodeTypeItem[] = [
     type: 'httpRequest',
     label: 'HTTP Request',
     description: 'Make HTTP requests to external APIs',
+    Icon: FiGlobe,
   },
   {
     type: 'delay',
     label: 'Delay',
     description: 'Add a delay between steps',
+    Icon: FiClock,
   },
   {
     type: 'setVariable',
     label: 'Set Variable',
     description: 'Set or update workflow variables',
+    Icon: FiSliders,
   },
   {
     type: 'condition',
     label: 'Condition',
     description: 'Add conditional logic to your workflow',
+    Icon: FiGitBranch,
   },
   {
     type: 'webhook',
     label: 'Webhook',
     description: 'Trigger workflow from external events',
+    Icon: FiLink,
   },
 ];
 
 function DraggableNode({ nodeType }: { nodeType: NodeTypeItem }) {
+  const setNodeToAdd = useWorkflowStore((state) => state.setNodeToAdd);
+  const pendingConnection = useWorkflowStore((state) => state.pendingConnection);
+  const closeSidebar = useWorkflowStore((state) => state.closeSidebar);
+
+  const onClick = () => {
+    if (!pendingConnection) {
+      setNodeToAdd(nodeType.type);
+      closeSidebar();
+    }
+  };
+
   return (
     <div
       draggable
-      onDragStart={e => {
+      onDragStart={(e) => {
         e.dataTransfer.setData('application/reactflow', nodeType.type);
         e.dataTransfer.effectAllowed = 'move';
       }}
-      className="p-4 mb-2 rounded-lg border cursor-move hover:bg-gray-50 transition-colors"
+      onClick={onClick}
+      className="p-4 mb-2 rounded-lg border cursor-move hover:bg-gray-50 transition-colors flex items-center gap-2"
     >
-      <h3 className="font-medium text-gray-900">{nodeType.label}</h3>
-      <p className="text-sm text-gray-500">{nodeType.description}</p>
+      <nodeType.Icon className="w-5 h-5" />
+      <div>
+        <h3 className="font-medium text-gray-900 dark:text-gray-100">
+          {nodeType.label}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {nodeType.description}
+        </p>
+      </div>
     </div>
   );
 }

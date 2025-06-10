@@ -12,6 +12,7 @@ import 'reactflow/dist/style.css';
 import { useWorkflowStore } from '../store/workflowStore';
 import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../types/workflow';
 import BaseNode from './nodes/BaseNode';
+import GlobalAddButton from './GlobalAddButton';
 
 const nodeTypes = {
   httpRequest: BaseNode,
@@ -92,7 +93,7 @@ export function WorkflowEditor() {
   );
 
   return (
-    <div className="w-full h-full" ref={reactFlowWrapper}>
+    <div className="w-full h-full relative" ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -110,6 +111,7 @@ export function WorkflowEditor() {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      <GlobalAddButton />
     </div>
   );
-} 
+}

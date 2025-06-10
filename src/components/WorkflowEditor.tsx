@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -15,6 +15,7 @@ import type { WorkflowNode, WorkflowEdge, WorkflowNodeData, NodeType } from '../
 import BaseNode from './nodes/BaseNode';
 import GlobalAddButton from './GlobalAddButton';
 import EdgeControls from './edges/EdgeControls';
+import { getNodeId } from '../utils/getNodeId';
 
 const nodeTypes = {
   httpRequest: BaseNode,
@@ -28,9 +29,6 @@ const edgeTypes = {
   controls: EdgeControls,
 };
 
-let id = 0;
-const getId = () => `node_${id++}`;
-
 export function WorkflowEditor() {
   const {
     nodes: initialNodes,
@@ -41,6 +39,9 @@ export function WorkflowEditor() {
     pendingConnection,
     setPendingConnection,
     openSidebar,
+    closeSidebar,
+    nodeToAdd,
+    setNodeToAdd,
   } = useWorkflowStore();
 
   const [nodes, setNodes, onNodesChange] =
@@ -50,6 +51,42 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+
+  useEffect(() => {
+    if (!nodeToAdd) return;
+
+    const lastNode = nodes[nodes.length - 1];
+    const position = lastNode
+      ? { x: lastNode.position.x + 200, y: lastNode.position.y }
+      : { x: 50, y: 50 };
+
+    const newNode: WorkflowNode = {
+      id: getNodeId(),
+      type: nodeToAdd,
+      position,
+      data: {
+        label: nodeToAdd.charAt(0).toUpperCase() + nodeToAdd.slice(1),
+        config: {},
+        type: nodeToAdd,
+      },
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+    addNode(newNode);
+
+    if (lastNode) {
+      const newEdge: WorkflowEdge = {
+        id: `edge-${lastNode.id}-${newNode.id}`,
+        source: lastNode.id,
+        target: newNode.id,
+        type: 'controls',
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+      addStoreEdge(newEdge);
+    }
+
+    setNodeToAdd(null);
+  }, [nodeToAdd, nodes, setNodes, addNode, setEdges, addStoreEdge, setNodeToAdd]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -111,12 +148,13 @@ export function WorkflowEditor() {
         y: event.clientY - (bounds?.top ?? 0),
       });
       const newNode: WorkflowNode = {
-        id: getId(),
+        id: getNodeId(),
         type,
         position,
         data: {
           label: type.charAt(0).toUpperCase() + type.slice(1),
           config: {},
+          type,
         },
       };
       setNodes((nds) => nds.concat(newNode));
@@ -134,8 +172,9 @@ export function WorkflowEditor() {
         addStoreEdge(newEdge);
         setPendingConnection(null);
       }
+      closeSidebar();
     },
-    [setNodes, addNode, pendingConnection, addStoreEdge, setEdges, setPendingConnection]
+    [setNodes, addNode, pendingConnection, addStoreEdge, setEdges, setPendingConnection, closeSidebar]
   );
 
   return (
@@ -160,6 +199,14 @@ export function WorkflowEditor() {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      {nodes.length === 0 && (
+        <button
+          onClick={openSidebar}
+          className="absolute inset-0 m-auto h-10 w-44 border-2 border-dashed rounded-lg text-sm text-gray-500 dark:text-gray-300 flex items-center justify-center bg-white/70 dark:bg-gray-800/70"
+        >
+          + Add first step...
+        </button>
+      )}
       <GlobalAddButton />
     </div>
   );

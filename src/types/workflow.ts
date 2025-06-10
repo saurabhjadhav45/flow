@@ -5,6 +5,7 @@ export type NodeType = 'httpRequest' | 'delay' | 'setVariable' | 'condition' | '
 export interface WorkflowNodeData {
   label: string;
   config: Record<string, unknown>;
+  type: NodeType;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData> & {
@@ -28,6 +29,7 @@ export interface WorkflowState {
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   sidebarOpen: boolean;
   pendingConnection: PendingConnection | null;
+  nodeToAdd: NodeType | null;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -45,4 +47,5 @@ export interface WorkflowStore extends WorkflowState {
   openSidebar: () => void;
   closeSidebar: () => void;
   setPendingConnection: (connection: PendingConnection | null) => void;
+  setNodeToAdd: (type: NodeType | null) => void;
 }

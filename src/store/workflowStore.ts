@@ -9,6 +9,7 @@ const initialState = {
   redoStack: [],
   sidebarOpen: false,
   pendingConnection: null,
+  nodeToAdd: null,
 };
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
@@ -83,4 +84,5 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   openSidebar: () => set({ sidebarOpen: true }),
   closeSidebar: () => set({ sidebarOpen: false }),
   setPendingConnection: (connection) => set({ pendingConnection: connection }),
+  setNodeToAdd: (type) => set({ nodeToAdd: type }),
 }));

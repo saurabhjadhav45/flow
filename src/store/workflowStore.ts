@@ -7,6 +7,7 @@ const initialState = {
   selectedNode: null,
   undoStack: [],
   redoStack: [],
+  sidebarOpen: false,
 };
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
@@ -77,4 +78,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   },
 
   clearWorkflow: () => set(initialState),
-})); 
+
+  openSidebar: () => set({ sidebarOpen: true }),
+  closeSidebar: () => set({ sidebarOpen: false }),
+}));

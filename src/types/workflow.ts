@@ -21,6 +21,7 @@ export interface WorkflowState {
   selectedNode: string | null;
   undoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
+  sidebarOpen: boolean;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -35,4 +36,6 @@ export interface WorkflowStore extends WorkflowState {
   undo: () => void;
   redo: () => void;
   clearWorkflow: () => void;
-} 
+  openSidebar: () => void;
+  closeSidebar: () => void;
+}

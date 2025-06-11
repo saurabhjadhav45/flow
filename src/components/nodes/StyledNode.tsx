@@ -21,7 +21,16 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   // connection. The plus button is hidden whenever at least one edge starts
   // from this node.
   const edges = useWorkflowStore((state) => state.edges);
+  const openSidebar = useWorkflowStore((state) => state.openSidebar);
+  const setPendingConnection = useWorkflowStore(
+    (state) => state.setPendingConnection,
+  );
   const hasOutgoing = edges.some((e) => e.source === id);
+  const onAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPendingConnection({ source: id, sourceHandle: 'out' });
+    openSidebar();
+  };
   const colors = {
     background: darkMode ? '#1E2235' : '#FFFFFF',
     border: darkMode ? 'rgba(255,255,255,0.2)' : '#C1C1C1',
@@ -79,32 +88,49 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
         {data.label}
       </div>
       {/*
-        Single output handle. It grows to a square with a plus icon when there
-        are no outgoing connections. Once an edge is created, it shrinks back to
-        the standard circular handle and the plus icon disappears.
+        Single output handle. The plus icon is rendered inside the same handle
+        so dragging from either the dot or the icon produces a single edge. The
+        icon becomes hidden once an outgoing connection exists.
       */}
       <Handle
         type="source"
         id="out"
+        onClick={onAdd}
         position={Position.Right}
         style={{
-          width: hasOutgoing ? 10 : 24,
-          height: hasOutgoing ? 10 : 24,
-          borderRadius: hasOutgoing ? '50%' : 4,
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
           border: `2px solid ${colors.border}`,
           background: colors.background,
-          right: hasOutgoing ? 0 : -32,
+          right: 0,
           top: '50%',
           transform: 'translate(50%, -50%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: colors.text,
-          fontSize: 16,
-          fontWeight: 'bold',
+          fontSize: 14,
+          cursor: 'pointer',
         }}
       >
-        {!hasOutgoing && <FiPlus style={{ pointerEvents: 'none' }} />}
+        {!hasOutgoing && (
+          <FiPlus
+            style={{
+              position: 'absolute',
+              right: -20,
+              top: '50%',
+              transform: 'translate(0, -50%)',
+              width: 20,
+              height: 20,
+              border: `2px solid ${colors.border}`,
+              borderRadius: 4,
+              padding: 2,
+              background: colors.background,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </Handle>
     </div>
   );

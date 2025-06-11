@@ -2,13 +2,26 @@ import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
-import { FiGlobe, FiClock, FiSliders, FiGitBranch, FiLink } from 'react-icons/fi';
+import {
+  FiGlobe,
+  FiClock,
+  FiSliders,
+  FiGitBranch,
+  FiLink,
+  FiPlus,
+} from 'react-icons/fi';
+import { useWorkflowStore } from '../../store/workflowStore';
 
 interface StyledNodeProps extends NodeProps<WorkflowNodeData> {
   darkMode?: boolean;
 }
 
-function StyledNode({ data, darkMode = false }: StyledNodeProps) {
+function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
+  // Access the global edges to know if this node already has an outgoing
+  // connection. The plus button is hidden whenever at least one edge starts
+  // from this node.
+  const edges = useWorkflowStore((state) => state.edges);
+  const hasOutgoing = edges.some((e) => e.source === id);
   const colors = {
     background: darkMode ? '#1E2235' : '#FFFFFF',
     border: darkMode ? 'rgba(255,255,255,0.2)' : '#C1C1C1',
@@ -65,29 +78,22 @@ function StyledNode({ data, darkMode = false }: StyledNodeProps) {
       >
         {data.label}
       </div>
+      {/*
+        Single output handle. It grows to a square with a plus icon when there
+        are no outgoing connections. Once an edge is created, it shrinks back to
+        the standard circular handle and the plus icon disappears.
+      */}
       <Handle
         type="source"
         id="out"
         position={Position.Right}
         style={{
-          width: 10,
-          height: 10,
-          borderRadius: '50%',
+          width: hasOutgoing ? 10 : 24,
+          height: hasOutgoing ? 10 : 24,
+          borderRadius: hasOutgoing ? '50%' : 4,
           border: `2px solid ${colors.border}`,
           background: colors.background,
-        }}
-      />
-      <Handle
-        type="source"
-        id="add"
-        position={Position.Right}
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: 4,
-          border: `2px solid ${colors.border}`,
-          background: colors.background,
-          right: -32,
+          right: hasOutgoing ? 0 : -32,
           top: '50%',
           transform: 'translate(50%, -50%)',
           display: 'flex',
@@ -98,7 +104,7 @@ function StyledNode({ data, darkMode = false }: StyledNodeProps) {
           fontWeight: 'bold',
         }}
       >
-        <span style={{ pointerEvents: 'none' }}>+</span>
+        {!hasOutgoing && <FiPlus style={{ pointerEvents: 'none' }} />}
       </Handle>
     </div>
   );

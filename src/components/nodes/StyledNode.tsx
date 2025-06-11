@@ -88,14 +88,15 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
         {data.label}
       </div>
       {/*
-        Single output handle. The plus icon is rendered inside the same handle
-        so dragging from either the dot or the icon produces a single edge. The
-        icon becomes hidden once an outgoing connection exists.
+        The single output handle acts as the true connection point. The plus
+        button is visually offset from the handle with a short line connecting
+        them. When clicked, the button opens the sidebar and starts a pending
+        connection from this handle. Once an outgoing edge exists the entire
+        plus UI (icon and connecting line) is hidden.
       */}
       <Handle
         type="source"
         id="out"
-        onClick={onAdd}
         position={Position.Right}
         style={{
           width: 10,
@@ -111,25 +112,40 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
           justifyContent: 'center',
           color: colors.text,
           fontSize: 14,
-          cursor: 'pointer',
         }}
       >
         {!hasOutgoing && (
-          <FiPlus
-            style={{
-              position: 'absolute',
-              right: -20,
-              top: '50%',
-              transform: 'translate(0, -50%)',
-              width: 20,
-              height: 20,
-              border: `2px solid ${colors.border}`,
-              borderRadius: 4,
-              padding: 2,
-              background: colors.background,
-              pointerEvents: 'none',
-            }}
-          />
+          <>
+            <div
+              style={{
+                position: 'absolute',
+                right: -12,
+                top: '50%',
+                width: 12,
+                height: 2,
+                background: colors.border,
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none',
+              }}
+            />
+            <FiPlus
+              onClick={onAdd}
+              style={{
+                position: 'absolute',
+                right: -28,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 20,
+                height: 20,
+                border: `2px solid ${colors.border}`,
+                borderRadius: 4,
+                padding: 2,
+                background: colors.background,
+                color: colors.text,
+                cursor: 'pointer',
+              }}
+            />
+          </>
         )}
       </Handle>
     </div>

@@ -12,9 +12,12 @@ export type WorkflowNode = Node<WorkflowNodeData> & {
   type: NodeType;
 };
 
-export type WorkflowEdge = Edge & {
-  label?: string;
-};
+export interface WorkflowEdgeData {
+  onAddEdgeClick?: () => void;
+  onDeleteEdgeClick?: () => void;
+}
+
+export type WorkflowEdge = Edge<WorkflowEdgeData>;
 
 export interface PendingConnection {
   source: string;

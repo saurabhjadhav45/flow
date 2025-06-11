@@ -12,7 +12,12 @@ export type WorkflowNode = Node<WorkflowNodeData> & {
   type: NodeType;
 };
 
-export type WorkflowEdge = Edge & {
+export interface WorkflowEdgeData {
+  onAddEdgeClick?: () => void;
+  onDeleteEdgeClick?: () => void;
+}
+
+export type WorkflowEdge = Edge<WorkflowEdgeData> & {
   label?: string;
 };
 

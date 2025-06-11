@@ -21,6 +21,7 @@ import type {
 import StyledNode from "./nodes/StyledNode";
 import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
+import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
 
 const nodeTypes = {
@@ -33,6 +34,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   controls: EdgeControls,
+  buttonedge: ButtonEdge as any,
 };
 
 export function WorkflowEditor() {
@@ -42,6 +44,7 @@ export function WorkflowEditor() {
     setNodes: setStoreNodes,
     addNode,
     addEdge: addStoreEdge,
+    deleteEdge,
     pendingConnection,
     setPendingConnection,
     openSidebar,
@@ -81,11 +84,19 @@ export function WorkflowEditor() {
     addNode(newNode);
 
     if (lastNode) {
+      const edgeId = `edge-${lastNode.id}-${newNode.id}`;
       const newEdge: WorkflowEdge = {
-        id: `edge-${lastNode.id}-${newNode.id}`,
+        id: edgeId,
         source: lastNode.id,
         target: newNode.id,
-        type: "controls",
+        type: "buttonedge",
+        data: {
+          onAddEdgeClick: () => {
+            setPendingConnection({ source: lastNode.id, sourceHandle: null });
+            openSidebar();
+          },
+          onDeleteEdgeClick: () => deleteEdge(edgeId),
+        },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
@@ -100,22 +111,36 @@ export function WorkflowEditor() {
     setEdges,
     addStoreEdge,
     setNodeToAdd,
+    setPendingConnection,
+    openSidebar,
+    deleteEdge,
   ]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
       if (!connection.source || !connection.target) return;
+      const edgeId = `edge-${connection.source}-${connection.target}`;
       const newEdge: WorkflowEdge = {
         ...connection,
-        id: `edge-${connection.source}-${connection.target}`,
+        id: edgeId,
         source: connection.source,
         target: connection.target,
-        type: "controls",
+        type: "buttonedge",
+        data: {
+          onAddEdgeClick: () => {
+            setPendingConnection({
+              source: connection.source as string,
+              sourceHandle: connection.sourceHandle ?? null,
+            });
+            openSidebar();
+          },
+          onDeleteEdgeClick: () => deleteEdge(edgeId),
+        },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
     },
-    [setEdges, addStoreEdge]
+    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge]
   );
 
   const onNodeDragStop = useCallback(() => {
@@ -177,12 +202,23 @@ export function WorkflowEditor() {
       addNode(newNode);
 
       if (pendingConnection) {
+        const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
         const newEdge: WorkflowEdge = {
-          id: `edge-${pendingConnection.source}-${newNode.id}`,
+          id: edgeId,
           source: pendingConnection.source,
           sourceHandle: pendingConnection.sourceHandle ?? undefined,
           target: newNode.id,
-          type: "controls",
+          type: "buttonedge",
+          data: {
+            onAddEdgeClick: () => {
+              setPendingConnection({
+                source: pendingConnection.source,
+                sourceHandle: pendingConnection.sourceHandle,
+              });
+              openSidebar();
+            },
+            onDeleteEdgeClick: () => deleteEdge(edgeId),
+          },
         };
         setEdges((eds) => addEdge(newEdge, eds));
         addStoreEdge(newEdge);
@@ -198,6 +234,8 @@ export function WorkflowEditor() {
       setEdges,
       setPendingConnection,
       closeSidebar,
+      openSidebar,
+      deleteEdge,
     ]
   );
 

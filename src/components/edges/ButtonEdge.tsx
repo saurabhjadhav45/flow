@@ -25,6 +25,9 @@ export function ButtonEdge({
     targetY,
     targetPosition,
   });
+
+  const theme = localStorage.getItem("theme");
+
   const [hovered, setHovered] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,13 +74,23 @@ export function ButtonEdge({
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             }}
-            className="flex items-center gap-0.5"
+            className="flex items-center gap-0.5 bg-background cursor-pointer"
           >
             <button
               onClick={onAdd}
               aria-label="Add node"
               title="Add node"
-              className="btn-icon bg-gray-800 border border-white/20 text-white"
+              style={{
+                borderRadius: 4,
+                padding: 2,
+                border:
+                  theme === "dark"
+                    ? "2px solid rgba(255,255,255,0.2)"
+                    : "2px solid #ccc",
+                background: theme === "dark" ? "#1E2235" : "#ffffff",
+                color: theme === "dark" ? "#ffffff" : "#333333",
+                cursor: "pointer",
+              }}
             >
               <FiPlus size={5} />
             </button>
@@ -87,7 +100,18 @@ export function ButtonEdge({
               onClick={onDelete}
               aria-label="Delete edge"
               title="Delete edge"
-              className="btn-icon bg-gray-800 border border-white/20 text-white flex items-center justify-center"
+              className="cursor-pointer"
+              style={{
+                borderRadius: 4,
+                padding: 2,
+                border:
+                  theme === "dark"
+                    ? "2px solid rgba(255,255,255,0.2)"
+                    : "2px solid #ccc",
+                background: theme === "dark" ? "#1E2235" : "#ffffff",
+                color: theme === "dark" ? "#ffffff" : "#333333",
+                cursor: "pointer",
+              }}
             >
               <FiTrash2 size={5} />
             </button>

@@ -1,8 +1,12 @@
 import { useCallback } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
+import { useThemeStore } from '../store/themeStore';
+import { FiSun, FiMoon } from 'react-icons/fi';
 
 export function Toolbar() {
   const { nodes, edges, clearWorkflow } = useWorkflowStore();
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+  const theme = useThemeStore((state) => state.theme);
 
   const handleNewWorkflow = useCallback(() => {
     if (window.confirm('Are you sure you want to create a new workflow? All unsaved changes will be lost.')) {
@@ -55,7 +59,7 @@ export function Toolbar() {
   }, []);
 
   return (
-    <div className="h-14 bg-white border-b px-4 flex items-center justify-between">
+    <div className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">
       <div className="flex items-center space-x-2">
         <button
           onClick={handleNewWorkflow}
@@ -75,7 +79,6 @@ export function Toolbar() {
         >
           Load
         </button>
-        <button className="bg-red-500 text-white px-4 py-2 rounded">Test Tailwind</button>
       </div>
       <div className="flex items-center space-x-2">
         <button
@@ -84,7 +87,10 @@ export function Toolbar() {
         >
           Run
         </button>
+        <button onClick={toggleTheme} className="btn btn-secondary">
+          {theme === 'dark' ? <FiSun /> : <FiMoon />}
+        </button>
       </div>
     </div>
   );
-} 
+}

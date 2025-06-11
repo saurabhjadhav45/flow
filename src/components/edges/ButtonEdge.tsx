@@ -71,20 +71,13 @@ export function ButtonEdge({
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             }}
-            className="flex items-center gap-0.5 bg-background"
+            className="flex items-center gap-0.5"
           >
             <button
               onClick={onAdd}
               aria-label="Add node"
               title="Add node"
-              style={{
-                border: "2px solid rgba(255,255,255,0.2)",
-                borderRadius: 4,
-                padding: 2,
-                background: "#1E2235",
-                color: "#FFFFFF",
-                cursor: "pointer",
-              }}
+              className="btn-icon bg-gray-800 border border-white/20 text-white"
             >
               <FiPlus size={5} />
             </button>
@@ -94,15 +87,7 @@ export function ButtonEdge({
               onClick={onDelete}
               aria-label="Delete edge"
               title="Delete edge"
-              className=" flex items-center justify-center "
-              style={{
-                border: "2px solid rgba(255,255,255,0.2)",
-                borderRadius: 4,
-                padding: 2,
-                background: "#1E2235",
-                color: "#FFFFFF",
-                cursor: "pointer",
-              }}
+              className="btn-icon bg-gray-800 border border-white/20 text-white flex items-center justify-center"
             >
               <FiTrash2 size={5} />
             </button>

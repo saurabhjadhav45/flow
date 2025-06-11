@@ -6,7 +6,7 @@ export function GlobalAddButton() {
   return (
     <button
       onClick={openSidebar}
-      className="absolute top-4 right-4 z-10 p-2 rounded-full bg-blue-500 text-white shadow"
+      className="btn-icon absolute top-4 right-4 z-10 p-2 rounded-full bg-blue-500 text-white shadow hover:bg-blue-600"
       aria-label="Add node"
     >
       +

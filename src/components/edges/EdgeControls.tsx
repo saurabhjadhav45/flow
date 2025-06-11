@@ -68,10 +68,10 @@ export default function EdgeControls({
             requiredExtensions="http://www.w3.org/1999/xhtml"
           >
             <div className="flex gap-1 bg-white dark:bg-gray-800 rounded shadow px-1">
-              <button onClick={onAdd} className="text-xs">
+              <button onClick={onAdd} className="btn-icon text-xs p-0.5" aria-label="Add edge">
                 +
               </button>
-              <button onClick={onDelete} className="text-xs">
+              <button onClick={onDelete} className="btn-icon text-xs p-0.5" aria-label="Delete edge">
                 ×
               </button>
             </div>

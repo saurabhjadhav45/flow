@@ -84,11 +84,11 @@ export function NodePalette() {
 
   return (
     <div
-      className={`fixed top-14 bottom-0 left-0 w-64 bg-white border-r p-4 overflow-y-auto transform transition-transform duration-300 z-10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      className={`fixed top-14 bottom-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto transform transition-transform duration-300 z-10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <button
         onClick={closeSidebar}
-        className="absolute top-2 right-2 text-gray-500"
+        className="btn-icon absolute top-2 right-2"
         aria-label="Close sidebar"
       >
         ×

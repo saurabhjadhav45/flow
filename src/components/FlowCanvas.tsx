@@ -13,7 +13,7 @@ import ReactFlow, {
   applyNodeChanges,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import WebhookNode, { WebhookNodeData } from './nodes/WebhookNode';
+import WebhookNode, { type WebhookNodeData } from './nodes/WebhookNode';
 import WebhookSettingsModal from './WebhookSettingsModal';
 
 const nodeTypes = {

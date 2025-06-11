@@ -17,9 +17,7 @@ export interface WorkflowEdgeData {
   onDeleteEdgeClick?: () => void;
 }
 
-export type WorkflowEdge = Edge<WorkflowEdgeData> & {
-  label?: string;
-};
+export type WorkflowEdge = Edge<WorkflowEdgeData>;
 
 export interface PendingConnection {
   source: string;

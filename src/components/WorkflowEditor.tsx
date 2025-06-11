@@ -15,6 +15,7 @@ import { FiPlus } from "react-icons/fi";
 import type {
   WorkflowNode,
   WorkflowEdge,
+  WorkflowEdgeData,
   WorkflowNodeData,
   NodeType,
 } from "../types/workflow";
@@ -34,7 +35,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   controls: EdgeControls,
-  buttonedge: ButtonEdge as any,
+  buttonedge: ButtonEdge,
 };
 
 export function WorkflowEditor() {
@@ -56,7 +57,7 @@ export function WorkflowEditor() {
   const [nodes, setNodes, onNodesChange] =
     useNodesState<WorkflowNodeData>(initialNodes);
   const [edges, setEdges, onEdgesChange] =
-    useEdgesState<WorkflowEdge>(initialEdges);
+    useEdgesState<WorkflowEdgeData>(initialEdges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);

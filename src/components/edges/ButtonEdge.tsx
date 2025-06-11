@@ -1,9 +1,9 @@
-import { BaseEdge, EdgeLabelRenderer, getBezierPath } from '@xyflow/react';
-import type { EdgeProps } from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, getBezierPath } from 'reactflow';
+import type { EdgeProps } from 'reactflow';
 import { Plus, Trash2 } from 'lucide-react';
-import { Button } from 'shadcn/ui/button';
+import type { WorkflowEdgeData } from '../../types/workflow';
 
-export function ButtonEdge({ id, data, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, markerEnd, style }: EdgeProps<Record<string, unknown>>): JSX.Element {
+export function ButtonEdge({ id, data, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, markerEnd, style }: EdgeProps<WorkflowEdgeData>) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -31,12 +31,20 @@ export function ButtonEdge({ id, data, sourceX, sourceY, targetX, targetY, sourc
           style={{ position: 'absolute', transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)` }}
           className="flex items-center gap-1 bg-background rounded-md px-1"
         >
-          <Button size="icon" variant="outline" className="border-red-500 text-red-500" onClick={onAdd}>
+          <button
+            onClick={onAdd}
+            className="w-5 h-5 flex items-center justify-center border border-red-500 text-red-500 rounded"
+            aria-label="add node"
+          >
             <Plus className="w-3 h-3" />
-          </Button>
-          <Button size="icon" variant="outline" className="border-gray-400 text-gray-400" onClick={onDelete}>
+          </button>
+          <button
+            onClick={onDelete}
+            className="w-5 h-5 flex items-center justify-center border border-gray-400 text-gray-400 rounded"
+            aria-label="delete edge"
+          >
             <Trash2 className="w-3 h-3" />
-          </Button>
+          </button>
         </div>
       </EdgeLabelRenderer>
     </>

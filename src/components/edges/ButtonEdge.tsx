@@ -1,8 +1,8 @@
-import { EdgeLabelRenderer, getBezierPath } from 'reactflow';
-import type { EdgeProps } from 'reactflow';
-import { Plus, Trash2 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import type { WorkflowEdgeData } from '../../types/workflow';
+import { EdgeLabelRenderer, getBezierPath } from "reactflow";
+import type { EdgeProps } from "reactflow";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { useState, useRef, useEffect } from "react";
+import type { WorkflowEdgeData } from "../../types/workflow";
 
 export function ButtonEdge({
   id,
@@ -68,24 +68,43 @@ export function ButtonEdge({
         <EdgeLabelRenderer>
           <div
             style={{
-              position: 'absolute',
+              position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             }}
-            className="flex items-center gap-0.5 bg-background rounded px-0.5 shadow"
+            className="flex items-center gap-0.5 bg-background"
           >
             <button
               onClick={onAdd}
-              className="w-4 h-4 flex items-center justify-center border border-red-500 text-red-500 rounded"
-              aria-label="add node"
+              aria-label="Add node"
+              title="Add node"
+              style={{
+                border: "2px solid rgba(255,255,255,0.2)",
+                borderRadius: 4,
+                padding: 2,
+                background: "#1E2235",
+                color: "#FFFFFF",
+                cursor: "pointer",
+              }}
             >
-              <Plus className="w-2.5 h-2.5" />
+              <FiPlus size={5} />
             </button>
+
+            {/* trash button */}
             <button
               onClick={onDelete}
-              className="w-4 h-4 flex items-center justify-center border border-gray-400 text-gray-400 rounded"
-              aria-label="delete edge"
+              aria-label="Delete edge"
+              title="Delete edge"
+              className=" flex items-center justify-center "
+              style={{
+                border: "2px solid rgba(255,255,255,0.2)",
+                borderRadius: 4,
+                padding: 2,
+                background: "#1E2235",
+                color: "#FFFFFF",
+                cursor: "pointer",
+              }}
             >
-              <Trash2 className="w-2.5 h-2.5" />
+              <FiTrash2 size={5} />
             </button>
           </div>
         </EdgeLabelRenderer>

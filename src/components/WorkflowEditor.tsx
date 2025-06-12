@@ -22,7 +22,6 @@ import type {
 import StyledNode from "./nodes/StyledNode";
 import WebhookNode from "./nodes/WebhookNode";
 import GlobalAddButton from "./GlobalAddButton";
-import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
 import { v4 as uuidv4 } from 'uuid';
@@ -38,7 +37,6 @@ const nodeTypes: NodeTypes = {
 };
 
 const edgeTypes = {
-  controls: EdgeControls,
   buttonedge: ButtonEdge,
 };
 

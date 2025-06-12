@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FiSettings, FiX, FiSave, FiArrowLeft } from 'react-icons/fi';
+import { FiSettings, FiArrowLeft } from 'react-icons/fi';
 import type { Node } from 'reactflow';
 
 interface PropertiesPanelProps {
   node: Node;
-  onUpdateNode: (nodeId: string, newData: any) => void;
+  onUpdateNode: (nodeId: string, newData: Record<string, unknown>) => void;
   onClose: () => void;
 }
 
@@ -17,7 +17,7 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     setFormData(node.data);
   }, [node.data]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });

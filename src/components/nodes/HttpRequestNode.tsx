@@ -7,15 +7,8 @@ import {
 } from "react-icons/fi";
 import { useWorkflowStore } from "../../store/workflowStore";
 
-export default function HttpRequestNode({ id, data, selected }: NodeProps) {
-  const[darkMode, setDarkMode] = React.useState(false);
-  const methodColors = {
-    GET: 'bg-green-500',
-    POST: 'bg-blue-500',
-    PUT: 'bg-yellow-500',
-    DELETE: 'bg-red-500',
-    PATCH: 'bg-purple-500',
-  };
+export default function HttpRequestNode({ id, data }: NodeProps) {
+  const [darkMode, setDarkMode] = React.useState(false);
 
   const method = data.method || 'GET';
 
@@ -40,8 +33,8 @@ export default function HttpRequestNode({ id, data, selected }: NodeProps) {
     openSidebar();
   };
   useEffect(() => {
-    let darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? true : false
-    setDarkMode(darkMode);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(prefersDark);
   }, []);
 
   return (

@@ -20,6 +20,9 @@ import type {
   NodeType,
 } from "../types/workflow";
 import StyledNode from "./nodes/StyledNode";
+import WebhookNode from "./nodes/WebhookNode";
+import WebhookSettingsModal from "./WebhookSettingsModal";
+import type { WebhookSettings } from "./WebhookSettingsModal";
 import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
@@ -32,7 +35,7 @@ const nodeTypes: NodeTypes = {
   delay: StyledNode,
   setVariable: StyledNode,
   condition: StyledNode,
-  webhook: StyledNode,
+  webhook: WebhookNode,
 };
 
 const edgeTypes = {
@@ -64,13 +67,16 @@ export function WorkflowEditor() {
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const selectedNode = selectedNodeId
     ? nodes.find((node) => node.id === selectedNodeId) || null
     : null;
 
   const updateNodeData = useCallback(
-    (nodeId: string, newData: any) => {
+    (nodeId: string, newData: Record<string, unknown>) => {
       // console.log("Updating node data", nodeId, newData);
 
       setNodes((nds) =>
@@ -106,6 +112,10 @@ export function WorkflowEditor() {
 
     setNodes((nds) => nds.concat(newNode));
     addNode(newNode);
+    if (newNode.type === 'webhook') {
+      setEditingNodeId(newNode.id);
+      setModalOpen(true);
+    }
 
     if (lastNode) {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
@@ -138,6 +148,8 @@ export function WorkflowEditor() {
     setPendingConnection,
     openSidebar,
     deleteEdge,
+    setModalOpen,
+    setEditingNodeId,
   ]);
 
   const onConnect = useCallback(
@@ -168,6 +180,13 @@ export function WorkflowEditor() {
   );
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
+  }, []);
+
+  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
+    if (node.type === 'webhook') {
+      setEditingNodeId(node.id);
+      setModalOpen(true);
+    }
   }, []);
 
   const onPaneClick = useCallback(() => {
@@ -230,6 +249,10 @@ export function WorkflowEditor() {
       };
       setNodes((nds) => nds.concat(newNode));
       addNode(newNode);
+      if (type === 'webhook') {
+        setEditingNodeId(newNode.id);
+        setModalOpen(true);
+      }
 
       if (pendingConnection) {
         const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
@@ -266,6 +289,8 @@ export function WorkflowEditor() {
       closeSidebar,
       openSidebar,
       deleteEdge,
+      setModalOpen,
+      setEditingNodeId,
     ]
   );
 
@@ -287,6 +312,7 @@ export function WorkflowEditor() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeClick={onNodeClick}
+        onNodeDoubleClick={onNodeDoubleClick}
         onPaneClick={onPaneClick}
       >
         <Background />
@@ -308,6 +334,24 @@ export function WorkflowEditor() {
           node={selectedNode}
           onUpdateNode={updateNodeData}
           onClose={() => setSelectedNodeId(null)}
+        />
+      )}
+      {modalOpen && (
+        <WebhookSettingsModal
+          open={modalOpen}
+          initialData={nodes.find((n) => n.id === editingNodeId)?.data as Partial<WebhookSettings>}
+          onSave={(data) => {
+            if (!editingNodeId) return;
+            setNodes((nds) =>
+              nds.map((n) => (n.id === editingNodeId ? { ...n, data: { ...n.data, ...data } } : n))
+            );
+            setModalOpen(false);
+            setEditingNodeId(null);
+          }}
+          onClose={() => {
+            setModalOpen(false);
+            setEditingNodeId(null);
+          }}
         />
       )}
     </div>

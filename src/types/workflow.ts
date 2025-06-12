@@ -1,6 +1,11 @@
-import type { Node, Edge } from 'reactflow';
+import type { Node, Edge } from "reactflow";
 
-export type NodeType = 'httpRequest' | 'delay' | 'setVariable' | 'condition' | 'webhook';
+export type NodeType =
+  | "httpRequest"
+  | "delay"
+  | "setVariable"
+  | "condition"
+  | "webhook";
 
 export interface WorkflowNodeData {
   label: string;

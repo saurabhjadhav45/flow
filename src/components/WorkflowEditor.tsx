@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -8,7 +8,7 @@ import ReactFlow, {
   addEdge,
   type OnConnectStartParams,
 } from "reactflow";
-import type { Connection, ReactFlowInstance } from "reactflow";
+import type { Connection, ReactFlowInstance, NodeTypes, Node } from "reactflow";
 import "reactflow/dist/style.css";
 import { useWorkflowStore } from "../store/workflowStore";
 import { FiPlus } from "react-icons/fi";
@@ -24,9 +24,11 @@ import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import PropertiesPanel from "./PropertiesPanel";
+import HttpRequestNode from "./nodes/HttpRequestNode";
 
-const nodeTypes = {
-  httpRequest: StyledNode,
+const nodeTypes: NodeTypes = {
+  httpRequest: HttpRequestNode,
   delay: StyledNode,
   setVariable: StyledNode,
   condition: StyledNode,
@@ -61,6 +63,27 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const selectedNode = selectedNodeId
+    ? nodes.find((node) => node.id === selectedNodeId) || null
+    : null;
+
+  const updateNodeData = useCallback(
+    (nodeId: string, newData: any) => {
+      // console.log("Updating node data", nodeId, newData);
+
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId) {
+            return { ...node, data: { ...node.data, ...newData } };
+          }
+          return node;
+        })
+      );
+    },
+    [setNodes]
+  );
 
   useEffect(() => {
     if (!nodeToAdd) return;
@@ -143,7 +166,13 @@ export function WorkflowEditor() {
     },
     [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge]
   );
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNodeId(node.id);
+  }, []);
 
+  const onPaneClick = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
   const onNodeDragStop = useCallback(() => {
     setStoreNodes(nodes as WorkflowNode[]);
   }, [nodes, setStoreNodes]);
@@ -257,6 +286,8 @@ export function WorkflowEditor() {
         onInit={(instance) => (reactFlowInstance.current = instance)}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
       >
         <Background />
         <Controls />
@@ -272,6 +303,13 @@ export function WorkflowEditor() {
         </button>
       )}
       <GlobalAddButton />
+      {selectedNode && (
+        <PropertiesPanel
+          node={selectedNode}
+          onUpdateNode={updateNodeData}
+          onClose={() => setSelectedNodeId(null)}
+        />
+      )}
     </div>
   );
 }

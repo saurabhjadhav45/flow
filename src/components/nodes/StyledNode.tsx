@@ -23,11 +23,13 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   // connection. The plus button is hidden whenever at least one edge starts
   // from this node.
   const edges = useWorkflowStore((state) => state.edges);
+  const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore(
     (state) => state.setPendingConnection
   );
   const hasOutgoing = edges.some((e) => e.source === id);
+  const showPlus = !hasOutgoing && draggingNodeId !== id;
   const onAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPendingConnection({ source: id, sourceHandle: "out" });
@@ -106,7 +108,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
           fontSize: 14,
         }}
       >
-        {!hasOutgoing && (
+        {showPlus && (
           <>
             <div
               style={{

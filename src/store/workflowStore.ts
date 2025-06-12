@@ -10,6 +10,7 @@ const initialState = {
   sidebarOpen: false,
   pendingConnection: null,
   nodeToAdd: null,
+  draggingNodeId: null,
 };
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
@@ -85,4 +86,5 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   closeSidebar: () => set({ sidebarOpen: false }),
   setPendingConnection: (connection) => set({ pendingConnection: connection }),
   setNodeToAdd: (type) => set({ nodeToAdd: type }),
+  setDraggingNodeId: (id) => set({ draggingNodeId: id }),
 }));

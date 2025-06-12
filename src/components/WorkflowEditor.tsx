@@ -56,6 +56,7 @@ export function WorkflowEditor() {
     closeSidebar,
     nodeToAdd,
     setNodeToAdd,
+    setDraggingNodeId,
   } = useWorkflowStore();
 
   const [nodes, setNodes, onNodesChange] =
@@ -186,8 +187,9 @@ export function WorkflowEditor() {
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
+      setDraggingNodeId(null);
     },
-    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge]
+    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge, setDraggingNodeId]
   );
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -214,8 +216,9 @@ export function WorkflowEditor() {
   const onConnectStart = useCallback(
     (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
       connectStart.current = params;
+      setDraggingNodeId(params.nodeId || null);
     },
-    []
+    [setDraggingNodeId]
   );
 
   const onConnectEnd = useCallback(
@@ -231,8 +234,9 @@ export function WorkflowEditor() {
         openSidebar();
       }
       connectStart.current = null;
+      setDraggingNodeId(null);
     },
-    [openSidebar, setPendingConnection]
+    [openSidebar, setPendingConnection, setDraggingNodeId]
   );
 
   const onDrop = useCallback(

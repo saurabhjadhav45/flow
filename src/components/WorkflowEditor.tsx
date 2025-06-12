@@ -224,10 +224,9 @@ export function WorkflowEditor() {
         "application/reactflow"
       ) as NodeType;
       if (!type || !reactFlowInstance.current) return;
-      const bounds = reactFlowWrapper.current?.getBoundingClientRect();
-      const position = reactFlowInstance.current.project({
-        x: event.clientX - (bounds?.left ?? 0),
-        y: event.clientY - (bounds?.top ?? 0),
+      const position = reactFlowInstance.current.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
       const newNode: WorkflowNode = {
         id: getNodeId(),

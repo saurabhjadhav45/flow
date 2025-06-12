@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -8,7 +8,7 @@ import ReactFlow, {
   addEdge,
   type OnConnectStartParams,
 } from "reactflow";
-import type { Connection, ReactFlowInstance } from "reactflow";
+import type { Connection, ReactFlowInstance, Node } from "reactflow";
 import "reactflow/dist/style.css";
 import { useWorkflowStore } from "../store/workflowStore";
 import { FiPlus } from "react-icons/fi";
@@ -20,17 +20,20 @@ import type {
   NodeType,
 } from "../types/workflow";
 import StyledNode from "./nodes/StyledNode";
+import WebhookNode from "./nodes/WebhookNode";
 import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import WebhookSettingsModal from "./WebhookSettingsModal";
+import type { WebhookSettings } from "./WebhookSettingsModal";
 
 const nodeTypes = {
   httpRequest: StyledNode,
   delay: StyledNode,
   setVariable: StyledNode,
   condition: StyledNode,
-  webhook: StyledNode,
+  webhook: WebhookNode,
 };
 
 const edgeTypes = {
@@ -61,6 +64,8 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
+  const [editingWebhookId, setEditingWebhookId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!nodeToAdd) return;
@@ -83,6 +88,11 @@ export function WorkflowEditor() {
 
     setNodes((nds) => nds.concat(newNode));
     addNode(newNode);
+
+    if (newNode.type === "webhook") {
+      setEditingWebhookId(newNode.id);
+      setWebhookModalOpen(true);
+    }
 
     if (lastNode) {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
@@ -148,6 +158,16 @@ export function WorkflowEditor() {
     setStoreNodes(nodes as WorkflowNode[]);
   }, [nodes, setStoreNodes]);
 
+  const onNodeDoubleClick = useCallback(
+    (_: React.MouseEvent, node: Node<WorkflowNodeData>) => {
+      if (node.type === "webhook") {
+        setEditingWebhookId(node.id);
+        setWebhookModalOpen(true);
+      }
+    },
+    []
+  );
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -202,6 +222,11 @@ export function WorkflowEditor() {
       setNodes((nds) => nds.concat(newNode));
       addNode(newNode);
 
+      if (type === "webhook") {
+        setEditingWebhookId(newNode.id);
+        setWebhookModalOpen(true);
+      }
+
       if (pendingConnection) {
         const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
         const newEdge: WorkflowEdge = {
@@ -251,6 +276,7 @@ export function WorkflowEditor() {
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onNodeDragStop={onNodeDragStop}
+        onNodeDoubleClick={onNodeDoubleClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
@@ -272,6 +298,35 @@ export function WorkflowEditor() {
         </button>
       )}
       <GlobalAddButton />
+      {webhookModalOpen && (
+        <WebhookSettingsModal
+          open={webhookModalOpen}
+          initialData={
+            nodes.find((n) => n.id === editingWebhookId)?.data.config as Partial<WebhookSettings>
+          }
+          onSave={(data) => {
+            setNodes((nds) =>
+              nds.map((n) =>
+                n.id === editingWebhookId
+                  ? {
+                      ...n,
+                      data: {
+                        ...n.data,
+                        config: data as unknown as Record<string, unknown>,
+                      },
+                    }
+                  : n
+              )
+            );
+            setWebhookModalOpen(false);
+            setEditingWebhookId(null);
+          }}
+          onClose={() => {
+            setWebhookModalOpen(false);
+            setEditingWebhookId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

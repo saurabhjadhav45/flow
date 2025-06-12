@@ -1,4 +1,4 @@
-import { memo } from "react";
+import React, { useEffect, memo } from "react";
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import type { WorkflowNodeData } from "../../types/workflow";
@@ -17,6 +17,8 @@ interface StyledNodeProps extends NodeProps<WorkflowNodeData> {
 }
 
 function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
+  const [isDark, setIsDark] = React.useState(darkMode);
+
   // Access the global edges to know if this node already has an outgoing
   // connection. The plus button is hidden whenever at least one edge starts
   // from this node.
@@ -32,13 +34,22 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     openSidebar();
   };
   const colors = {
-    background: darkMode ? "#1E2235" : "#FFFFFF",
-    border: darkMode ? "rgba(255,255,255,0.2)" : "#C1C1C1",
-    shadow: darkMode
+    background: isDark ? "#1e2235" : "#fff",
+    border: isDark ? "rgba(255,255,255,0.2)" : "#C1C1C1",
+    shadow: isDark
       ? "0 1px 4px rgba(0,0,0,0.5)"
       : "0 1px 4px rgba(0,0,0,0.1)",
-    text: darkMode ? "#FFFFFF" : "#333333",
+    text: isDark ? "#FFFFFF" : "#333333",
   };
+
+  useEffect(() => {
+    if (!darkMode) {
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setIsDark(prefersDark);
+    }
+  }, [darkMode]);
 
   const IconMap = {
     httpRequest: FiGlobe,
@@ -51,44 +62,23 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   const Icon = IconMap[data.type] ?? FiGlobe;
 
   return (
-    <div
-      style={{
-        width: 80,
-        height: 80,
-        borderRadius: 8,
-        border: `2px solid ${colors.border}`,
-        background: colors.background,
-        boxShadow: colors.shadow,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-      }}
-    >
+    <div>
       <Handle
         type="target"
         position={Position.Left}
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: 0,
-          border: `2px solid ${colors.border}`,
-          background: colors.background,
-        }}
+        className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
       />
-      <Icon style={{ width: 40, height: 40, color: colors.text }} />
+
       <div
-        style={{
-          marginTop: 4,
-          fontSize: 12,
-          fontWeight: 500,
-          textAlign: "center",
-          color: colors.text,
-        }}
+        className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}
       >
-        {data.label}
+        <Icon className="w-6 h-6 text-blue-600" />
       </div>
+
+      <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
+        <div className="font-medium text-[8px]">{data.label}</div>
+      </div>
+
       {/*
         The single output handle acts as the true connection point. The plus
         button is visually offset from the handle with a short line connecting

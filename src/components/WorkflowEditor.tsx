@@ -71,6 +71,14 @@ export function WorkflowEditor() {
     ? nodes.find((node) => node.id === selectedNodeId) || null
     : null;
 
+  const handleEdgeDelete = useCallback(
+    (edgeId: string) => {
+      setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+      deleteEdge(edgeId);
+    },
+    [setEdges, deleteEdge],
+  );
+
   const updateNodeData = useCallback(
     (nodeId: string, newData: Record<string, unknown>) => {
       // console.log("Updating node data", nodeId, newData);
@@ -141,7 +149,7 @@ export function WorkflowEditor() {
             setPendingConnection({ source: lastNode.id, sourceHandle: null });
             openSidebar();
           },
-          onDeleteEdgeClick: () => deleteEdge(edgeId),
+          onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));
@@ -159,7 +167,7 @@ export function WorkflowEditor() {
     setNodeToAdd,
     setPendingConnection,
     openSidebar,
-    deleteEdge,
+    handleEdgeDelete,
   ]);
 
   const onConnect = useCallback(
@@ -180,14 +188,14 @@ export function WorkflowEditor() {
             });
             openSidebar();
           },
-          onDeleteEdgeClick: () => deleteEdge(edgeId),
+          onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
       setDraggingNodeId(null);
     },
-    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge, setDraggingNodeId]
+    [setEdges, addStoreEdge, setPendingConnection, openSidebar, handleEdgeDelete, setDraggingNodeId]
   );
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -298,7 +306,7 @@ export function WorkflowEditor() {
                 });
                 openSidebar();
               },
-              onDeleteEdgeClick: () => deleteEdge(edgeId),
+              onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
             },
           };
           setEdges((eds) => addEdge(newEdge, eds));
@@ -317,7 +325,7 @@ export function WorkflowEditor() {
       setPendingConnection,
       closeSidebar,
       openSidebar,
-      deleteEdge,
+      handleEdgeDelete,
     ]
   );
 

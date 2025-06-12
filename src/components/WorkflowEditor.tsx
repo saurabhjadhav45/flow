@@ -20,10 +20,12 @@ import type {
   NodeType,
 } from "../types/workflow";
 import StyledNode from "./nodes/StyledNode";
+import WebhookNode from "./nodes/WebhookNode";
 import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import { v4 as uuidv4 } from 'uuid';
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
 
@@ -32,7 +34,7 @@ const nodeTypes: NodeTypes = {
   delay: StyledNode,
   setVariable: StyledNode,
   condition: StyledNode,
-  webhook: StyledNode,
+  webhook: WebhookNode,
 };
 
 const edgeTypes = {
@@ -64,13 +66,14 @@ export function WorkflowEditor() {
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
 
+
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const selectedNode = selectedNodeId
     ? nodes.find((node) => node.id === selectedNodeId) || null
     : null;
 
   const updateNodeData = useCallback(
-    (nodeId: string, newData: any) => {
+    (nodeId: string, newData: Record<string, unknown>) => {
       // console.log("Updating node data", nodeId, newData);
 
       setNodes((nds) =>
@@ -93,6 +96,22 @@ export function WorkflowEditor() {
       ? { x: lastNode.position.x + 200, y: lastNode.position.y }
       : { x: 50, y: 50 };
 
+    const defaults = nodeToAdd === 'webhook'
+      ? (() => {
+          const id = uuidv4();
+          return {
+            path: id,
+            method: 'GET',
+            auth: 'None',
+            respond: 'Immediately',
+            testUrl: `https://example.com/webhook-test/${id}`,
+            prodUrl: `https://example.com/webhook/${id}`,
+            notes: '',
+            displayNote: false,
+          };
+        })()
+      : {};
+
     const newNode: WorkflowNode = {
       id: getNodeId(),
       type: nodeToAdd,
@@ -101,11 +120,15 @@ export function WorkflowEditor() {
         label: nodeToAdd.charAt(0).toUpperCase() + nodeToAdd.slice(1),
         config: {},
         type: nodeToAdd,
+        ...defaults,
       },
     };
 
     setNodes((nds) => nds.concat(newNode));
     addNode(newNode);
+    if (newNode.type === 'webhook') {
+      setSelectedNodeId(newNode.id);
+    }
 
     if (lastNode) {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
@@ -170,6 +193,12 @@ export function WorkflowEditor() {
     setSelectedNodeId(node.id);
   }, []);
 
+  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
+    if (node.type === 'webhook') {
+      setSelectedNodeId(node.id);
+    }
+  }, []);
+
   const onPaneClick = useCallback(() => {
     setSelectedNodeId(null);
   }, []);
@@ -213,11 +242,26 @@ export function WorkflowEditor() {
         "application/reactflow"
       ) as NodeType;
       if (!type || !reactFlowInstance.current) return;
-      const bounds = reactFlowWrapper.current?.getBoundingClientRect();
-      const position = reactFlowInstance.current.project({
-        x: event.clientX - (bounds?.left ?? 0),
-        y: event.clientY - (bounds?.top ?? 0),
+      const position = reactFlowInstance.current.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
+      const defaults = type === 'webhook'
+        ? (() => {
+            const id = uuidv4();
+            return {
+              path: id,
+              method: 'GET',
+              auth: 'None',
+              respond: 'Immediately',
+              testUrl: `https://example.com/webhook-test/${id}`,
+              prodUrl: `https://example.com/webhook/${id}`,
+              notes: '',
+              displayNote: false,
+            };
+          })()
+        : {};
+
       const newNode: WorkflowNode = {
         id: getNodeId(),
         type,
@@ -226,10 +270,14 @@ export function WorkflowEditor() {
           label: type.charAt(0).toUpperCase() + type.slice(1),
           config: {},
           type,
+          ...defaults,
         },
       };
       setNodes((nds) => nds.concat(newNode));
       addNode(newNode);
+      if (type === 'webhook') {
+        setSelectedNodeId(newNode.id);
+      }
 
       if (pendingConnection) {
         const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
@@ -287,6 +335,7 @@ export function WorkflowEditor() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeClick={onNodeClick}
+        onNodeDoubleClick={onNodeDoubleClick}
         onPaneClick={onPaneClick}
       >
         <Background />

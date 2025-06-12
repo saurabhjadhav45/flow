@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FiSettings, FiX, FiSave, FiArrowLeft } from 'react-icons/fi';
+import { FiSettings, FiArrowLeft } from 'react-icons/fi';
 import type { Node } from 'reactflow';
+import WebhookSettings from './WebhookSettings';
 
 interface PropertiesPanelProps {
   node: Node;
-  onUpdateNode: (nodeId: string, newData: any) => void;
+  onUpdateNode: (nodeId: string, newData: Record<string, unknown>) => void;
   onClose: () => void;
 }
 
@@ -15,9 +16,9 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
   // Update local state when node changes
   useEffect(() => {
     setFormData(node.data);
-  }, [node.data]);
+  }, [node]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });
@@ -110,9 +111,37 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     switch (node.type) {
       case 'httpRequest':
         return renderHttpRequestProperties();
+      case 'webhook':
+        return <WebhookSettings data={formData} onChange={handleInputChange} />;
       default:
         return <div className="text-gray-400">No properties available</div>;
     }
+  };
+
+  const renderInputSection = () => {
+    if (node.type === 'webhook') {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center gap-3">
+          <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
+            Pull in events from Webhook
+          </h6>
+          <button
+            className="px-3 py-1 border rounded bg-blue-500 text-white"
+            onClick={() => handleInputChange('isListening', true)}
+          >
+            Listen for test event
+          </button>
+          <p className="text-xs text-gray-500 px-2">
+            Once you've finished building your workflow, run it without having to click this button by using the production webhook URL.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
+        Input
+      </h6>
+    );
   };
 
   return (
@@ -123,10 +152,8 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
         Back to canvas
       </span>
     <div className="p-6 flex items-center justify-center z-50 my-8 h-[calc(100%-64px)]" onClick={(e) => e.stopPropagation()}>
-      <div className='bg-[#f1f3f9] h-full  w-[30%] p-4 rounded-tl-lg'>
-        <h6 className='tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]'>
-          Input
-        </h6>
+      <div className='bg-[#f1f3f9] h-full  w-[30%] p-4 rounded-tl-lg flex items-center justify-center'>
+        {renderInputSection()}
       </div>
       <div className="w-96 rounded-lg border border-gray-300 flex flex-col w-[40%] h-[calc(100%+48px)]">
         <div className="p-4 flex items-center justify-between bg-[#f1f3f9] rounded-tl-lg rounded-tr-lg">

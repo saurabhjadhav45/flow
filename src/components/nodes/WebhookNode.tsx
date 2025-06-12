@@ -33,9 +33,8 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
 
   return (
     <div>
-      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-gray-400 border-2 border-gray-600" />
 
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
+      <div className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-full`}>
         <FiLink className="w-6 h-6 text-blue-600" />
         {isListening && <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />}
       </div>

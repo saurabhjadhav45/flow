@@ -131,7 +131,7 @@ export function WorkflowEditor() {
       setSelectedNodeId(newNode.id);
     }
 
-    if (lastNode) {
+    if (lastNode && nodeToAdd !== 'webhook') {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
       const newEdge: WorkflowEdge = {
         id: edgeId,
@@ -284,26 +284,28 @@ export function WorkflowEditor() {
       }
 
       if (pendingConnection) {
-        const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
-        const newEdge: WorkflowEdge = {
-          id: edgeId,
-          source: pendingConnection.source,
-          sourceHandle: pendingConnection.sourceHandle ?? undefined,
-          target: newNode.id,
-          type: "buttonedge",
-          data: {
-            onAddEdgeClick: () => {
-              setPendingConnection({
-                source: pendingConnection.source,
-                sourceHandle: pendingConnection.sourceHandle,
-              });
-              openSidebar();
+        if (type !== 'webhook') {
+          const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
+          const newEdge: WorkflowEdge = {
+            id: edgeId,
+            source: pendingConnection.source,
+            sourceHandle: pendingConnection.sourceHandle ?? undefined,
+            target: newNode.id,
+            type: "buttonedge",
+            data: {
+              onAddEdgeClick: () => {
+                setPendingConnection({
+                  source: pendingConnection.source,
+                  sourceHandle: pendingConnection.sourceHandle,
+                });
+                openSidebar();
+              },
+              onDeleteEdgeClick: () => deleteEdge(edgeId),
             },
-            onDeleteEdgeClick: () => deleteEdge(edgeId),
-          },
-        };
-        setEdges((eds) => addEdge(newEdge, eds));
-        addStoreEdge(newEdge);
+          };
+          setEdges((eds) => addEdge(newEdge, eds));
+          addStoreEdge(newEdge);
+        }
         setPendingConnection(null);
       }
       closeSidebar();

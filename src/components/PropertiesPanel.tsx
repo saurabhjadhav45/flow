@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiSettings, FiArrowLeft } from 'react-icons/fi';
 import type { Node } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
+import WebhookSettings from './WebhookSettings';
 
 interface PropertiesPanelProps {
   node: Node;
@@ -128,95 +129,13 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     </div>
   );
 
-  const renderWebhookProperties = () => (
-    <div className="space-y-3 text-left">
-      <div>
-        <label className="block text-sm mb-1">Test URL</label>
-        <input
-          className="w-full border px-2 py-1"
-          value={formData.testUrl || ''}
-          readOnly
-        />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Production URL</label>
-        <input
-          className="w-full border px-2 py-1"
-          value={formData.prodUrl || ''}
-          onChange={(e) => handleInputChange('prodUrl', e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">HTTP Method</label>
-        <select
-          className="w-full border px-2 py-1"
-          value={formData.method || 'GET'}
-          onChange={(e) => handleInputChange('method', e.target.value)}
-        >
-          {['GET', 'POST', 'PUT', 'DELETE'].map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Path</label>
-        <input
-          className="w-full border px-2 py-1"
-          value={formData.path || ''}
-          onChange={(e) => handleInputChange('path', e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Authentication</label>
-        <select
-          className="w-full border px-2 py-1"
-          value={formData.auth || 'None'}
-          onChange={(e) => handleInputChange('auth', e.target.value)}
-        >
-          <option value="None">None</option>
-          <option value="Basic">Basic</option>
-          <option value="Bearer">Bearer</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Respond</label>
-        <select
-          className="w-full border px-2 py-1"
-          value={formData.respond || 'Immediately'}
-          onChange={(e) => handleInputChange('respond', e.target.value)}
-        >
-          <option value="Immediately">Immediately</option>
-          <option value="After Workflow">After Workflow</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Notes</label>
-        <textarea
-          className="w-full border px-2 py-1"
-          value={formData.notes || ''}
-          onChange={(e) => handleInputChange('notes', e.target.value)}
-        />
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={!!formData.displayNote}
-          onChange={(e) => handleInputChange('displayNote', e.target.checked)}
-        />
-        <span className="text-sm">Display Note in Flow</span>
-      </div>
-    </div>
-  );
-
 
   const renderProperties = () => {
     switch (node.type) {
       case 'httpRequest':
         return renderHttpRequestProperties();
       case 'webhook':
-        return renderWebhookProperties();
+        return <WebhookSettings data={formData} onChange={handleInputChange} />;
       default:
         return <div className="text-gray-400">No properties available</div>;
     }

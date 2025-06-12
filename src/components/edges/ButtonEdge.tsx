@@ -73,6 +73,7 @@ export function ButtonEdge({
             style={{
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              pointerEvents: "all",
             }}
             className="flex items-center gap-0.5 bg-background cursor-pointer"
           >
@@ -91,8 +92,9 @@ export function ButtonEdge({
                 color: theme === "dark" ? "#ffffff" : "#333333",
                 cursor: "pointer",
               }}
+              className="cursor-pointer"
             >
-              <FiPlus size={5} />
+              <FiPlus size={5} className="pointer-events-none" />
             </button>
 
             {/* trash button */}
@@ -113,7 +115,7 @@ export function ButtonEdge({
                 cursor: "pointer",
               }}
             >
-              <FiTrash2 size={5} />
+              <FiTrash2 size={5} className="pointer-events-none" />
             </button>
           </div>
         </EdgeLabelRenderer>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiSettings, FiArrowLeft } from 'react-icons/fi';
 import type { Node } from 'reactflow';
-import { v4 as uuidv4 } from 'uuid';
 import WebhookSettings from './WebhookSettings';
 
 interface PropertiesPanelProps {
@@ -16,30 +15,8 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
 
   // Update local state when node changes
   useEffect(() => {
-    let data: Record<string, unknown> = { ...node.data };
-    if (node.type === 'webhook') {
-      const defaults: Record<string, unknown> = {};
-      const id = (data.path as string) || uuidv4();
-      if (!data.path) defaults.path = id;
-      if (!data.method) defaults.method = 'GET';
-      if (!data.auth) defaults.auth = 'None';
-      if (!data.respond) defaults.respond = 'Immediately';
-      const baseTest = (data.testUrl as string)?.split(id)[0] ||
-        'https://example.com/webhook-test/';
-      const baseProd = (data.prodUrl as string)?.split(id)[0] ||
-        'https://example.com/webhook/';
-      if (!data.testUrl) defaults.testUrl = `${baseTest}${id}`;
-      if (!data.prodUrl) defaults.prodUrl = `${baseProd}${id}`;
-      if (!data.notes) defaults.notes = '';
-      if (data.displayNote === undefined) defaults.displayNote = false;
-
-      if (Object.keys(defaults).length) {
-        onUpdateNode(node.id, defaults);
-        data = { ...data, ...defaults };
-      }
-    }
-    setFormData(data);
-  }, [node, onUpdateNode]);
+    setFormData(node.data);
+  }, [node]);
 
   const handleInputChange = (field: string, value: unknown) => {
     const newFormData = { ...formData, [field]: value };

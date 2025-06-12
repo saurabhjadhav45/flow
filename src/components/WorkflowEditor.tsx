@@ -25,6 +25,7 @@ import GlobalAddButton from "./GlobalAddButton";
 import EdgeControls from "./edges/EdgeControls";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import { v4 as uuidv4 } from 'uuid';
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
 
@@ -95,6 +96,22 @@ export function WorkflowEditor() {
       ? { x: lastNode.position.x + 200, y: lastNode.position.y }
       : { x: 50, y: 50 };
 
+    const defaults = nodeToAdd === 'webhook'
+      ? (() => {
+          const id = uuidv4();
+          return {
+            path: id,
+            method: 'GET',
+            auth: 'None',
+            respond: 'Immediately',
+            testUrl: `https://example.com/webhook-test/${id}`,
+            prodUrl: `https://example.com/webhook/${id}`,
+            notes: '',
+            displayNote: false,
+          };
+        })()
+      : {};
+
     const newNode: WorkflowNode = {
       id: getNodeId(),
       type: nodeToAdd,
@@ -103,6 +120,7 @@ export function WorkflowEditor() {
         label: nodeToAdd.charAt(0).toUpperCase() + nodeToAdd.slice(1),
         config: {},
         type: nodeToAdd,
+        ...defaults,
       },
     };
 
@@ -228,6 +246,22 @@ export function WorkflowEditor() {
         x: event.clientX,
         y: event.clientY,
       });
+      const defaults = type === 'webhook'
+        ? (() => {
+            const id = uuidv4();
+            return {
+              path: id,
+              method: 'GET',
+              auth: 'None',
+              respond: 'Immediately',
+              testUrl: `https://example.com/webhook-test/${id}`,
+              prodUrl: `https://example.com/webhook/${id}`,
+              notes: '',
+              displayNote: false,
+            };
+          })()
+        : {};
+
       const newNode: WorkflowNode = {
         id: getNodeId(),
         type,
@@ -236,6 +270,7 @@ export function WorkflowEditor() {
           label: type.charAt(0).toUpperCase() + type.slice(1),
           config: {},
           type,
+          ...defaults,
         },
       };
       setNodes((nds) => nds.concat(newNode));

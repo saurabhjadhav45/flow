@@ -38,6 +38,7 @@ export interface WorkflowState {
   sidebarOpen: boolean;
   pendingConnection: PendingConnection | null;
   nodeToAdd: NodeType | null;
+  draggingNodeId: string | null;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -56,4 +57,5 @@ export interface WorkflowStore extends WorkflowState {
   closeSidebar: () => void;
   setPendingConnection: (connection: PendingConnection | null) => void;
   setNodeToAdd: (type: NodeType | null) => void;
+  setDraggingNodeId: (id: string | null) => void;
 }

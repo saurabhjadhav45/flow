@@ -22,11 +22,13 @@ export default function HttpRequestNode({ id, data }: NodeProps) {
   };
 
   const edges = useWorkflowStore((state) => state.edges);
-    const openSidebar = useWorkflowStore((state) => state.openSidebar);
-    const setPendingConnection = useWorkflowStore(
-      (state) => state.setPendingConnection
-    );
+  const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
+  const openSidebar = useWorkflowStore((state) => state.openSidebar);
+  const setPendingConnection = useWorkflowStore(
+    (state) => state.setPendingConnection
+  );
   const hasOutgoing = edges.some((e) => e.source === id);
+  const showPlus = !hasOutgoing && draggingNodeId !== id;
   const onAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPendingConnection({ source: id, sourceHandle: "out" });
@@ -82,7 +84,7 @@ export default function HttpRequestNode({ id, data }: NodeProps) {
                 fontSize: 14,
               }}
             >
-              {!hasOutgoing && (
+              {showPlus && (
                 <>
                   <div
                     style={{

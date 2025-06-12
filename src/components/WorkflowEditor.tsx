@@ -56,6 +56,7 @@ export function WorkflowEditor() {
     closeSidebar,
     nodeToAdd,
     setNodeToAdd,
+    setDraggingNodeId,
   } = useWorkflowStore();
 
   const [nodes, setNodes, onNodesChange] =
@@ -130,7 +131,7 @@ export function WorkflowEditor() {
       setSelectedNodeId(newNode.id);
     }
 
-    if (lastNode) {
+    if (lastNode && nodeToAdd !== 'webhook') {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
       const newEdge: WorkflowEdge = {
         id: edgeId,
@@ -186,8 +187,9 @@ export function WorkflowEditor() {
       };
       setEdges((eds) => addEdge(newEdge, eds));
       addStoreEdge(newEdge);
+      setDraggingNodeId(null);
     },
-    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge]
+    [setEdges, addStoreEdge, setPendingConnection, openSidebar, deleteEdge, setDraggingNodeId]
   );
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -214,8 +216,9 @@ export function WorkflowEditor() {
   const onConnectStart = useCallback(
     (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
       connectStart.current = params;
+      setDraggingNodeId(params.nodeId || null);
     },
-    []
+    [setDraggingNodeId]
   );
 
   const onConnectEnd = useCallback(
@@ -231,8 +234,9 @@ export function WorkflowEditor() {
         openSidebar();
       }
       connectStart.current = null;
+      setDraggingNodeId(null);
     },
-    [openSidebar, setPendingConnection]
+    [openSidebar, setPendingConnection, setDraggingNodeId]
   );
 
   const onDrop = useCallback(
@@ -280,26 +284,28 @@ export function WorkflowEditor() {
       }
 
       if (pendingConnection) {
-        const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
-        const newEdge: WorkflowEdge = {
-          id: edgeId,
-          source: pendingConnection.source,
-          sourceHandle: pendingConnection.sourceHandle ?? undefined,
-          target: newNode.id,
-          type: "buttonedge",
-          data: {
-            onAddEdgeClick: () => {
-              setPendingConnection({
-                source: pendingConnection.source,
-                sourceHandle: pendingConnection.sourceHandle,
-              });
-              openSidebar();
+        if (type !== 'webhook') {
+          const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
+          const newEdge: WorkflowEdge = {
+            id: edgeId,
+            source: pendingConnection.source,
+            sourceHandle: pendingConnection.sourceHandle ?? undefined,
+            target: newNode.id,
+            type: "buttonedge",
+            data: {
+              onAddEdgeClick: () => {
+                setPendingConnection({
+                  source: pendingConnection.source,
+                  sourceHandle: pendingConnection.sourceHandle,
+                });
+                openSidebar();
+              },
+              onDeleteEdgeClick: () => deleteEdge(edgeId),
             },
-            onDeleteEdgeClick: () => deleteEdge(edgeId),
-          },
-        };
-        setEdges((eds) => addEdge(newEdge, eds));
-        addStoreEdge(newEdge);
+          };
+          setEdges((eds) => addEdge(newEdge, eds));
+          addStoreEdge(newEdge);
+        }
         setPendingConnection(null);
       }
       closeSidebar();

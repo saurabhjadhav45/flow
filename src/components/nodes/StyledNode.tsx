@@ -9,7 +9,15 @@ import {
   FiGitBranch,
   FiLink,
   FiPlus,
+  FiCode,
+  FiGitMerge,
+  FiFilter,
+  FiZap,
+  FiList,
+  FiMail,
+  FiSettings,
 } from "react-icons/fi";
+import { SiAirtable } from "react-icons/si";
 import { useWorkflowStore } from "../../store/workflowStore";
 
 interface StyledNodeProps extends NodeProps<WorkflowNodeData> {
@@ -59,6 +67,14 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     setVariable: FiSliders,
     condition: FiGitBranch,
     webhook: FiLink,
+    code: FiCode,
+    set: FiSettings,
+    merge: FiGitMerge,
+    if: FiFilter,
+    function: FiZap,
+    functionItem: FiList,
+    email: FiMail,
+    airtable: SiAirtable,
   } as const;
 
   const Icon = IconMap[data.type] ?? FiGlobe;

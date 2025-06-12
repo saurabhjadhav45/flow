@@ -34,6 +34,14 @@ const nodeTypes: NodeTypes = {
   setVariable: StyledNode,
   condition: StyledNode,
   webhook: WebhookNode,
+  code: StyledNode,
+  set: StyledNode,
+  merge: StyledNode,
+  if: StyledNode,
+  function: StyledNode,
+  functionItem: StyledNode,
+  email: StyledNode,
+  airtable: StyledNode,
 };
 
 const edgeTypes = {

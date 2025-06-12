@@ -1,6 +1,20 @@
 import type { NodeType } from '../types/workflow';
 import { useWorkflowStore } from '../store/workflowStore';
-import { FiGlobe, FiClock, FiSliders, FiGitBranch, FiLink } from 'react-icons/fi';
+import {
+  FiGlobe,
+  FiClock,
+  FiSliders,
+  FiGitBranch,
+  FiLink,
+  FiCode,
+  FiGitMerge,
+  FiFilter,
+  FiZap,
+  FiList,
+  FiMail,
+  FiSettings,
+} from 'react-icons/fi';
+import { SiAirtable } from 'react-icons/si';
 import type { IconType } from 'react-icons';
 
 interface NodeTypeItem {
@@ -40,6 +54,54 @@ const nodeTypes: NodeTypeItem[] = [
     label: 'Webhook',
     description: 'Trigger workflow from external events',
     Icon: FiLink,
+  },
+  {
+    type: 'code',
+    label: 'Code',
+    description: 'Execute custom code snippets',
+    Icon: FiCode,
+  },
+  {
+    type: 'set',
+    label: 'Set',
+    description: 'Assign values within the workflow',
+    Icon: FiSettings,
+  },
+  {
+    type: 'merge',
+    label: 'Merge',
+    description: 'Combine multiple branches',
+    Icon: FiGitMerge,
+  },
+  {
+    type: 'if',
+    label: 'If',
+    description: 'Conditional branching logic',
+    Icon: FiFilter,
+  },
+  {
+    type: 'function',
+    label: 'Function',
+    description: 'Reusable workflow function',
+    Icon: FiZap,
+  },
+  {
+    type: 'functionItem',
+    label: 'Function Item',
+    description: 'Step inside a function',
+    Icon: FiList,
+  },
+  {
+    type: 'email',
+    label: 'Email',
+    description: 'Send an email message',
+    Icon: FiMail,
+  },
+  {
+    type: 'airtable',
+    label: 'Airtable',
+    description: 'Interact with Airtable records',
+    Icon: SiAirtable,
   },
 ];
 

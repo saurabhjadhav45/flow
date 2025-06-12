@@ -1,42 +1,51 @@
-import React, { useEffect, memo } from 'react';
-import { Handle, Position } from 'reactflow';
-import type { NodeProps } from 'reactflow';
-import { FiLink, FiPlus, FiZap } from 'react-icons/fi';
-import type { WorkflowNodeData } from '../../types/workflow';
-import { useWorkflowStore } from '../../store/workflowStore';
+import React, { useEffect, memo } from "react";
+import { Handle, Position } from "reactflow";
+import type { NodeProps } from "reactflow";
+import { FiLink, FiPlus, FiZap } from "react-icons/fi";
+import type { WorkflowNodeData } from "../../types/workflow";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const [darkMode, setDarkMode] = React.useState(false);
   const isListening = (data as { isListening?: boolean })?.isListening;
 
   const colors = {
-    background: darkMode ? '#1e2235' : '#fff',
-    border: darkMode ? 'rgba(255,255,255,0.2)' : '#C1C1C1',
-    shadow: darkMode ? '0 1px 4px rgba(0,0,0,0.5)' : '0 1px 4px rgba(0,0,0,0.1)',
-    text: darkMode ? '#FFFFFF' : '#333333',
+    background: darkMode ? "#1e2235" : "#fff",
+    border: darkMode ? "rgba(255,255,255,0.2)" : "#C1C1C1",
+    shadow: darkMode
+      ? "0 1px 4px rgba(0,0,0,0.5)"
+      : "0 1px 4px rgba(0,0,0,0.1)",
+    text: darkMode ? "#FFFFFF" : "#333333",
   };
 
   const edges = useWorkflowStore((state) => state.edges);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
-  const setPendingConnection = useWorkflowStore((state) => state.setPendingConnection);
+  const setPendingConnection = useWorkflowStore(
+    (state) => state.setPendingConnection
+  );
   const hasOutgoing = edges.some((e) => e.source === id);
   const onAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setPendingConnection({ source: id, sourceHandle: 'out' });
+    setPendingConnection({ source: id, sourceHandle: "out" });
     openSidebar();
   };
 
   useEffect(() => {
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
     setDarkMode(prefersDark);
   }, []);
 
   return (
     <div>
-
-      <div className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-full`}>
+      <div
+        className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-3xl`}
+      >
         <FiLink className="w-6 h-6 text-blue-600" />
-        {isListening && <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />}
+        {isListening && (
+          <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />
+        )}
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
         <div className="font-medium text-[8px]">Webhook</div>
@@ -49,15 +58,15 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
         style={{
           width: 10,
           height: 10,
-          borderRadius: '50%',
+          borderRadius: "50%",
           border: `2px solid ${colors.border}`,
           background: colors.background,
           right: 0,
-          top: '50%',
-          transform: 'translate(50%, -50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          top: "50%",
+          transform: "translate(50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           color: colors.text,
           fontSize: 14,
         }}
@@ -66,23 +75,23 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
           <>
             <div
               style={{
-                position: 'absolute',
+                position: "absolute",
                 right: -30,
-                top: '50%',
+                top: "50%",
                 width: 30,
                 height: 2,
                 background: colors.border,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
               }}
             />
             <FiPlus
               onClick={onAdd}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 right: -45,
-                top: '50%',
-                transform: 'translateY(-50%)',
+                top: "50%",
+                transform: "translateY(-50%)",
                 width: 20,
                 height: 20,
                 border: `2px solid ${colors.border}`,
@@ -90,7 +99,7 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
                 padding: 2,
                 background: colors.background,
                 color: colors.text,
-                cursor: 'pointer',
+                cursor: "pointer",
               }}
             />
           </>

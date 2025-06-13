@@ -5,7 +5,15 @@ export type NodeType =
   | "delay"
   | "setVariable"
   | "condition"
-  | "webhook";
+  | "webhook"
+  | "code"
+  | "set"
+  | "merge"
+  | "if"
+  | "function"
+  | "functionItem"
+  | "email"
+  | "airtable";
 
 export interface WorkflowNodeData {
   label: string;

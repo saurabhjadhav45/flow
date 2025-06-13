@@ -44,10 +44,9 @@ export function Toolbar() {
           try {
             const workflow = JSON.parse(event.target?.result as string);
             // TODO: Validate workflow structure
-            useWorkflowStore.setState({
-              nodes: workflow.nodes,
-              edges: workflow.edges,
-            });
+            const { setNodes, setEdges } = useWorkflowStore.getState();
+            setNodes(workflow.nodes);
+            setEdges(workflow.edges);
           } catch {
             alert('Invalid workflow file');
           }

@@ -130,6 +130,7 @@ export function WorkflowEditor() {
     setNodes: setStoreNodes,
     addNode,
     addEdge: addStoreEdge,
+    updateNode,
     deleteEdge,
     pendingConnection,
     setPendingConnection,
@@ -144,6 +145,15 @@ export function WorkflowEditor() {
     useNodesState<WorkflowNodeData>(initialNodes);
   const [edges, setEdges, onEdgesChange] =
     useEdgesState<WorkflowEdgeData>(initialEdges);
+
+  // Keep local state in sync with the store
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
@@ -185,8 +195,17 @@ export function WorkflowEditor() {
           return node;
         })
       );
+
+      const storeNode = useWorkflowStore
+        .getState()
+        .nodes.find((n) => n.id === nodeId);
+      if (storeNode) {
+        updateNode(nodeId, {
+          data: { ...storeNode.data, ...newData },
+        });
+      }
     },
-    [setNodes]
+    [setNodes, updateNode]
   );
 
   useEffect(() => {

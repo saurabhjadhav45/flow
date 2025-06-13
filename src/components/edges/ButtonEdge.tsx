@@ -26,7 +26,6 @@ export function ButtonEdge({
     targetPosition,
   });
 
-  const theme = localStorage.getItem("theme");
 
   const [hovered, setHovered] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -81,18 +80,7 @@ export function ButtonEdge({
               onClick={onAdd}
               aria-label="Add node"
               title="Add node"
-              style={{
-                borderRadius: 4,
-                padding: 2,
-                border:
-                  theme === "dark"
-                    ? "2px solid rgba(255,255,255,0.2)"
-                    : "2px solid #ccc",
-                background: theme === "dark" ? "#1E2235" : "#ffffff",
-                color: theme === "dark" ? "#ffffff" : "#333333",
-                cursor: "pointer",
-              }}
-              className="cursor-pointer"
+              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
             >
               <FiPlus size={5} className="pointer-events-none" />
             </button>
@@ -102,18 +90,7 @@ export function ButtonEdge({
               onClick={onDelete}
               aria-label="Delete edge"
               title="Delete edge"
-              className="cursor-pointer"
-              style={{
-                borderRadius: 4,
-                padding: 2,
-                border:
-                  theme === "dark"
-                    ? "2px solid rgba(255,255,255,0.2)"
-                    : "2px solid #ccc",
-                background: theme === "dark" ? "#1E2235" : "#ffffff",
-                color: theme === "dark" ? "#ffffff" : "#333333",
-                cursor: "pointer",
-              }}
+              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
             >
               <FiTrash2 size={5} className="pointer-events-none" />
             </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from "react";
+import { memo } from "react";
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import { FiLink, FiPlus, FiZap } from "react-icons/fi";
@@ -6,17 +6,8 @@ import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
 
 function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
-  const [darkMode, setDarkMode] = React.useState(false);
   const isListening = (data as { isListening?: boolean })?.isListening;
 
-  const colors = {
-    background: darkMode ? "#1e2235" : "#fff",
-    border: darkMode ? "rgba(255,255,255,0.2)" : "#C1C1C1",
-    shadow: darkMode
-      ? "0 1px 4px rgba(0,0,0,0.5)"
-      : "0 1px 4px rgba(0,0,0,0.1)",
-    text: darkMode ? "#FFFFFF" : "#333333",
-  };
 
   const edges = useWorkflowStore((state) => state.edges);
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
@@ -32,17 +23,11 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
     openSidebar();
   };
 
-  useEffect(() => {
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDarkMode(prefersDark);
-  }, []);
 
   return (
     <div>
       <div
-        className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-3xl`}
+        className="flex items-center p-4 shadow-lg border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-r-sm rounded-l-3xl"
       >
         <FiLink className="w-6 h-6 text-blue-600" />
         {isListening && (
@@ -57,52 +42,14 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
         type="source"
         id="out"
         position={Position.Right}
-        style={{
-          width: 10,
-          height: 10,
-          borderRadius: "50%",
-          border: `2px solid ${colors.border}`,
-          background: colors.background,
-          right: 0,
-          top: "50%",
-          transform: "translate(50%, -50%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: colors.text,
-          fontSize: 14,
-        }}
+        className="w-2.5 h-2.5 rounded-full border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 flex items-center justify-center absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 text-[14px]"
       >
         {showPlus && (
           <>
-            <div
-              style={{
-                position: "absolute",
-                right: -30,
-                top: "50%",
-                width: 30,
-                height: 2,
-                background: colors.border,
-                transform: "translateY(-50%)",
-                pointerEvents: "none",
-              }}
-            />
+            <div className="absolute right-[30px] top-1/2 w-[30px] h-[2px] -translate-y-1/2 pointer-events-none bg-gray-300 dark:bg-gray-600" />
             <FiPlus
               onClick={onAdd}
-              style={{
-                position: "absolute",
-                right: -45,
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: 20,
-                height: 20,
-                border: `2px solid ${colors.border}`,
-                borderRadius: 4,
-                padding: 2,
-                background: colors.background,
-                color: colors.text,
-                cursor: "pointer",
-              }}
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded p-[2px] cursor-pointer"
             />
           </>
         )}

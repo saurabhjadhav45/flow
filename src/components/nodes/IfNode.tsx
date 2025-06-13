@@ -1,16 +1,11 @@
-import React, { useEffect, memo } from 'react';
+import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
 import { FiGitBranch, FiPlus } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
 
-interface IfNodeProps extends NodeProps<WorkflowNodeData> {
-  darkMode?: boolean;
-}
-
-function IfNode({ id, data, darkMode = false }: IfNodeProps) {
-  const [isDark, setIsDark] = React.useState(darkMode);
+function IfNode({ id, data }: NodeProps<WorkflowNodeData>) {
 
   const edges = useWorkflowStore((state) => state.edges);
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
@@ -28,20 +23,6 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
     openSidebar();
   };
 
-  const colors = {
-    background: isDark ? '#1e2235' : '#fff',
-    border: isDark ? 'rgba(255,255,255,0.2)' : '#C1C1C1',
-    shadow: isDark ? '0 1px 4px rgba(0,0,0,0.5)' : '0 1px 4px rgba(0,0,0,0.1)',
-    text: isDark ? '#FFFFFF' : '#333333',
-  };
-
-  useEffect(() => {
-    if (!darkMode) {
-      const prefersDark =
-        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(prefersDark);
-    }
-  }, [darkMode]);
 
   return (
     <div>
@@ -51,7 +32,7 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
         className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
       />
 
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
+      <div className="flex items-center p-4 shadow-lg rounded-sm border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
         <FiGitBranch className="w-6 h-6 text-blue-600" />
       </div>
 
@@ -63,52 +44,15 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
         type="source"
         id="true"
         position={Position.Right}
-        style={{
-          width: 10,
-          height: 10,
-          borderRadius: '50%',
-          border: `2px solid ${colors.border}`,
-          background: colors.background,
-          right: 0,
-          top: '35%',
-          transform: 'translate(50%, -50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: colors.text,
-          fontSize: 14,
-        }}
+        style={{ top: '35%' }}
+        className="w-2.5 h-2.5 rounded-full border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 flex items-center justify-center absolute right-0 translate-x-1/2 -translate-y-1/2 top-[35%] text-[14px]"
       >
         {showPlusTrue && (
           <>
-            <div
-              style={{
-                position: 'absolute',
-                right: -30,
-                top: '50%',
-                width: 30,
-                height: 2,
-                background: colors.border,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-              }}
-            />
+            <div className="absolute right-[30px] top-1/2 w-[30px] h-[2px] -translate-y-1/2 pointer-events-none bg-gray-300 dark:bg-gray-600" />
             <FiPlus
               onClick={onAdd('true')}
-              style={{
-                position: 'absolute',
-                right: -45,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: 20,
-                height: 20,
-                border: `2px solid ${colors.border}`,
-                borderRadius: 4,
-                padding: 2,
-                background: colors.background,
-                color: colors.text,
-                cursor: 'pointer',
-              }}
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded p-[2px] cursor-pointer"
             />
           </>
         )}
@@ -118,52 +62,15 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
         type="source"
         id="false"
         position={Position.Right}
-        style={{
-          width: 10,
-          height: 10,
-          borderRadius: '50%',
-          border: `2px solid ${colors.border}`,
-          background: colors.background,
-          right: 0,
-          top: '65%',
-          transform: 'translate(50%, -50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: colors.text,
-          fontSize: 14,
-        }}
+        style={{ top: '65%' }}
+        className="w-2.5 h-2.5 rounded-full border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 flex items-center justify-center absolute right-0 translate-x-1/2 -translate-y-1/2 top-[65%] text-[14px]"
       >
         {showPlusFalse && (
           <>
-            <div
-              style={{
-                position: 'absolute',
-                right: -30,
-                top: '50%',
-                width: 30,
-                height: 2,
-                background: colors.border,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-              }}
-            />
+            <div className="absolute right-[30px] top-1/2 w-[30px] h-[2px] -translate-y-1/2 pointer-events-none bg-gray-300 dark:bg-gray-600" />
             <FiPlus
               onClick={onAdd('false')}
-              style={{
-                position: 'absolute',
-                right: -45,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: 20,
-                height: 20,
-                border: `2px solid ${colors.border}`,
-                borderRadius: 4,
-                padding: 2,
-                background: colors.background,
-                color: colors.text,
-                cursor: 'pointer',
-              }}
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded p-[2px] cursor-pointer"
             />
           </>
         )}

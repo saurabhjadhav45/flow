@@ -1,8 +1,8 @@
-import { memo } from 'react';
-import { Handle, Position } from 'reactflow';
-import type { NodeProps } from 'reactflow';
-import type { WorkflowNodeData } from '../../types/workflow';
-import { useWorkflowStore } from '../../store/workflowStore';
+import { memo } from "react";
+import { Handle, Position } from "reactflow";
+import type { NodeProps } from "reactflow";
+import type { WorkflowNodeData } from "../../types/workflow";
+import { useWorkflowStore } from "../../store/workflowStore";
 import {
   FiGlobe,
   FiClock,
@@ -14,17 +14,19 @@ import {
   FiCpu,
   FiMail,
   FiGrid,
-} from 'react-icons/fi';
+} from "react-icons/fi";
 
 function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
-  const setPendingConnection = useWorkflowStore((state) => state.setPendingConnection);
+  const setPendingConnection = useWorkflowStore(
+    (state) => state.setPendingConnection
+  );
 
   const IconMap = {
     httpRequest: FiGlobe,
     delay: FiClock,
-    setVariable: FiSliders,
-    condition: FiGitBranch,
+    // setVariable: FiSliders,
+    // condition: FiGitBranch,
     webhook: FiLink,
     code: FiCode,
     set: FiSliders,
@@ -37,7 +39,6 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   } as const;
 
   const Icon = IconMap[data.type];
-
 
   const onAdd = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -43,9 +43,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   const colors = {
     background: isDark ? "#1e2235" : "#fff",
     border: isDark ? "rgba(255,255,255,0.2)" : "#C1C1C1",
-    shadow: isDark
-      ? "0 1px 4px rgba(0,0,0,0.5)"
-      : "0 1px 4px rgba(0,0,0,0.1)",
+    shadow: isDark ? "0 1px 4px rgba(0,0,0,0.5)" : "0 1px 4px rgba(0,0,0,0.1)",
     text: isDark ? "#FFFFFF" : "#333333",
   };
 
@@ -61,8 +59,8 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   const IconMap = {
     httpRequest: FiGlobe,
     delay: FiClock,
-    setVariable: FiSliders,
-    condition: FiGitBranch,
+    // setVariable: FiSliders,
+    // condition: FiGitBranch,
     webhook: FiLink,
     code: FiCode,
     set: FiSliders,

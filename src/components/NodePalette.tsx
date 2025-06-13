@@ -1,5 +1,5 @@
-import type { NodeType } from '../types/workflow';
-import { useWorkflowStore } from '../store/workflowStore';
+import type { NodeType } from "../types/workflow";
+import { useWorkflowStore } from "../store/workflowStore";
 import {
   FiGlobe,
   FiClock,
@@ -13,9 +13,9 @@ import {
   FiList,
   FiMail,
   FiSettings,
-} from 'react-icons/fi';
-import { SiAirtable } from 'react-icons/si';
-import type { IconType } from 'react-icons';
+} from "react-icons/fi";
+import { SiAirtable } from "react-icons/si";
+import type { IconType } from "react-icons";
 
 interface NodeTypeItem {
   type: NodeType;
@@ -26,88 +26,90 @@ interface NodeTypeItem {
 
 const nodeTypes: NodeTypeItem[] = [
   {
-    type: 'httpRequest',
-    label: 'HTTP Request',
-    description: 'Make HTTP requests to external APIs',
+    type: "httpRequest",
+    label: "HTTP Request",
+    description: "Make HTTP requests to external APIs",
     Icon: FiGlobe,
   },
   {
-    type: 'delay',
-    label: 'Delay',
-    description: 'Add a delay between steps',
+    type: "delay",
+    label: "Delay",
+    description: "Add a delay between steps",
     Icon: FiClock,
   },
+  // {
+  //   type: 'setVariable',
+  //   label: 'Set Variable',
+  //   description: 'Set or update workflow variables',
+  //   Icon: FiSliders,
+  // },
+  // {
+  //   type: 'condition',
+  //   label: 'Condition',
+  //   description: 'Add conditional logic to your workflow',
+  //   Icon: FiGitBranch,
+  // },
   {
-    type: 'setVariable',
-    label: 'Set Variable',
-    description: 'Set or update workflow variables',
-    Icon: FiSliders,
-  },
-  {
-    type: 'condition',
-    label: 'Condition',
-    description: 'Add conditional logic to your workflow',
-    Icon: FiGitBranch,
-  },
-  {
-    type: 'webhook',
-    label: 'Webhook',
-    description: 'Trigger workflow from external events',
+    type: "webhook",
+    label: "Webhook",
+    description: "Trigger workflow from external events",
     Icon: FiLink,
   },
   {
-    type: 'code',
-    label: 'Code',
-    description: 'Execute custom code snippets',
+    type: "code",
+    label: "Code",
+    description: "Execute custom code snippets",
     Icon: FiCode,
   },
   {
-    type: 'set',
-    label: 'Set',
-    description: 'Assign values within the workflow',
+    type: "set",
+    label: "Set",
+    description: "Assign values within the workflow",
     Icon: FiSettings,
   },
   {
-    type: 'merge',
-    label: 'Merge',
-    description: 'Combine multiple branches',
+    type: "merge",
+    label: "Merge",
+    description: "Combine multiple branches",
     Icon: FiGitMerge,
   },
   {
-    type: 'if',
-    label: 'If',
-    description: 'Conditional branching logic',
+    type: "if",
+    label: "If",
+    description: "Conditional branching logic",
     Icon: FiFilter,
   },
   {
-    type: 'function',
-    label: 'Function',
-    description: 'Reusable workflow function',
+    type: "function",
+    label: "Function",
+    description: "Reusable workflow function",
     Icon: FiZap,
   },
   {
-    type: 'functionItem',
-    label: 'Function Item',
-    description: 'Step inside a function',
+    type: "functionItem",
+    label: "Function Item",
+    description: "Step inside a function",
     Icon: FiList,
   },
   {
-    type: 'email',
-    label: 'Email',
-    description: 'Send an email message',
+    type: "email",
+    label: "Email",
+    description: "Send an email message",
     Icon: FiMail,
   },
   {
-    type: 'airtable',
-    label: 'Airtable',
-    description: 'Interact with Airtable records',
+    type: "airtable",
+    label: "Airtable",
+    description: "Interact with Airtable records",
     Icon: SiAirtable,
   },
 ];
 
 function DraggableNode({ nodeType }: { nodeType: NodeTypeItem }) {
   const setNodeToAdd = useWorkflowStore((state) => state.setNodeToAdd);
-  const pendingConnection = useWorkflowStore((state) => state.pendingConnection);
+  const pendingConnection = useWorkflowStore(
+    (state) => state.pendingConnection
+  );
   const closeSidebar = useWorkflowStore((state) => state.closeSidebar);
 
   const onClick = () => {
@@ -121,8 +123,8 @@ function DraggableNode({ nodeType }: { nodeType: NodeTypeItem }) {
     <div
       draggable
       onDragStart={(e) => {
-        e.dataTransfer.setData('application/reactflow', nodeType.type);
-        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData("application/reactflow", nodeType.type);
+        e.dataTransfer.effectAllowed = "move";
       }}
       onClick={onClick}
       className="p-4 mb-2 rounded-lg border cursor-move hover:bg-gray-50 transition-colors flex items-center gap-2"
@@ -146,7 +148,9 @@ export function NodePalette() {
 
   return (
     <div
-      className={`fixed top-14 bottom-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto transform transition-transform duration-300 z-10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      className={`fixed top-14 bottom-0 left-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto transform transition-transform duration-300 z-10 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
     >
       <button
         onClick={closeSidebar}

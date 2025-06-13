@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { useWorkflowStore } from '../store/workflowStore';
+import { useCallback } from "react";
+import { useWorkflowStore } from "../store/workflowStore";
 
 export function NodeConfigPanel() {
   const { selectedNode, nodes, updateNode } = useWorkflowStore();
@@ -34,7 +34,7 @@ export function NodeConfigPanel() {
   return (
     <div className="w-64 h-full bg-white border-l p-4 overflow-y-auto">
       <h2 className="text-lg font-semibold mb-4">Node Configuration</h2>
-      
+
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -53,7 +53,7 @@ export function NodeConfigPanel() {
         </div>
 
         {/* Node type specific configuration */}
-        {selectedNodeData.type === 'httpRequest' && (
+        {selectedNodeData.type === "httpRequest" && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -61,8 +61,10 @@ export function NodeConfigPanel() {
               </label>
               <input
                 type="text"
-                value={(selectedNodeData.data.config.url as string | undefined) ?? ''}
-                onChange={(e) => handleConfigChange('url', e.target.value)}
+                value={
+                  (selectedNodeData.data.config.url as string | undefined) ?? ""
+                }
+                onChange={(e) => handleConfigChange("url", e.target.value)}
                 className="input w-full"
               />
             </div>
@@ -71,8 +73,11 @@ export function NodeConfigPanel() {
                 Method
               </label>
               <select
-                value={(selectedNodeData.data.config.method as string | undefined) ?? 'GET'}
-                onChange={(e) => handleConfigChange('method', e.target.value)}
+                value={
+                  (selectedNodeData.data.config.method as string | undefined) ??
+                  "GET"
+                }
+                onChange={(e) => handleConfigChange("method", e.target.value)}
                 className="input w-full"
               >
                 <option value="GET">GET</option>
@@ -84,21 +89,26 @@ export function NodeConfigPanel() {
           </div>
         )}
 
-        {selectedNodeData.type === 'delay' && (
+        {selectedNodeData.type === "delay" && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Delay (ms)
             </label>
             <input
               type="number"
-              value={(selectedNodeData.data.config.delay as number | undefined) ?? 1000}
-              onChange={(e) => handleConfigChange('delay', parseInt(e.target.value))}
+              value={
+                (selectedNodeData.data.config.delay as number | undefined) ??
+                1000
+              }
+              onChange={(e) =>
+                handleConfigChange("delay", parseInt(e.target.value))
+              }
               className="input w-full"
             />
           </div>
         )}
 
-        {selectedNodeData.type === 'setVariable' && (
+        {/* {selectedNodeData.type === 'setVariable' && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -138,17 +148,21 @@ export function NodeConfigPanel() {
               placeholder="e.g., value > 10"
             />
           </div>
-        )}
+        )} */}
 
-        {selectedNodeData.type === 'webhook' && (
+        {selectedNodeData.type === "webhook" && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Webhook URL
             </label>
             <input
               type="text"
-              value={(selectedNodeData.data.config.webhookUrl as string | undefined) ?? ''}
-              onChange={(e) => handleConfigChange('webhookUrl', e.target.value)}
+              value={
+                (selectedNodeData.data.config.webhookUrl as
+                  | string
+                  | undefined) ?? ""
+              }
+              onChange={(e) => handleConfigChange("webhookUrl", e.target.value)}
               className="input w-full"
               placeholder="https://..."
             />
@@ -157,4 +171,4 @@ export function NodeConfigPanel() {
       </div>
     </div>
   );
-} 
+}

@@ -19,7 +19,7 @@ import type {
   WorkflowNodeData,
   NodeType,
 } from "../types/workflow";
-import StyledNode from "./nodes/StyledNode";
+// import StyledNode from "./nodes/StyledNode";
 import WebhookNode from "./nodes/WebhookNode";
 import CodeNode from "./nodes/CodeNode";
 import SetNode from "./nodes/SetNode";
@@ -33,69 +33,69 @@ import AirtableNode from "./nodes/AirtableNode";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
 
 function getDefaultData(type: NodeType) {
-  if (type === 'webhook') {
+  if (type === "webhook") {
     const id = uuidv4();
     return {
       path: id,
-      method: 'GET',
-      auth: 'None',
-      respond: 'Immediately',
+      method: "GET",
+      auth: "None",
+      respond: "Immediately",
       testUrl: `https://example.com/webhook-test/${id}`,
       prodUrl: `https://example.com/webhook/${id}`,
-      notes: '',
+      notes: "",
       displayNote: false,
     };
   }
 
   switch (type) {
-    case 'httpRequest':
-      return { method: 'GET', url: '', headers: '', body: '' };
-    case 'delay':
-      return { duration: 1000, until: '' };
-    case 'setVariable':
-      return { variableName: '', value: '' };
-    case 'condition':
-      return { condition: '' };
-    case 'code':
-    case 'function':
-    case 'functionItem':
+    case "httpRequest":
+      return { method: "GET", url: "", headers: "", body: "" };
+    case "delay":
+      return { duration: 1000, until: "" };
+    // case "setVariable":
+    //   return { variableName: "", value: "" };
+    // case "condition":
+    //   return { condition: "" };
+    case "code":
+    case "function":
+    case "functionItem":
       return {
-        language: 'javascript',
-        mode: 'full',
-        code: '// TODO: implement',
+        language: "javascript",
+        mode: "full",
+        code: "// TODO: implement",
       };
-    case 'set':
+    case "set":
       return { mappings: [], keepOnlySetFields: false };
-    case 'merge':
-      return { mergeMode: 'append', mergeFields: '', inputCount: 2 };
-    case 'if':
-      return { conditions: [], andOr: 'AND' };
-    case 'email':
+    case "merge":
+      return { mergeMode: "append", mergeFields: "", inputCount: 2 };
+    case "if":
+      return { conditions: [], andOr: "AND" };
+    case "email":
       return {
-        smtpHost: '',
+        smtpHost: "",
         smtpPort: 587,
         smtpSecure: false,
-        smtpUser: '',
-        smtpPass: '',
-        from: '',
-        to: '',
-        subject: '',
-        body: '',
-        attachments: '',
+        smtpUser: "",
+        smtpPass: "",
+        from: "",
+        to: "",
+        subject: "",
+        body: "",
+        attachments: "",
       };
-    case 'airtable':
+    case "airtable":
       return {
-        apiKey: '',
-        baseId: '',
-        table: '',
-        operation: 'select',
-        fields: '',
-        filter: '',
+        apiKey: "",
+        baseId: "",
+        table: "",
+        operation: "select",
+        fields: "",
+        filter: "",
       };
     default:
       return {};
@@ -105,8 +105,8 @@ function getDefaultData(type: NodeType) {
 const nodeTypes: NodeTypes = {
   httpRequest: HttpRequestNode,
   delay: DelayNode,
-  setVariable: StyledNode,
-  condition: StyledNode,
+  // setVariable: StyledNode,
+  // condition: StyledNode,
   webhook: WebhookNode,
   code: CodeNode,
   set: SetNode,
@@ -116,7 +116,6 @@ const nodeTypes: NodeTypes = {
   functionItem: FunctionItemNode,
   email: EmailNode,
   airtable: AirtableNode,
-
 };
 
 const edgeTypes = {
@@ -153,12 +152,11 @@ export function WorkflowEditor() {
       if (!connection.target) return false;
       const targetNode = nodes.find((n) => n.id === connection.target);
       if (!targetNode) return true;
-      if (targetNode.type === 'merge') return true;
+      if (targetNode.type === "merge") return true;
       return !edges.some((e) => e.target === connection.target);
     },
     [nodes, edges]
   );
-
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const selectedNode = selectedNodeId
@@ -170,7 +168,7 @@ export function WorkflowEditor() {
       setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
       deleteEdge(edgeId);
     },
-    [setEdges, deleteEdge],
+    [setEdges, deleteEdge]
   );
 
   const updateNodeData = useCallback(
@@ -215,21 +213,21 @@ export function WorkflowEditor() {
     addNode(newNode);
     setSelectedNodeId(newNode.id);
 
-    if (lastNode && nodeToAdd !== 'webhook') {
+    if (lastNode && nodeToAdd !== "webhook") {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
 
       let sourceHandle: string | undefined = undefined;
-      if (lastNode.type === 'if') {
+      if (lastNode.type === "if") {
         const hasTrue = edges.some(
-          (e) => e.source === lastNode.id && e.sourceHandle === 'true'
+          (e) => e.source === lastNode.id && e.sourceHandle === "true"
         );
         const hasFalse = edges.some(
-          (e) => e.source === lastNode.id && e.sourceHandle === 'false'
+          (e) => e.source === lastNode.id && e.sourceHandle === "false"
         );
         if (!hasTrue) {
-          sourceHandle = 'true';
+          sourceHandle = "true";
         } else if (!hasFalse) {
-          sourceHandle = 'false';
+          sourceHandle = "false";
         }
       }
 
@@ -247,7 +245,7 @@ export function WorkflowEditor() {
           onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
         },
       };
-      if (!sourceHandle && lastNode.type === 'if') {
+      if (!sourceHandle && lastNode.type === "if") {
         // both handles occupied, don't auto connect
       } else {
         setEdges((eds) => addEdge(newEdge, eds));
@@ -311,7 +309,7 @@ export function WorkflowEditor() {
   }, []);
 
   const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
-    if (node.type === 'webhook') {
+    if (node.type === "webhook") {
       setSelectedNodeId(node.id);
     }
   }, []);
@@ -383,7 +381,7 @@ export function WorkflowEditor() {
       setSelectedNodeId(newNode.id);
 
       if (pendingConnection) {
-        if (type !== 'webhook') {
+        if (type !== "webhook") {
           const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
           const newEdge: WorkflowEdge = {
             id: edgeId,

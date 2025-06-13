@@ -3,8 +3,8 @@ import type { Node, Edge } from "reactflow";
 export type NodeType =
   | "httpRequest"
   | "delay"
-  | "setVariable"
-  | "condition"
+  // | "setVariable"
+  // | "condition"
   | "webhook"
   | "code"
   | "set"

@@ -38,22 +38,21 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     }
   }, [darkMode]);
 
+  const inputCount = (data.inputCount as number) || 2;
+  const step = 100 / (inputCount + 1);
+
   return (
     <div>
-      <Handle
-        type="target"
-        id="in1"
-        position={Position.Left}
-        style={{ top: '30%' }}
-        className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
-      />
-      <Handle
-        type="target"
-        id="in2"
-        position={Position.Left}
-        style={{ top: '70%' }}
-        className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
-      />
+      {Array.from({ length: inputCount }, (_, i) => (
+        <Handle
+          key={`in${i + 1}`}
+          type="target"
+          id={`in${i + 1}`}
+          position={Position.Left}
+          style={{ top: `${(i + 1) * step}%` }}
+          className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
+        />
+      ))}
 
       <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
         <FiGitMerge className="w-6 h-6 text-blue-600" />

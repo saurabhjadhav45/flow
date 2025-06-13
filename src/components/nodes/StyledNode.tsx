@@ -15,6 +15,7 @@ import {
   FiMail,
   FiGrid,
 } from "react-icons/fi";
+import { SiAirtable } from "react-icons/si";
 import { useWorkflowStore } from "../../store/workflowStore";
 
 interface StyledNodeProps extends NodeProps<WorkflowNodeData> {

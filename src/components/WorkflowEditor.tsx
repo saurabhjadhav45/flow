@@ -51,6 +51,7 @@ const nodeTypes: NodeTypes = {
   functionItem: FunctionItemNode,
   email: EmailNode,
   airtable: AirtableNode,
+
 };
 
 const edgeTypes = {

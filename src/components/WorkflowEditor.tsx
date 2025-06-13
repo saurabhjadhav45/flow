@@ -72,7 +72,7 @@ function getDefaultData(type: NodeType) {
     case 'set':
       return { mappings: [], keepOnlySetFields: false };
     case 'merge':
-      return { mergeMode: 'append', mergeFields: '' };
+      return { mergeMode: 'append', mergeFields: '', inputCount: 2 };
     case 'if':
       return { conditions: [], andOr: 'AND' };
     case 'email':
@@ -148,6 +148,17 @@ export function WorkflowEditor() {
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
 
+  const isValidConnection = useCallback(
+    (connection: Connection) => {
+      if (!connection.target) return false;
+      const targetNode = nodes.find((n) => n.id === connection.target);
+      if (!targetNode) return true;
+      if (targetNode.type === 'merge') return true;
+      return !edges.some((e) => e.target === connection.target);
+    },
+    [nodes, edges]
+  );
+
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const selectedNode = selectedNodeId
@@ -206,21 +217,42 @@ export function WorkflowEditor() {
 
     if (lastNode && nodeToAdd !== 'webhook') {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
+
+      let sourceHandle: string | undefined = undefined;
+      if (lastNode.type === 'if') {
+        const hasTrue = edges.some(
+          (e) => e.source === lastNode.id && e.sourceHandle === 'true'
+        );
+        const hasFalse = edges.some(
+          (e) => e.source === lastNode.id && e.sourceHandle === 'false'
+        );
+        if (!hasTrue) {
+          sourceHandle = 'true';
+        } else if (!hasFalse) {
+          sourceHandle = 'false';
+        }
+      }
+
       const newEdge: WorkflowEdge = {
         id: edgeId,
         source: lastNode.id,
+        sourceHandle,
         target: newNode.id,
         type: "buttonedge",
         data: {
           onAddEdgeClick: () => {
-            setPendingConnection({ source: lastNode.id, sourceHandle: null });
+            setPendingConnection({ source: lastNode.id, sourceHandle });
             openSidebar();
           },
           onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
         },
       };
-      setEdges((eds) => addEdge(newEdge, eds));
-      addStoreEdge(newEdge);
+      if (!sourceHandle && lastNode.type === 'if') {
+        // both handles occupied, don't auto connect
+      } else {
+        setEdges((eds) => addEdge(newEdge, eds));
+        addStoreEdge(newEdge);
+      }
     }
 
     setNodeToAdd(null);
@@ -232,6 +264,7 @@ export function WorkflowEditor() {
     setEdges,
     addStoreEdge,
     setNodeToAdd,
+    edges,
     setPendingConnection,
     openSidebar,
     handleEdgeDelete,
@@ -240,6 +273,7 @@ export function WorkflowEditor() {
   const onConnect = useCallback(
     (connection: Connection) => {
       if (!connection.source || !connection.target) return;
+      if (!isValidConnection(connection)) return;
       const edgeId = `edge-${connection.source}-${connection.target}`;
       const newEdge: WorkflowEdge = {
         ...connection,
@@ -262,7 +296,15 @@ export function WorkflowEditor() {
       addStoreEdge(newEdge);
       setDraggingNodeId(null);
     },
-    [setEdges, addStoreEdge, setPendingConnection, openSidebar, handleEdgeDelete, setDraggingNodeId]
+    [
+      setEdges,
+      addStoreEdge,
+      setPendingConnection,
+      openSidebar,
+      handleEdgeDelete,
+      setDraggingNodeId,
+      isValidConnection,
+    ]
   );
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -393,6 +435,7 @@ export function WorkflowEditor() {
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        isValidConnection={isValidConnection}
         fitView
         onInit={(instance) => (reactFlowInstance.current = instance)}
         onDrop={onDrop}

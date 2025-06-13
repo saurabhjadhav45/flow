@@ -30,6 +30,16 @@ export default function MergeSettings({ data, onChange }: MergeSettingsProps) {
           className="w-full px-3 py-2 border border-gray-600 rounded-md"
         />
       </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Inputs</label>
+        <input
+          type="number"
+          min={1}
+          value={(data.inputCount as number) || 2}
+          onChange={(e) => onChange('inputCount', parseInt(e.target.value, 10) || 1)}
+          className="w-full px-3 py-2 border border-gray-600 rounded-md"
+        />
+      </div>
     </div>
   );
 }

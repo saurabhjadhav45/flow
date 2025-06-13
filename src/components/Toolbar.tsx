@@ -15,9 +15,10 @@ export function Toolbar() {
   }, [clearWorkflow]);
 
   const handleSave = useCallback(() => {
+    const cleanEdges = edges.map(({ data, ...rest }) => ({ ...rest, data: {} }));
     const workflow = {
       nodes,
-      edges,
+      edges: cleanEdges,
     };
     const blob = new Blob([JSON.stringify(workflow, null, 2)], {
       type: 'application/json',

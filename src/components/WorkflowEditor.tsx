@@ -152,8 +152,21 @@ export function WorkflowEditor() {
   }, [initialNodes, setNodes]);
 
   useEffect(() => {
-    setEdges(initialEdges);
-  }, [initialEdges, setEdges]);
+    const hydratedEdges = initialEdges.map((e) => ({
+      ...e,
+      data: {
+        onAddEdgeClick: () => {
+          setPendingConnection({
+            source: e.source,
+            sourceHandle: e.sourceHandle ?? null,
+          });
+          openSidebar();
+        },
+        onDeleteEdgeClick: () => handleEdgeDelete(e.id),
+      },
+    }));
+    setEdges(hydratedEdges);
+  }, [initialEdges, setEdges, setPendingConnection, openSidebar, handleEdgeDelete]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
@@ -270,7 +283,7 @@ export function WorkflowEditor() {
         // both handles occupied, don't auto connect
       } else {
         setEdges((eds) => addEdge(newEdge, eds));
-        addStoreEdge(newEdge);
+        addStoreEdge({ ...newEdge, data: {} });
       }
     }
 
@@ -312,7 +325,7 @@ export function WorkflowEditor() {
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));
-      addStoreEdge(newEdge);
+      addStoreEdge({ ...newEdge, data: {} });
       setDraggingNodeId(null);
     },
     [
@@ -422,7 +435,7 @@ export function WorkflowEditor() {
             },
           };
           setEdges((eds) => addEdge(newEdge, eds));
-          addStoreEdge(newEdge);
+          addStoreEdge({ ...newEdge, data: {} });
         }
         setPendingConnection(null);
       }

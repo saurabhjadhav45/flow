@@ -47,7 +47,7 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
 
   return (
     <div className="relative flex flex-col items-center">
-      <div className="relative bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 shadow">
+      <div className="relative bg-white dark:bg-[#1e2235] border border-gray-300 dark:border-white/20 rounded-md px-3 py-2 shadow">
         <Handle
           type="target"
           position={Position.Left}

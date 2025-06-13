@@ -74,13 +74,13 @@ export function ButtonEdge({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: "all",
             }}
-            className="flex items-center gap-0.5 bg-background cursor-pointer"
+            className="flex items-center gap-0.5 bg-white dark:bg-[#1e2235] cursor-pointer"
           >
             <button
               onClick={onAdd}
               aria-label="Add node"
               title="Add node"
-              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-[#1e2235] border-gray-300 dark:border-white/20 text-gray-800 dark:text-gray-100"
             >
               <FiPlus size={5} className="pointer-events-none" />
             </button>
@@ -90,7 +90,7 @@ export function ButtonEdge({
               onClick={onDelete}
               aria-label="Delete edge"
               title="Delete edge"
-              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+              className="cursor-pointer rounded border-2 p-[2px] bg-white dark:bg-[#1e2235] border-gray-300 dark:border-white/20 text-gray-800 dark:text-gray-100"
             >
               <FiTrash2 size={5} className="pointer-events-none" />
             </button>

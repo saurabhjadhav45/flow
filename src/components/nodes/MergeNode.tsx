@@ -35,7 +35,7 @@ function MergeNode({ id, data }: NodeProps<WorkflowNodeData>) {
         />
       ))}
 
-      <div className="flex items-center p-4 shadow-lg rounded-sm border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+      <div className="flex items-center p-4 shadow-lg rounded-sm border bg-white dark:bg-[#1e2235] border-gray-300 dark:border-white/20">
         <FiGitMerge className="w-6 h-6 text-blue-600" />
       </div>
 
@@ -47,14 +47,14 @@ function MergeNode({ id, data }: NodeProps<WorkflowNodeData>) {
         type="source"
         id="out"
         position={Position.Right}
-        className="w-2.5 h-2.5 rounded-full border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 flex items-center justify-center absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 text-[14px]"
+        className="w-2.5 h-2.5 rounded-full border-2 bg-white dark:bg-[#1e2235] border-gray-300 dark:border-white/20 text-gray-800 dark:text-gray-100 flex items-center justify-center absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 text-[14px]"
       >
         {showPlus && (
           <>
-            <div className="absolute right-[30px] top-1/2 w-[30px] h-[2px] -translate-y-1/2 pointer-events-none bg-gray-300 dark:bg-gray-600" />
+            <div className="absolute right-[30px] top-1/2 w-[30px] h-[2px] -translate-y-1/2 pointer-events-none bg-gray-300 dark:bg-white/20" />
             <FiPlus
               onClick={onAdd}
-              className="absolute right-[45px] top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded p-[2px] cursor-pointer"
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 w-5 h-5 border-2 border-gray-300 dark:border-white/20 bg-white dark:bg-[#1e2235] text-gray-800 dark:text-gray-100 rounded p-[2px] cursor-pointer"
             />
           </>
         )}

@@ -125,8 +125,6 @@ const edgeTypes = {
 
 export function WorkflowEditor() {
   const {
-    nodes: initialNodes,
-    edges: initialEdges,
     setNodes: setStoreNodes,
     addNode,
     addEdge: addStoreEdge,
@@ -140,13 +138,25 @@ export function WorkflowEditor() {
     setDraggingNodeId,
   } = useWorkflowStore();
 
+  const storeNodes = useWorkflowStore((state) => state.nodes);
+  const storeEdges = useWorkflowStore((state) => state.edges);
   const [nodes, setNodes, onNodesChange] =
-    useNodesState<WorkflowNodeData>(initialNodes);
+    useNodesState<WorkflowNodeData>(storeNodes);
   const [edges, setEdges, onEdgesChange] =
-    useEdgesState<WorkflowEdgeData>(initialEdges);
+    useEdgesState<WorkflowEdgeData>(storeEdges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+
+  useEffect(() => {
+    setNodes(storeNodes);
+    reactFlowInstance.current?.fitView();
+  }, [storeNodes]);
+
+  useEffect(() => {
+    setEdges(storeEdges);
+    reactFlowInstance.current?.fitView();
+  }, [storeEdges]);
 
   const isValidConnection = useCallback(
     (connection: Connection) => {

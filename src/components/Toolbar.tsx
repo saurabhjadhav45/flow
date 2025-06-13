@@ -36,24 +36,30 @@ export function Toolbar() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            const workflow = JSON.parse(event.target?.result as string);
-            // TODO: Validate workflow structure
-            useWorkflowStore.setState({
-              nodes: workflow.nodes,
-              edges: workflow.edges,
-            });
-          } catch {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
             alert('Invalid workflow file');
+            return;
           }
-        };
-        reader.readAsText(file);
-      }
+          const store = useWorkflowStore.getState();
+          store.setNodes(parsed.nodes);
+          store.setEdges(parsed.edges);
+          store.setSelectedNode(null);
+          store.closeSidebar();
+          store.setPendingConnection(null);
+        } catch {
+          alert('Invalid workflow file');
+        }
+      };
+      reader.readAsText(file);
     };
     input.click();
   }, []);

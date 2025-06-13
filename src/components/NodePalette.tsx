@@ -3,8 +3,6 @@ import { useWorkflowStore } from "../store/workflowStore";
 import {
   FiGlobe,
   FiClock,
-  FiSliders,
-  FiGitBranch,
   FiLink,
   FiCode,
   FiGitMerge,

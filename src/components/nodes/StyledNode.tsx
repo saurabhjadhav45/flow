@@ -11,11 +11,9 @@ import {
   FiPlus,
   FiCode,
   FiGitMerge,
-  FiFilter,
-  FiZap,
-  FiList,
+  FiCpu,
   FiMail,
-  FiSettings,
+  FiGrid,
 } from "react-icons/fi";
 import { SiAirtable } from "react-icons/si";
 import { useWorkflowStore } from "../../store/workflowStore";
@@ -68,13 +66,13 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     condition: FiGitBranch,
     webhook: FiLink,
     code: FiCode,
-    set: FiSettings,
+    set: FiSliders,
     merge: FiGitMerge,
-    if: FiFilter,
-    function: FiZap,
-    functionItem: FiList,
+    if: FiGitBranch,
+    function: FiCpu,
+    functionItem: FiCpu,
     email: FiMail,
-    airtable: SiAirtable,
+    airtable: FiGrid,
   } as const;
 
   const Icon = IconMap[data.type] ?? FiGlobe;

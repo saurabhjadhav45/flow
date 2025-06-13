@@ -21,6 +21,15 @@ import type {
 } from "../types/workflow";
 import StyledNode from "./nodes/StyledNode";
 import WebhookNode from "./nodes/WebhookNode";
+import CodeNode from "./nodes/CodeNode";
+import SetNode from "./nodes/SetNode";
+import DelayNode from "./nodes/DelayNode";
+import MergeNode from "./nodes/MergeNode";
+import IfNode from "./nodes/IfNode";
+import FunctionNode from "./nodes/FunctionNode";
+import FunctionItemNode from "./nodes/FunctionItemNode";
+import EmailNode from "./nodes/EmailNode";
+import AirtableNode from "./nodes/AirtableNode";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
@@ -30,18 +39,19 @@ import HttpRequestNode from "./nodes/HttpRequestNode";
 
 const nodeTypes: NodeTypes = {
   httpRequest: HttpRequestNode,
-  delay: StyledNode,
+  delay: DelayNode,
   setVariable: StyledNode,
   condition: StyledNode,
   webhook: WebhookNode,
-  code: StyledNode,
-  set: StyledNode,
-  merge: StyledNode,
-  if: StyledNode,
-  function: StyledNode,
-  functionItem: StyledNode,
-  email: StyledNode,
-  airtable: StyledNode,
+  code: CodeNode,
+  set: SetNode,
+  merge: MergeNode,
+  if: IfNode,
+  function: FunctionNode,
+  functionItem: FunctionItemNode,
+  email: EmailNode,
+  airtable: AirtableNode,
+
 };
 
 const edgeTypes = {

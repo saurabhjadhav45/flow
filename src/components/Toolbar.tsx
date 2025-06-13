@@ -15,9 +15,10 @@ export function Toolbar() {
   }, [clearWorkflow]);
 
   const handleSave = useCallback(() => {
+    const cleanEdges = edges.map(({ data, ...rest }) => ({ ...rest, data: {} }));
     const workflow = {
       nodes,
-      edges,
+      edges: cleanEdges,
     };
     const blob = new Blob([JSON.stringify(workflow, null, 2)], {
       type: 'application/json',
@@ -44,10 +45,9 @@ export function Toolbar() {
           try {
             const workflow = JSON.parse(event.target?.result as string);
             // TODO: Validate workflow structure
-            useWorkflowStore.setState({
-              nodes: workflow.nodes,
-              edges: workflow.edges,
-            });
+            const { setNodes, setEdges } = useWorkflowStore.getState();
+            setNodes(workflow.nodes);
+            setEdges(workflow.edges);
           } catch {
             alert('Invalid workflow file');
           }

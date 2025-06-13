@@ -37,6 +37,71 @@ import { v4 as uuidv4 } from 'uuid';
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
 
+function getDefaultData(type: NodeType) {
+  if (type === 'webhook') {
+    const id = uuidv4();
+    return {
+      path: id,
+      method: 'GET',
+      auth: 'None',
+      respond: 'Immediately',
+      testUrl: `https://example.com/webhook-test/${id}`,
+      prodUrl: `https://example.com/webhook/${id}`,
+      notes: '',
+      displayNote: false,
+    };
+  }
+
+  switch (type) {
+    case 'httpRequest':
+      return { method: 'GET', url: '', headers: '', body: '' };
+    case 'delay':
+      return { duration: 1000, until: '' };
+    case 'setVariable':
+      return { variableName: '', value: '' };
+    case 'condition':
+      return { condition: '' };
+    case 'code':
+    case 'function':
+    case 'functionItem':
+      return {
+        language: 'javascript',
+        mode: 'full',
+        code: '// TODO: implement',
+      };
+    case 'set':
+      return { mappings: [], keepOnlySetFields: false };
+    case 'merge':
+      return { mergeMode: 'append', mergeFields: '' };
+    case 'if':
+      return { conditions: [], andOr: 'AND' };
+    case 'email':
+      return {
+        smtpHost: '',
+        smtpPort: 587,
+        smtpSecure: false,
+        smtpUser: '',
+        smtpPass: '',
+        from: '',
+        to: '',
+        subject: '',
+        body: '',
+        attachments: '',
+      };
+    case 'airtable':
+      return {
+        apiKey: '',
+        baseId: '',
+        table: '',
+        operation: 'select',
+        fields: '',
+        filter: '',
+      };
+    default:
+      return {};
+  }
+}
+
 const nodeTypes: NodeTypes = {
   httpRequest: HttpRequestNode,
   delay: DelayNode,
@@ -121,21 +186,7 @@ export function WorkflowEditor() {
       ? { x: lastNode.position.x + 200, y: lastNode.position.y }
       : { x: 50, y: 50 };
 
-    const defaults = nodeToAdd === 'webhook'
-      ? (() => {
-          const id = uuidv4();
-          return {
-            path: id,
-            method: 'GET',
-            auth: 'None',
-            respond: 'Immediately',
-            testUrl: `https://example.com/webhook-test/${id}`,
-            prodUrl: `https://example.com/webhook/${id}`,
-            notes: '',
-            displayNote: false,
-          };
-        })()
-      : {};
+    const defaults = getDefaultData(nodeToAdd);
 
     const newNode: WorkflowNode = {
       id: getNodeId(),
@@ -151,9 +202,7 @@ export function WorkflowEditor() {
 
     setNodes((nds) => nds.concat(newNode));
     addNode(newNode);
-    if (newNode.type === 'webhook') {
-      setSelectedNodeId(newNode.id);
-    }
+    setSelectedNodeId(newNode.id);
 
     if (lastNode && nodeToAdd !== 'webhook') {
       const edgeId = `edge-${lastNode.id}-${newNode.id}`;
@@ -274,21 +323,7 @@ export function WorkflowEditor() {
         x: event.clientX,
         y: event.clientY,
       });
-      const defaults = type === 'webhook'
-        ? (() => {
-            const id = uuidv4();
-            return {
-              path: id,
-              method: 'GET',
-              auth: 'None',
-              respond: 'Immediately',
-              testUrl: `https://example.com/webhook-test/${id}`,
-              prodUrl: `https://example.com/webhook/${id}`,
-              notes: '',
-              displayNote: false,
-            };
-          })()
-        : {};
+      const defaults = getDefaultData(type);
 
       const newNode: WorkflowNode = {
         id: getNodeId(),
@@ -303,9 +338,7 @@ export function WorkflowEditor() {
       };
       setNodes((nds) => nds.concat(newNode));
       addNode(newNode);
-      if (type === 'webhook') {
-        setSelectedNodeId(newNode.id);
-      }
+      setSelectedNodeId(newNode.id);
 
       if (pendingConnection) {
         if (type !== 'webhook') {

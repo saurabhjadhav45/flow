@@ -1,0 +1,44 @@
+import React from 'react';
+
+interface CodeSettingsProps {
+  data: Record<string, unknown>;
+  onChange: (field: string, value: unknown) => void;
+}
+
+export default function CodeSettings({ data, onChange }: CodeSettingsProps) {
+  return (
+    <div className="space-y-4 text-left">
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Language</label>
+        <select
+          value={(data.language as string) || 'javascript'}
+          onChange={(e) => onChange('language', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-600 rounded-md"
+        >
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="python">Python</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Mode</label>
+        <select
+          value={(data.mode as string) || 'full'}
+          onChange={(e) => onChange('mode', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-600 rounded-md"
+        >
+          <option value="full">Full</option>
+          <option value="inline">Inline</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Code</label>
+        <textarea
+          value={(data.code as string) || ''}
+          onChange={(e) => onChange('code', e.target.value)}
+          className="w-full h-32 px-3 py-2 border border-gray-600 rounded-md font-mono text-sm"
+        />
+      </div>
+    </div>
+  );
+}

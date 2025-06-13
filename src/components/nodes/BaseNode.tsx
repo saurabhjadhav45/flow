@@ -3,7 +3,18 @@ import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
 import { useWorkflowStore } from '../../store/workflowStore';
-import { FiGlobe, FiClock, FiSliders, FiGitBranch, FiLink } from 'react-icons/fi';
+import {
+  FiGlobe,
+  FiClock,
+  FiSliders,
+  FiGitBranch,
+  FiLink,
+  FiCode,
+  FiGitMerge,
+  FiCpu,
+  FiMail,
+  FiGrid,
+} from 'react-icons/fi';
 
 function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
@@ -15,6 +26,14 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
     setVariable: FiSliders,
     condition: FiGitBranch,
     webhook: FiLink,
+    code: FiCode,
+    set: FiSliders,
+    merge: FiGitMerge,
+    if: FiGitBranch,
+    function: FiCpu,
+    functionItem: FiCpu,
+    email: FiMail,
+    airtable: FiGrid,
   } as const;
 
   const Icon = IconMap[data.type];
@@ -51,4 +70,4 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   );
 }
 
-export default memo(BaseNode); 
+export default memo(BaseNode);

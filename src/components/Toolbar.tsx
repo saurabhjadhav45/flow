@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useThemeStore } from '../store/themeStore';
+import { initializeNodeId } from '../utils/getNodeId';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
 export function Toolbar() {
@@ -11,6 +12,7 @@ export function Toolbar() {
   const handleNewWorkflow = useCallback(() => {
     if (window.confirm('Are you sure you want to create a new workflow? All unsaved changes will be lost.')) {
       clearWorkflow();
+      initializeNodeId([]);
     }
   }, [clearWorkflow]);
 
@@ -48,6 +50,7 @@ export function Toolbar() {
               nodes: workflow.nodes,
               edges: workflow.edges,
             });
+            initializeNodeId(workflow.nodes || []);
           } catch {
             alert('Invalid workflow file');
           }

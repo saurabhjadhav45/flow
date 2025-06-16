@@ -147,6 +147,7 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+  const connectionMade = useRef(false);
 
   const isValidConnection = useCallback(
     (connection: Connection) => {
@@ -285,6 +286,7 @@ export function WorkflowEditor() {
     (connection: Connection) => {
       if (!connection.source || !connection.target) return;
       if (!isValidConnection(connection)) return;
+      connectionMade.current = true;
       const edgeId = `edge-${connection.source}-${connection.target}`;
       const newEdge: WorkflowEdge = {
         ...connection,
@@ -346,13 +348,14 @@ export function WorkflowEditor() {
       const target = event.target as Element;
       const droppedOnPane = target.classList.contains("react-flow__pane");
 
-      if (droppedOnPane && connectStart.current) {
+      if (!connectionMade.current && droppedOnPane && connectStart.current) {
         setPendingConnection({
           source: connectStart.current.nodeId || "",
           sourceHandle: connectStart.current.handleId,
         });
         openSidebar();
       }
+      connectionMade.current = false;
       connectStart.current = null;
       setDraggingNodeId(null);
     },

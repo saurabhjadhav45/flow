@@ -24,16 +24,233 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     setFormData(node.data);
   }, [node]);
 
-  const handleInputChange = (field: string, value: unknown) => {
+  // Sync fileInputs with formData.files when panel opens or node changes
+  useEffect(() => {
+    if (formData.files) {
+      const newInputs = Object.entries(formData.files).map(([key, file]) => {
+        const f = file as { name: string };
+        return { key, file: f.name ? new File([], f.name) : undefined };
+      });
+      setFileInputs(newInputs);
+    } else {
+      setFileInputs([]);
+    }
+  }, [formData.files]);
+
+  const handleInputChange = (field: string, value: any) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });
   };
 
+  // Handle multiple file input for HTTP request with key names (UI-based)
+  const [fileInputs, setFileInputs] = useState<Array<{ key: string; file?: File }>>([]);
+
+  const handleAddFileInput = () => {
+    setFileInputs([...fileInputs, { key: '' }]);
+  };
+
+  const handleRemoveFileInput = (idx: number) => {
+    const newInputs = [...fileInputs];
+    newInputs.splice(idx, 1);
+    setFileInputs(newInputs);
+    // Remove from formData.files as well
+    if (formData.files) {
+      const filesCopy = { ...formData.files };
+      const removedKey = Object.keys(formData.files)[idx];
+      delete filesCopy[removedKey];
+      setFormData({ ...formData, files: filesCopy });
+      onUpdateNode(node.id, { files: filesCopy });
+    }
+  };
+
+  const handleFileKeyChange = (idx: number, value: string) => {
+    const newInputs = [...fileInputs];
+    newInputs[idx].key = value;
+    setFileInputs(newInputs);
+  };
+
+  const handleFileChange = (idx: number, file: File | undefined) => {
+    const newInputs = [...fileInputs];
+    newInputs[idx].file = file;
+    setFileInputs(newInputs);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result ?? null;
+        const key = newInputs[idx].key || file.name;
+        const filesObj = {
+          ...(formData.files || {}),
+          [key]: { name: file.name, content },
+        };
+        setFormData({ ...formData, files: filesObj });
+        onUpdateNode(node.id, { files: filesObj });
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const conditionOperators = [
+    { value: 'equals', label: 'Equals' },
+    { value: 'not_equals', label: 'Not Equals' },
+    { value: 'contains', label: 'Contains' },
+    { value: 'not_contains', label: 'Not Contains' },
+    { value: 'greater', label: 'Greater Than' },
+    { value: 'less', label: 'Less Than' },
+    { value: 'starts_with', label: 'Starts With' },
+    { value: 'ends_with', label: 'Ends With' },
+  ];
+
+  // For n8n-like conditions: array of { field, operator, value }
+  const ifConditions: Array<{ field: string; operator: string; value: string }> = formData.config?.conditions || [
+    { field: '', operator: 'equals', value: '' },
+  ];
+
+  const updateIfCondition = (idx: number, key: 'field' | 'operator' | 'value', value: string) => {
+    const newConditions = [...ifConditions];
+    newConditions[idx] = { ...newConditions[idx], [key]: value };
+    const newConfig = { ...formData.config, conditions: newConditions };
+    setFormData({ ...formData, config: newConfig });
+    onUpdateNode(node.id, { config: newConfig });
+  };
+
+  const addIfCondition = () => {
+    const newConditions = [...ifConditions, { field: '', operator: 'equals', value: '' }];
+    const newConfig = { ...formData.config, conditions: newConditions };
+    setFormData({ ...formData, config: newConfig });
+    onUpdateNode(node.id, { config: newConfig });
+  };
+
+  const removeIfCondition = (idx: number) => {
+    const newConditions = ifConditions.filter((_, i) => i !== idx);
+    const newConfig = { ...formData.config, conditions: newConditions };
+    setFormData({ ...formData, config: newConfig });
+    onUpdateNode(node.id, { config: newConfig });
+  };
+
+  const renderHttpRequestProperties = () => (
+    <div className="space-y-4 text-left">
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Method</label>
+        <select
+          value={formData.method || 'GET'}
+          onChange={(e) => handleInputChange('method', e.target.value)}
+          className="w-full px-3 py-2  border border-gray-600 rounded-md"
+        >
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="PATCH">PATCH</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">URL</label>
+        <input
+          type="text"
+          value={formData.url || ''}
+          onChange={(e) => handleInputChange('url', e.target.value)}
+          placeholder="https://api.example.com/endpoint"
+          className="w-full px-3 py-2  border border-gray-600 rounded-md"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Headers (JSON)</label>
+        <textarea
+          value={formData.headers}
+          onChange={(e) => handleInputChange('headers', e.target.value)}
+          placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+          className="w-full h-24 px-3 py-2  border border-gray-600 rounded-md  font-mono text-sm"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">Body</label>
+        <textarea
+          value={formData.body || ''}
+          onChange={(e) => handleInputChange('body', e.target.value)}
+          placeholder="{name: 'John Doe', age: 30}"
+          className="w-full h-32 px-3 py-2  border border-gray-600 rounded-md font-mono text-sm"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2">File Upload</label>
+        <div className="space-y-2">
+          {fileInputs.map((input, idx) => (
+            <div key={idx} className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                placeholder="Key name"
+                value={input.key}
+                onChange={e => handleFileKeyChange(idx, e.target.value)}
+                className="px-2 py-1 border border-gray-400 rounded w-1/3"
+              />
+              <label className="relative w-2/3">
+                <input
+                  type="file"
+                  onChange={e => handleFileChange(idx, e.target.files?.[0])}
+                  className="px-2 py-1 border border-gray-400 rounded w-full opacity-0 absolute left-0 top-0 h-full cursor-pointer"
+                  value={undefined}
+                />
+                <span className="block px-2 py-1 border border-gray-400 rounded w-full bg-white text-left cursor-pointer truncate">
+                  {input.file ? input.file.name : 'No file chosen'}
+                </span>
+              </label>
+              <button type="button" onClick={() => handleRemoveFileInput(idx)} className="!bg-red-400 p-2 rounded text-white text-xs">Remove</button>
+            </div>
+          ))}
+        </div>
+        <button type="button" onClick={handleAddFileInput} className="!bg-violet-500 mt-2 px-3 py-2 bg-blue-500 text-white rounded text-xs">Add File</button>
+      </div>
+    </div>
+  );
+
+  const renderIfNodeProperties = () => (
+    <div className="space-y-4 text-left">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
+        <div className="space-y-2">
+          {ifConditions.map((cond, idx) => (
+            <div key={idx} className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={cond.field}
+                onChange={e => updateIfCondition(idx, 'field', e.target.value)}
+                placeholder="Field"
+                className="border border-gray-500 rounded p-1 input w-1/3"
+              />
+              <select
+                value={cond.operator}
+                onChange={e => updateIfCondition(idx, 'operator', e.target.value)}
+                className="border border-gray-500 rounded p-1  input w-1/3"
+              >
+                {conditionOperators.map(op => (
+                  <option key={op.value} value={op.value}>{op.label}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={cond.value}
+                onChange={e => updateIfCondition(idx, 'value', e.target.value)}
+                placeholder="Value"
+                className="border border-gray-500 rounded p-1 input w-1/3"
+              />
+              <button type="button" onClick={() => removeIfCondition(idx)} className="text-red-500 text-xs">✕</button>
+            </div>
+          ))}
+        </div>
+        <button type="button" onClick={addIfCondition} className="!bg-violet-500 mt-2 px-2 py-1 text-white rounded text-xs">Add Condition</button>
+      </div>
+    </div>
+  );
+
   const renderProperties = () => {
     switch (node.type) {
       case 'httpRequest':
-        return <HttpRequestSettings data={formData} onChange={handleInputChange} />;
+        return renderHttpRequestProperties();
       case 'webhook':
         return <WebhookSettings data={formData} onChange={handleInputChange} />;
       case 'code':
@@ -122,4 +339,4 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
       </div>
     </div>
   );
-}
+};

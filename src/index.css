@@ -23,3 +23,6 @@ body,
     @apply inline-flex items-center justify-center p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400;
   }
 }
+.custom-shadow {
+  box-shadow: 0 0 0 5px hsla(220, 47%, 30%, 0.1);
+}

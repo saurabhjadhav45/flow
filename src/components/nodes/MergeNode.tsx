@@ -2,7 +2,7 @@ import React, { useEffect, memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
-import { FiGitMerge, FiPlus } from 'react-icons/fi';
+import { FiGitMerge, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
 
 interface MergeNodeProps extends NodeProps<WorkflowNodeData> {
@@ -16,6 +16,7 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore((state) => state.setPendingConnection);
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
   const hasOutgoing = edges.some((e) => e.source === id);
   const showPlus = !hasOutgoing && draggingNodeId !== id;
   const onAdd = (e: React.MouseEvent) => {
@@ -38,11 +39,16 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     }
   }, [darkMode]);
 
-  const inputCount = (data.inputCount as number) || 2;
+  const inputCount = (data as any).inputCount || 2;
   const step = 100 / (inputCount + 1);
+  const [hovered, setHovered] = React.useState(false);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'relative' }}
+    >
       {Array.from({ length: inputCount }, (_, i) => (
         <Handle
           key={`in${i + 1}`}
@@ -54,8 +60,28 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
         />
       ))}
 
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
+      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`} style={{ position: 'relative' }}>
         <FiGitMerge className="w-6 h-6 text-blue-600" />
+        {hovered && (
+          <FiTrash2
+            onClick={e => { e.stopPropagation(); deleteNode(id); }}
+            style={{
+              position: 'absolute',
+              top: 3,
+              right: 2,
+              cursor: 'pointer',
+              color: colors.text,
+              fontSize: 10,
+              zIndex: 10,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              padding: 0,
+            }}
+            title="Delete node"
+            tabIndex={0}
+          />
+        )}
       </div>
 
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">

@@ -4,16 +4,7 @@ import { useThemeStore } from '../store/themeStore';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
 export function Toolbar() {
-  const {
-    nodes,
-    edges,
-    clearWorkflow,
-    setNodes: storeSetNodes,
-    setEdges: storeSetEdges,
-    closeSidebar,
-    setPendingConnection,
-    setSelectedNode,
-  } = useWorkflowStore();
+  const { nodes, edges, clearWorkflow } = useWorkflowStore();
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const theme = useThemeStore((state) => state.theme);
 
@@ -52,18 +43,11 @@ export function Toolbar() {
         reader.onload = (event) => {
           try {
             const workflow = JSON.parse(event.target?.result as string);
-            if (
-              !workflow ||
-              !Array.isArray(workflow.nodes) ||
-              !Array.isArray(workflow.edges)
-            ) {
-              throw new Error('Invalid format');
-            }
-            storeSetNodes(workflow.nodes);
-            storeSetEdges(workflow.edges);
-            closeSidebar();
-            setPendingConnection(null);
-            setSelectedNode(null);
+            // TODO: Validate workflow structure
+            useWorkflowStore.setState({
+              nodes: workflow.nodes,
+              edges: workflow.edges,
+            });
           } catch {
             alert('Invalid workflow file');
           }
@@ -72,7 +56,7 @@ export function Toolbar() {
       }
     };
     input.click();
-  }, [storeSetNodes, storeSetEdges, closeSidebar, setPendingConnection, setSelectedNode]);
+  }, []);
 
   return (
     <div className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">

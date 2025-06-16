@@ -1,7 +1,7 @@
 import React, { useEffect, memo } from "react";
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
-import { FiLink, FiPlus, FiZap } from "react-icons/fi";
+import { FiLink, FiPlus, FiZap, FiTrash2 } from "react-icons/fi";
 import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
 
@@ -24,6 +24,8 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const setPendingConnection = useWorkflowStore(
     (state) => state.setPendingConnection
   );
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
+  const [hovered, setHovered] = React.useState(false);
   const hasOutgoing = edges.some((e) => e.source === id);
   const showPlus = !hasOutgoing && draggingNodeId !== id;
   const onAdd = (e: React.MouseEvent) => {
@@ -40,13 +42,41 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   }, []);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: "relative" }}
+    >
       <div
         className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-3xl`}
+        style={{ position: "relative" }}
       >
         <FiLink className="w-6 h-6 text-blue-600" />
         {isListening && (
           <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />
+        )}
+        {hovered && (
+          <FiTrash2
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteNode(id);
+            }}
+            style={{
+              position: "absolute",
+              top: 3,
+              right: 2,
+              cursor: "pointer",
+              color: colors.text,
+              fontSize: 10,
+              zIndex: 10,
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              padding: 0,
+            }}
+            title="Delete node"
+            tabIndex={0}
+          />
         )}
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">

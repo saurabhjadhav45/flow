@@ -33,6 +33,7 @@ import AirtableNode from "./nodes/AirtableNode";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import { setupEdges } from "../utils/setupEdges";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
@@ -146,6 +147,7 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
+  const connectionMade = useRef(false);
 
   const isValidConnection = useCallback(
     (connection: Connection) => {
@@ -169,6 +171,18 @@ export function WorkflowEditor() {
       deleteEdge(edgeId);
     },
     [setEdges, deleteEdge]
+  );
+
+  const hydrateEdges = useCallback(
+    (rawEdges: WorkflowEdge[]) =>
+      setupEdges(rawEdges, {
+        onAdd: (source, sourceHandle) => {
+          setPendingConnection({ source, sourceHandle });
+          openSidebar();
+        },
+        onDelete: handleEdgeDelete,
+      }),
+    [setPendingConnection, openSidebar, handleEdgeDelete]
   );
 
   const updateNodeData = useCallback(
@@ -272,6 +286,7 @@ export function WorkflowEditor() {
     (connection: Connection) => {
       if (!connection.source || !connection.target) return;
       if (!isValidConnection(connection)) return;
+      connectionMade.current = true;
       const edgeId = `edge-${connection.source}-${connection.target}`;
       const newEdge: WorkflowEdge = {
         ...connection,
@@ -333,13 +348,14 @@ export function WorkflowEditor() {
       const target = event.target as Element;
       const droppedOnPane = target.classList.contains("react-flow__pane");
 
-      if (droppedOnPane && connectStart.current) {
+      if (!connectionMade.current && droppedOnPane && connectStart.current) {
         setPendingConnection({
           source: connectStart.current.nodeId || "",
           sourceHandle: connectStart.current.handleId,
         });
         openSidebar();
       }
+      connectionMade.current = false;
       connectStart.current = null;
       setDraggingNodeId(null);
     },
@@ -419,8 +435,8 @@ export function WorkflowEditor() {
     setNodes(initialNodes);
   }, [initialNodes, setNodes]);
   useEffect(() => {
-    setEdges(initialEdges);
-  }, [initialEdges, setEdges]);
+    setEdges(hydrateEdges(initialEdges));
+  }, [initialEdges, hydrateEdges, setEdges]);
 
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>

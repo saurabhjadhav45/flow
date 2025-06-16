@@ -33,6 +33,7 @@ import AirtableNode from "./nodes/AirtableNode";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
+import { setupEdges } from "../utils/setupEdges";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
@@ -169,6 +170,18 @@ export function WorkflowEditor() {
       deleteEdge(edgeId);
     },
     [setEdges, deleteEdge]
+  );
+
+  const hydrateEdges = useCallback(
+    (rawEdges: WorkflowEdge[]) =>
+      setupEdges(rawEdges, {
+        onAdd: (source, sourceHandle) => {
+          setPendingConnection({ source, sourceHandle });
+          openSidebar();
+        },
+        onDelete: handleEdgeDelete,
+      }),
+    [setPendingConnection, openSidebar, handleEdgeDelete]
   );
 
   const updateNodeData = useCallback(
@@ -419,8 +432,8 @@ export function WorkflowEditor() {
     setNodes(initialNodes);
   }, [initialNodes, setNodes]);
   useEffect(() => {
-    setEdges(initialEdges);
-  }, [initialEdges, setEdges]);
+    setEdges(hydrateEdges(initialEdges));
+  }, [initialEdges, hydrateEdges, setEdges]);
 
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>

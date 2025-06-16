@@ -304,14 +304,8 @@ export function WorkflowEditor() {
       isValidConnection,
     ]
   );
-  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
-    setSelectedNodeId(node.id);
-  }, []);
-
   const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
-    if (node.type === "webhook") {
-      setSelectedNodeId(node.id);
-    }
+    setSelectedNodeId(node.id);
   }, []);
 
   const onPaneClick = useCallback(() => {
@@ -420,6 +414,14 @@ export function WorkflowEditor() {
     ]
   );
 
+  // Sync local state with Zustand store for node/edge deletion
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
+
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>
       <ReactFlow
@@ -438,7 +440,6 @@ export function WorkflowEditor() {
         onInit={(instance) => (reactFlowInstance.current = instance)}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         onPaneClick={onPaneClick}
       >

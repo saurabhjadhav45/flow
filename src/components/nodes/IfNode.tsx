@@ -2,7 +2,7 @@ import React, { useEffect, memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
-import { FiGitBranch, FiPlus } from 'react-icons/fi';
+import { FiGitBranch, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
 
 interface IfNodeProps extends NodeProps<WorkflowNodeData> {
@@ -16,6 +16,7 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore((state) => state.setPendingConnection);
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
 
   const hasOutgoingTrue = edges.some((e) => e.source === id && e.sourceHandle === 'true');
   const hasOutgoingFalse = edges.some((e) => e.source === id && e.sourceHandle === 'false');
@@ -43,16 +44,42 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
     }
   }, [darkMode]);
 
+  const [hovered, setHovered] = React.useState(false);
+
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'relative' }}
+    >
       <Handle
         type="target"
         position={Position.Left}
         className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
       />
 
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
+      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`} style={{ position: 'relative' }}>
         <FiGitBranch className="w-6 h-6 text-blue-600" />
+        {hovered && (
+          <FiTrash2
+            onClick={e => { e.stopPropagation(); deleteNode(id); }}
+            style={{
+              position: 'absolute',
+              top: 3,
+              right: 2,
+              cursor: 'pointer',
+              color: colors.text,
+              fontSize: 10,
+              zIndex: 10,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              padding: 0,
+            }}
+            title="Delete node"
+            tabIndex={0}
+          />
+        )}
       </div>
 
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
@@ -79,6 +106,7 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
           fontSize: 14,
         }}
       >
+         <span style={{ position: 'absolute', zIndex:9, padding:2, fontSize:6, background:'#fff', left: 12, top: '50%', transform: 'translateY(-50%)', color: colors.text }}>true</span>
         {showPlusTrue && (
           <>
             <div
@@ -134,6 +162,7 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
           fontSize: 14,
         }}
       >
+        <span style={{ position: 'absolute', zIndex:9, padding:2, fontSize:6, background:'#fff', left: 12, top: '50%', transform: 'translateY(-50%)', color: colors.text }}>false</span>
         {showPlusFalse && (
           <>
             <div

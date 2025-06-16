@@ -4,53 +4,86 @@ import type { NodeProps } from 'reactflow';
 import {
   FiGlobe,
   FiPlus,
+  FiTrash2
 } from "react-icons/fi";
 import { useWorkflowStore } from "../../store/workflowStore";
 
-export default function HttpRequestNode({ id, data }: NodeProps) {
+export default function HttpRequestNode({ id, data, selected}: NodeProps) {
   const [darkMode, setDarkMode] = React.useState(false);
 
   const method = data.method || 'GET';
 
     const colors = {
     background: darkMode ? "#1e2235" : "#fff",
-    border: darkMode ? "rgba(255,255,255,0.2)" : "#C1C1C1",
+    border: darkMode ? "#fff" : "#C1C1C1",
     shadow: darkMode
       ? "0 1px 4px rgba(0,0,0,0.5)"
       : "0 1px 4px rgba(0,0,0,0.1)",
-    text: darkMode ? "#FFFFFF" : "#333333",
+    text: darkMode ? "#fff" : "#333",
   };
 
   const edges = useWorkflowStore((state) => state.edges);
-  const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
-  const openSidebar = useWorkflowStore((state) => state.openSidebar);
-  const setPendingConnection = useWorkflowStore(
-    (state) => state.setPendingConnection
-  );
-  const hasOutgoing = edges.some((e) => e.source === id);
-  const showPlus = !hasOutgoing && draggingNodeId !== id;
-  const onAdd = (e: React.MouseEvent) => {
+    const openSidebar = useWorkflowStore((state) => state.openSidebar);
+    const setPendingConnection = useWorkflowStore(
+      (state) => state.setPendingConnection
+    );
+    const hasOutgoing = edges.some((e) => e.source === id);
+    const onAdd = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setPendingConnection({ source: id, sourceHandle: "out" });
+      openSidebar();
+    };
+    const deleteNode = useWorkflowStore((state) => state.deleteNode);
+  const onDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setPendingConnection({ source: id, sourceHandle: "out" });
-    openSidebar();
+    deleteNode(id);
   };
+  const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
+  const showPlus = !hasOutgoing && draggingNodeId !== id;
   useEffect(() => {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     setDarkMode(prefersDark);
   }, []);
 
+  const [hovered, setHovered] = React.useState(false);
+
   return (
-    <div className={``}>
+    <div
+      className={``}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: 'relative' }}
+    >
+      <div className='d-none bg-[#fff] bg-[#1e2235]'></div>
       <Handle
         type="target"
         position={Position.Left}
         className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
       />
-      
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}>
+      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}] ${selected ? 'custom-shadow':''}`} style={{ position: 'relative' }}>
         <FiGlobe className="w-6 h-6 text-blue-600" />
+        {hovered && (
+          <FiTrash2
+            onClick={e => { e.stopPropagation(); onDelete(e); }}
+            style={{
+              position: 'absolute',
+              top: 3,
+              right: 2,
+              cursor: 'pointer',
+              color: colors.text,
+              fontSize: 10,
+              zIndex: 10,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              padding: 0,
+            }}
+            title="Delete node"
+            tabIndex={0}
+          />
+        )}
       </div>
-      <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
+      <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+4px)] text-center w-full">
           <div className="font-medium text-[8px]">HTTP Request</div>
           <div className="flex justify-center">
             <span className={`text-[6px]`}>

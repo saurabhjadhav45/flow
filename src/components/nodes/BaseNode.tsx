@@ -1,4 +1,4 @@
-import { memo } from "react";
+import React, { memo, useState } from "react";
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import type { WorkflowNodeData } from "../../types/workflow";
@@ -14,6 +14,7 @@ import {
   FiCpu,
   FiMail,
   FiGrid,
+  FiTrash2,
 } from "react-icons/fi";
 
 function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
@@ -21,6 +22,8 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const setPendingConnection = useWorkflowStore(
     (state) => state.setPendingConnection
   );
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
+  const [hovered, setHovered] = useState(false);
 
   const IconMap = {
     httpRequest: FiGlobe,
@@ -47,14 +50,45 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
   };
 
   return (
-    <div className="relative flex flex-col items-center">
-      <div className="relative bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 shadow">
+    <div
+      className="relative flex flex-col items-center"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: "relative" }}
+    >
+      <div
+        className="relative bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 shadow"
+        style={{ position: "relative" }}
+      >
         <Handle
           type="target"
           position={Position.Left}
           className="w-2 h-4 !rounded-none"
         />
         <Icon className="w-6 h-6 text-primary-500" />
+        {hovered && (
+          <FiTrash2
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteNode(id);
+            }}
+            style={{
+              position: "absolute",
+              top: 3,
+              right: 2,
+              cursor: "pointer",
+              color: "#333",
+              fontSize: 10,
+              zIndex: 10,
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              padding: 0,
+            }}
+            title="Delete node"
+            tabIndex={0}
+          />
+        )}
         <div className="absolute -right-2 top-1/2 -translate-y-1/2">
           <Handle
             type="source"

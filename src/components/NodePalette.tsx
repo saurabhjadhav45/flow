@@ -37,18 +37,6 @@ const nodeTypes: NodeTypeItem[] = [
     description: "Add a delay between steps",
     Icon: FiClock,
   },
-  // {
-  //   type: 'setVariable',
-  //   label: 'Set Variable',
-  //   description: 'Set or update workflow variables',
-  //   Icon: FiSliders,
-  // },
-  // {
-  //   type: 'condition',
-  //   label: 'Condition',
-  //   description: 'Add conditional logic to your workflow',
-  //   Icon: FiGitBranch,
-  // },
   {
     type: "webhook",
     label: "Webhook",

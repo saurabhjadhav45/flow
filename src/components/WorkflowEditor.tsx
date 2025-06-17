@@ -212,7 +212,7 @@ export function WorkflowEditor() {
 
     const lastNode = nodes[nodes.length - 1];
     const position = lastNode
-      ? { x: lastNode.position.x + 200, y: lastNode.position.y }
+      ? { x: lastNode.position.x + 120, y: lastNode.position.y }
       : { x: 50, y: 50 };
 
     const defaults = getDefaultData(nodeToAdd);

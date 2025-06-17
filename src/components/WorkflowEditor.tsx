@@ -7,6 +7,7 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   type OnConnectStartParams,
+  MarkerType,
 } from "reactflow";
 import type { Connection, ReactFlowInstance, NodeTypes, Node } from "reactflow";
 import "reactflow/dist/style.css";
@@ -176,8 +177,13 @@ export function WorkflowEditor() {
   const hydrateEdges = useCallback(
     (rawEdges: WorkflowEdge[]) =>
       setupEdges(rawEdges, {
-        onAdd: (source, sourceHandle) => {
-          setPendingConnection({ source, sourceHandle });
+        onAdd: ({ source, sourceHandle, target, edgeId }) => {
+          setPendingConnection({
+            source,
+            sourceHandle,
+            target,
+            edgeId,
+          });
           openSidebar();
         },
         onDelete: handleEdgeDelete,
@@ -251,9 +257,15 @@ export function WorkflowEditor() {
         sourceHandle,
         target: newNode.id,
         type: "buttonedge",
+        markerEnd: { type: MarkerType.ArrowClosed },
         data: {
           onAddEdgeClick: () => {
-            setPendingConnection({ source: lastNode.id, sourceHandle });
+            setPendingConnection({
+              source: lastNode.id,
+              sourceHandle,
+              target: newNode.id,
+              edgeId,
+            });
             openSidebar();
           },
           onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
@@ -294,11 +306,14 @@ export function WorkflowEditor() {
         source: connection.source,
         target: connection.target,
         type: "buttonedge",
+        markerEnd: { type: MarkerType.ArrowClosed },
         data: {
           onAddEdgeClick: () => {
             setPendingConnection({
               source: connection.source as string,
               sourceHandle: connection.sourceHandle ?? null,
+              target: connection.target as string,
+              edgeId,
             });
             openSidebar();
           },
@@ -392,26 +407,81 @@ export function WorkflowEditor() {
 
       if (pendingConnection) {
         if (type !== "webhook") {
-          const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
-          const newEdge: WorkflowEdge = {
-            id: edgeId,
-            source: pendingConnection.source,
-            sourceHandle: pendingConnection.sourceHandle ?? undefined,
-            target: newNode.id,
-            type: "buttonedge",
-            data: {
-              onAddEdgeClick: () => {
-                setPendingConnection({
-                  source: pendingConnection.source,
-                  sourceHandle: pendingConnection.sourceHandle,
-                });
-                openSidebar();
+          if (pendingConnection.target && pendingConnection.edgeId) {
+            // insert between existing edge
+            handleEdgeDelete(pendingConnection.edgeId);
+
+            const edgeId1 = `edge-${pendingConnection.source}-${newNode.id}`;
+            const newEdge1: WorkflowEdge = {
+              id: edgeId1,
+              source: pendingConnection.source,
+              sourceHandle: pendingConnection.sourceHandle ?? undefined,
+              target: newNode.id,
+              type: "buttonedge",
+              markerEnd: { type: MarkerType.ArrowClosed },
+              data: {
+                onAddEdgeClick: () => {
+                  setPendingConnection({
+                    source: pendingConnection.source,
+                    sourceHandle: pendingConnection.sourceHandle,
+                    target: newNode.id,
+                    edgeId: edgeId1,
+                  });
+                  openSidebar();
+                },
+                onDeleteEdgeClick: () => handleEdgeDelete(edgeId1),
               },
-              onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
-            },
-          };
-          setEdges((eds) => addEdge(newEdge, eds));
-          addStoreEdge(newEdge);
+            };
+
+            const edgeId2 = `edge-${newNode.id}-${pendingConnection.target}`;
+            const newEdge2: WorkflowEdge = {
+              id: edgeId2,
+              source: newNode.id,
+              target: pendingConnection.target,
+              type: "buttonedge",
+              markerEnd: { type: MarkerType.ArrowClosed },
+              data: {
+                onAddEdgeClick: () => {
+                  setPendingConnection({
+                    source: newNode.id,
+                    sourceHandle: null,
+                    target: pendingConnection.target,
+                    edgeId: edgeId2,
+                  });
+                  openSidebar();
+                },
+                onDeleteEdgeClick: () => handleEdgeDelete(edgeId2),
+              },
+            };
+
+            setEdges((eds) => addEdge(newEdge2, addEdge(newEdge1, eds)));
+            addStoreEdge(newEdge1);
+            addStoreEdge(newEdge2);
+          } else {
+            const edgeId = `edge-${pendingConnection.source}-${newNode.id}`;
+            const newEdge: WorkflowEdge = {
+              id: edgeId,
+              source: pendingConnection.source,
+              sourceHandle: pendingConnection.sourceHandle ?? undefined,
+              target: newNode.id,
+              type: "buttonedge",
+              markerEnd: { type: MarkerType.ArrowClosed },
+              data: {
+                onAddEdgeClick: () => {
+                  setPendingConnection({
+                    source: pendingConnection.source,
+                    sourceHandle: pendingConnection.sourceHandle,
+                    target: newNode.id,
+                    edgeId,
+                  });
+                  openSidebar();
+                },
+                onDeleteEdgeClick: () => handleEdgeDelete(edgeId),
+              },
+            };
+            setEdges((eds) => addEdge(newEdge, eds));
+            addStoreEdge(newEdge);
+          }
         }
         setPendingConnection(null);
       }

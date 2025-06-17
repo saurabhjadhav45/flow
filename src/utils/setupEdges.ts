@@ -1,7 +1,13 @@
 import type { WorkflowEdge } from '../types/workflow';
+import { MarkerType } from 'reactflow';
 
 export interface EdgeHandlers {
-  onAdd: (source: string, sourceHandle: string | null) => void;
+  onAdd: (info: {
+    source: string;
+    sourceHandle: string | null;
+    target: string;
+    edgeId: string;
+  }) => void;
   onDelete: (id: string) => void;
 }
 
@@ -12,9 +18,15 @@ export function setupEdges(
   return edges.map((edge) => ({
     ...edge,
     type: 'buttonedge',
+    markerEnd: { type: MarkerType.ArrowClosed },
     data: {
       onAddEdgeClick: () =>
-        handlers.onAdd(edge.source, edge.sourceHandle ?? null),
+        handlers.onAdd({
+          source: edge.source,
+          sourceHandle: edge.sourceHandle ?? null,
+          target: edge.target,
+          edgeId: edge.id,
+        }),
       onDeleteEdgeClick: () => handlers.onDelete(edge.id),
     },
   }));

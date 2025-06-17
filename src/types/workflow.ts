@@ -35,6 +35,8 @@ export type WorkflowEdge = Edge<WorkflowEdgeData>;
 export interface PendingConnection {
   source: string;
   sourceHandle: string | null;
+  target?: string;
+  edgeId?: string;
 }
 
 export interface WorkflowState {

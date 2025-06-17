@@ -262,7 +262,7 @@ export function WorkflowEditor() {
           onAddEdgeClick: () => {
             setPendingConnection({
               source: lastNode.id,
-              sourceHandle,
+              sourceHandle: sourceHandle ?? null,
               target: newNode.id,
               edgeId,
             });

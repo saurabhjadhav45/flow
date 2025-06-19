@@ -9,6 +9,7 @@ import MergeSettings from "./MergeSettings";
 import IfSettings from "./IfSettings";
 import EmailSettings from "./EmailSettings";
 import AirtableSettings from "./AirtableSettings";
+import JsonViewer from "./JsonViewer";
 
 interface PropertiesPanelProps {
   node: Node;
@@ -26,6 +27,7 @@ export default function PropertiesPanel({
   const [isValid, setIsValid] = useState(true);
   // Error for the HTTP request URL field
   const [urlError, setUrlError] = useState('');
+  const [testOutput, setTestOutput] = useState<unknown>(null);
 
   const handleLabelChange = (value: string) => {
     const newData = { ...formData, label: value };
@@ -84,13 +86,61 @@ export default function PropertiesPanel({
     onUpdateNode(node.id, { [field]: value });
   };
 
-  // Triggered by "Test Node" button; prevents testing when invalid
-  const handleTestNode = () => {
+  // Triggered by "Test Node" button
+  const handleTestNode = async () => {
     if (!isValid) {
       alert('Please fix validation errors before testing.');
       return;
     }
-    alert('Testing node...');
+
+    const method = (formData.method as string) || 'GET';
+    const url = (formData.url as string) ||
+      'https://jsonplaceholder.typicode.com/todos/1';
+
+    let headers: Record<string, string> = {};
+    try {
+      if (formData.headers) {
+        headers = JSON.parse(formData.headers as string);
+      }
+    } catch {
+      // ignore parse errors
+    }
+
+    let body: BodyInit | undefined;
+    if (formData.body && method !== 'GET') {
+      try {
+        body = JSON.stringify(JSON.parse(formData.body as string));
+      } catch {
+        body = String(formData.body);
+      }
+    }
+
+    const fetchWithMock = async (
+      requestUrl: string,
+      options?: RequestInit,
+    ): Promise<Response> => {
+      if (requestUrl === 'https://jsonplaceholder.typicode.com/posts') {
+        const mockData = [
+          { id: 1, title: 'Mock Post 1' },
+          { id: 2, title: 'Mock Post 2' },
+        ];
+        return new Response(JSON.stringify(mockData), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+      return fetch(requestUrl, options);
+    };
+
+    try {
+      const res = await fetchWithMock(url, { method, headers, body });
+      const json = await res.json();
+      setTestOutput(json);
+    } catch (err) {
+      setTestOutput({ error: String(err) });
+    }
+
+    setActiveTab('docs');
   };
 
   // Handle multiple file input for HTTP request with key names (UI-based)
@@ -346,25 +396,49 @@ export default function PropertiesPanel({
             Once you've finished building your workflow, run it without having
             to click this button by using the production webhook URL.
           </p>
+          <button
+            className={`mt-4 px-3 py-2 rounded text-white ${
+              isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
+            }`}
+            onClick={handleTestNode}
+            disabled={!isValid}
+          >
+            Test Node
+          </button>
         </div>
       );
     }
     return (
-      <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
-        Parameters
-      </h6>
+      <div className="flex flex-col gap-4">
+        <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
+          Parameters
+        </h6>
+        <button
+          className={`self-start px-3 py-2 rounded text-white ${
+            isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
+          }`}
+          onClick={handleTestNode}
+          disabled={!isValid}
+        >
+          Test Node
+        </button>
+      </div>
     );
   };
 
-  // Render Docs Tab Content (placeholder)
+  // Render Docs/Output Tab
   const renderDocsTab = () => (
-    <div className="h-full flex flex-col items-center justify-center text-center gap-3">
+    <div className="h-full flex flex-col items-start gap-3">
       <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
-        Docs
+        Output / Docs
       </h6>
-      <p className="text-xs text-gray-500 px-2">
-        Documentation preview or configuration will appear here.
-      </p>
+      {testOutput ? (
+        <JsonViewer data={testOutput} />
+      ) : (
+        <p className="text-xs text-gray-500 px-2">
+          Documentation preview or configuration will appear here.
+        </p>
+      )}
     </div>
   );
 

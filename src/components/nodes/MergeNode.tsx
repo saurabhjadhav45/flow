@@ -5,7 +5,11 @@ import type { WorkflowNodeData } from '../../types/workflow';
 import { FiGitMerge, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
 
-interface MergeNodeProps extends NodeProps<WorkflowNodeData> {
+interface MergeNodeData extends WorkflowNodeData {
+  inputCount?: number;
+}
+
+interface MergeNodeProps extends NodeProps<MergeNodeData> {
   darkMode?: boolean;
 }
 
@@ -39,7 +43,7 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     }
   }, [darkMode]);
 
-  const inputCount = (data as { inputCount?: number }).inputCount ?? 2;
+  const inputCount = data.inputCount ?? 2;
   const step = 100 / (inputCount + 1);
   const [hovered, setHovered] = React.useState(false);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSettings, FiX } from "react-icons/fi";
 import type { Node } from "reactflow";
 import WebhookSettings from "./WebhookSettings";
@@ -22,6 +22,24 @@ export default function PropertiesPanel({
   onClose,
 }: PropertiesPanelProps) {
   const [formData, setFormData] = useState(node.data);
+
+  const handleLabelChange = (value: string) => {
+    const newData = { ...formData, label: value };
+    setFormData(newData);
+    onUpdateNode(node.id, {
+      label: value,
+      description: (newData as { description?: string }).description ?? "",
+    });
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    const newData = { ...formData, description: value };
+    setFormData(newData);
+    onUpdateNode(node.id, {
+      label: (newData as { label?: string }).label ?? "",
+      description: value,
+    });
+  };
 
   useEffect(() => {
     setFormData(node.data);
@@ -286,6 +304,30 @@ export default function PropertiesPanel({
           <FiX className="w-5 h-5" />
           {/* <span className="hidden md:inline">Close</span> */}
         </button>
+      </div>
+      <div className="p-4 space-y-2 border-b border-gray-200 bg-white">
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Label
+          </label>
+          <input
+            type="text"
+            value={formData.label || ""}
+            onChange={(e) => handleLabelChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-600 rounded-md"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Description
+          </label>
+          <input
+            type="text"
+            value={(formData as { description?: string }).description || ""}
+            onChange={(e) => handleDescriptionChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-600 rounded-md"
+          />
+        </div>
       </div>
       {/* Tabs */}
       <div className="flex border-b border-gray-200 bg-white">

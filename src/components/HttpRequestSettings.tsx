@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ChangeEvent } from 'react';
 
 interface HttpRequestSettingsProps {
   data: Record<string, unknown>;
@@ -6,7 +6,7 @@ interface HttpRequestSettingsProps {
 }
 
 export default function HttpRequestSettings({ data, onChange }: HttpRequestSettingsProps) {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -69,7 +69,7 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
           className="w-full px-3 py-2 border border-gray-600 rounded-md"
           value={undefined}
         />
-        {data.fileName && (
+        {!!data.fileName && (
           <div className="mt-2 text-xs text-gray-700">Selected file: {data.fileName as string}</div>
         )}
       </div>

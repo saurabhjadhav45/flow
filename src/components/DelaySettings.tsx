@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface DelaySettingsProps {
   data: Record<string, unknown>;

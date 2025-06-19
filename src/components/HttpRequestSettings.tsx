@@ -1,12 +1,38 @@
 import type { ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface HttpRequestSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function HttpRequestSettings({ data, onChange }: HttpRequestSettingsProps) {
+export default function HttpRequestSettings({ data, onChange, onValidationChange }: HttpRequestSettingsProps) {
+  const [urlError, setUrlError] = useState('');
+
+  // Validate URL whenever it changes
+  useEffect(() => {
+    if (!(data.url as string)?.trim()) {
+      setUrlError('URL is required');
+      onValidationChange?.(false);
+    } else {
+      setUrlError('');
+      onValidationChange?.(true);
+    }
+  }, [data.url, onValidationChange]);
+
+  const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    onChange('url', value);
+    if (!value.trim()) {
+      setUrlError('URL is required');
+      onValidationChange?.(false);
+    } else {
+      setUrlError('');
+      onValidationChange?.(true);
+    }
+  };
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -47,10 +73,13 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
           <input
             type="text"
             value={(data.url as string) || ''}
-            onChange={(e) => onChange('url', e.target.value)}
+            onChange={handleUrlChange}
             placeholder="https://api.example.com/endpoint"
-            className="w-full px-3 py-2  border border-gray-600 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${urlError ? 'border-red-500' : 'border-gray-600'}`}
           />
+          {urlError && (
+            <p className="text-red-500 text-xs mt-1">{urlError}</p>
+          )}
         </div>
       </fieldset>
 

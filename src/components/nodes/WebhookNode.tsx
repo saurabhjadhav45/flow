@@ -81,6 +81,11 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
         <div className="font-medium text-[8px]">Webhook</div>
+        {data.description && (
+          <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+            {data.description}
+          </div>
+        )}
       </div>
 
       <Handle

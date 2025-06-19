@@ -85,6 +85,11 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+4px)] text-center w-full">
           <div className="font-medium text-[8px]">HTTP Request</div>
+          {data.description && (
+            <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+              {data.description}
+            </div>
+          )}
           <div className="flex justify-center">
             <span className={`text-[6px]`}>
               {method}:&nbsp;

@@ -223,6 +223,7 @@ export function WorkflowEditor() {
       position,
       data: {
         label: nodeToAdd.charAt(0).toUpperCase() + nodeToAdd.slice(1),
+        description: "",
         config: {},
         type: nodeToAdd,
         ...defaults,
@@ -396,6 +397,7 @@ export function WorkflowEditor() {
         position,
         data: {
           label: type.charAt(0).toUpperCase() + type.slice(1),
+          description: "",
           config: {},
           type,
           ...defaults,

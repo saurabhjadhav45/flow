@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface MergeSettingsProps {
   data: Record<string, unknown>;

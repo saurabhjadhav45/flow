@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface EmailSettingsProps {
   data: Record<string, unknown>;

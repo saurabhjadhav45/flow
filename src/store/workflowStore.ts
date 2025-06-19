@@ -12,6 +12,8 @@ const initialState = {
   nodes: [],
   edges: [],
   variables: [],
+  inputByNode: {},
+  outputByNode: {},
   selectedNode: null,
   undoStack: [],
   redoStack: [],
@@ -105,5 +107,15 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   removeVariable: (name: string) =>
     set((state: WorkflowState) => ({
       variables: state.variables.filter((v: string) => v !== name),
+    })),
+
+  setInputForNode: (nodeId: string, items: unknown[]) =>
+    set((state: WorkflowState) => ({
+      inputByNode: { ...state.inputByNode, [nodeId]: items },
+    })),
+
+  setOutputForNode: (nodeId: string, items: unknown[]) =>
+    set((state: WorkflowState) => ({
+      outputByNode: { ...state.outputByNode, [nodeId]: items },
     })),
 }));

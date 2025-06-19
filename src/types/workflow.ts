@@ -45,6 +45,10 @@ export interface WorkflowState {
   edges: WorkflowEdge[];
   /** List of variables available for expression pickers */
   variables: string[];
+  /** Map of nodeId -> array of input items */
+  inputByNode: Record<string, unknown[]>;
+  /** Map of nodeId -> array of output items */
+  outputByNode: Record<string, unknown[]>;
   selectedNode: string | null;
   undoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
@@ -73,4 +77,6 @@ export interface WorkflowStore extends WorkflowState {
   setDraggingNodeId: (id: string | null) => void;
   addVariable: (name: string) => void;
   removeVariable: (name: string) => void;
+  setInputForNode: (nodeId: string, items: unknown[]) => void;
+  setOutputForNode: (nodeId: string, items: unknown[]) => void;
 }

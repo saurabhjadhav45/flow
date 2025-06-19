@@ -40,7 +40,7 @@ export default function PropertiesPanel({
     }
   }, [formData.files]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });
@@ -95,54 +95,6 @@ export default function PropertiesPanel({
     }
   };
 
-  const conditionOperators = [
-    { value: "equals", label: "Equals" },
-    { value: "not_equals", label: "Not Equals" },
-    { value: "contains", label: "Contains" },
-    { value: "not_contains", label: "Not Contains" },
-    { value: "greater", label: "Greater Than" },
-    { value: "less", label: "Less Than" },
-    { value: "starts_with", label: "Starts With" },
-    { value: "ends_with", label: "Ends With" },
-  ];
-
-  // For n8n-like conditions: array of { field, operator, value }
-  const ifConditions: Array<{
-    field: string;
-    operator: string;
-    value: string;
-  }> = formData.config?.conditions || [
-    { field: "", operator: "equals", value: "" },
-  ];
-
-  const updateIfCondition = (
-    idx: number,
-    key: "field" | "operator" | "value",
-    value: string
-  ) => {
-    const newConditions = [...ifConditions];
-    newConditions[idx] = { ...newConditions[idx], [key]: value };
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
-
-  const addIfCondition = () => {
-    const newConditions = [
-      ...ifConditions,
-      { field: "", operator: "equals", value: "" },
-    ];
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
-
-  const removeIfCondition = (idx: number) => {
-    const newConditions = ifConditions.filter((_, i) => i !== idx);
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
 
   const renderHttpRequestProperties = () => (
     <div className="space-y-4 text-left">
@@ -276,12 +228,12 @@ export default function PropertiesPanel({
   };
 
   // Add tab state
-  const [activeTab, setActiveTab] = useState<"input" | "properties" | "output">(
-    "properties"
+  const [activeTab, setActiveTab] = useState<"parameters" | "settings" | "docs">(
+    "parameters"
   );
 
   // Render Input Tab Content
-  const renderInputTab = () => {
+  const renderParametersTab = () => {
     if (node.type === "webhook") {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center gap-3">
@@ -303,19 +255,19 @@ export default function PropertiesPanel({
     }
     return (
       <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
-        Input
+        Parameters
       </h6>
     );
   };
 
-  // Render Output Tab Content (placeholder)
-  const renderOutputTab = () => (
+  // Render Docs Tab Content (placeholder)
+  const renderDocsTab = () => (
     <div className="h-full flex flex-col items-center justify-center text-center gap-3">
       <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
-        Output
+        Docs
       </h6>
       <p className="text-xs text-gray-500 px-2">
-        Output preview or configuration will appear here.
+        Documentation preview or configuration will appear here.
       </p>
     </div>
   );
@@ -339,41 +291,41 @@ export default function PropertiesPanel({
       <div className="flex border-b border-gray-200 bg-white">
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
-            activeTab === "input"
+            activeTab === "parameters"
               ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
               : "text-gray-600 hover:text-blue-600"
           }`}
-          onClick={() => setActiveTab("input")}
+          onClick={() => setActiveTab("parameters")}
         >
-          Input
+          Parameters
         </button>
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
-            activeTab === "properties"
+            activeTab === "settings"
               ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
               : "text-gray-600 hover:text-blue-600"
           }`}
-          onClick={() => setActiveTab("properties")}
+          onClick={() => setActiveTab("settings")}
         >
-          Properties
+          Settings
         </button>
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
-            activeTab === "output"
+            activeTab === "docs"
               ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
               : "text-gray-600 hover:text-blue-600"
           }`}
-          onClick={() => setActiveTab("output")}
+          onClick={() => setActiveTab("docs")}
         >
-          Output
+          Docs
         </button>
       </div>
       {/* Tab Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
-        {activeTab === "input" && (
-          <div className="flex-1 p-4 overflow-y-auto">{renderInputTab()}</div>
+        {activeTab === "parameters" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderParametersTab()}</div>
         )}
-        {activeTab === "properties" && (
+        {activeTab === "settings" && (
           <>
             <div className="p-4 border-b border-gray-100">
               <h3 className="font-medium text-gray-800 mb-2">
@@ -386,8 +338,8 @@ export default function PropertiesPanel({
             </div>
           </>
         )}
-        {activeTab === "output" && (
-          <div className="flex-1 p-4 overflow-y-auto">{renderOutputTab()}</div>
+        {activeTab === "docs" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderDocsTab()}</div>
         )}
       </div>
     </div>

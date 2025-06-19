@@ -1,4 +1,6 @@
-export async function runHttpRequest(config: Record<string, any>) {
+import type { Item } from '../../types/workflow';
+
+export async function runHttpRequest(config: Record<string, any>): Promise<Item[]> {
   const method = config.method || 'GET';
   const url = config.url as string;
   let headers: Record<string, string> = {};
@@ -19,9 +21,11 @@ export async function runHttpRequest(config: Record<string, any>) {
   }
   const res = await fetch(url, { method, headers, body });
   const text = await res.text();
+  let parsed: any;
   try {
-    return JSON.parse(text);
+    parsed = JSON.parse(text);
   } catch {
-    return text;
+    parsed = text;
   }
+  return [{ json: parsed }];
 }

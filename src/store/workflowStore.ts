@@ -6,6 +6,7 @@ import type {
   PendingConnection,
   NodeType,
   WorkflowState,
+  Item,
 } from '../types/workflow';
 
 const initialState = {
@@ -33,8 +34,11 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   setSelectedNode: (nodeId: string | null) => set({ selectedNode: nodeId }),
 
   addNode: (node: WorkflowNode) => {
-    const { nodes } = get();
-    set({ nodes: [...nodes, node] });
+    const { nodes, variables } = get();
+    const label = node.data.label || node.type;
+    const expr = `$(${JSON.stringify(label)}).first().json`;
+    const newVars = variables.includes(expr) ? variables : [...variables, expr];
+    set({ nodes: [...nodes, node], variables: newVars });
   },
 
   updateNode: (nodeId: string, data: Partial<WorkflowNode>) => {
@@ -47,12 +51,16 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   },
 
   deleteNode: (nodeId: string) => {
-    const { nodes, edges } = get();
+    const { nodes, edges, variables } = get();
+    const node = nodes.find((n) => n.id === nodeId);
+    const label = node?.data.label || node?.type;
+    const expr = `$(${JSON.stringify(label)}).first().json`;
     set({
       nodes: nodes.filter((node) => node.id !== nodeId),
       edges: edges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       ),
+      variables: variables.filter((v) => v !== expr),
     });
   },
 
@@ -110,7 +118,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     set((state: WorkflowState) => ({
       variables: state.variables.filter((v: string) => v !== name),
     })),
-  setNodeResult: (nodeId: string, result: unknown) =>
+  setNodeResult: (nodeId: string, result: Item[]) =>
     set((state: WorkflowState) => ({
       nodeResults: { ...state.nodeResults, [nodeId]: result },
       nodeStatus: { ...state.nodeStatus, [nodeId]: 'success' },
@@ -120,7 +128,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
       errorResults: { ...state.errorResults, [nodeId]: error },
       nodeStatus: { ...state.nodeStatus, [nodeId]: 'error' },
     })),
-  setNodeInput: (nodeId: string, input: unknown) =>
+  setNodeInput: (nodeId: string, input: Item[]) =>
     set((state: WorkflowState) => ({
       nodeInputs: { ...state.nodeInputs, [nodeId]: input },
     })),

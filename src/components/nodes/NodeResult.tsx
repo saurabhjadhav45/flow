@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWorkflowStore } from '../../store/workflowStore';
 import { runNode } from '../../nodes/executors';
+import JsonViewer from '../JsonViewer';
 
 export default function NodeResult({ id }: { id: string }) {
   const nodes = useWorkflowStore((s) => s.nodes);
@@ -42,13 +43,12 @@ export default function NodeResult({ id }: { id: string }) {
   }
 
   if (result !== undefined) {
-    const text = typeof result === 'string' ? result : JSON.stringify(result);
     return (
-      <div className="text-[6px] text-green-600 mt-1 max-w-[120px] truncate" title={text}>
-        {text}
-        <button onClick={handleRun} className="ml-1 underline">
+      <div className="text-[6px] text-green-600 mt-1 max-w-[120px]">
+        <button onClick={handleRun} className="underline mr-1">
           run
         </button>
+        <JsonViewer data={result} />
       </div>
     );
   }
@@ -56,9 +56,8 @@ export default function NodeResult({ id }: { id: string }) {
   if (input !== undefined) {
     return (
       <div className="text-[6px] text-gray-500 mt-1">
-        <button onClick={handleRun} className="underline">
-          run
-        </button>
+        <button onClick={handleRun} className="underline mr-1">run</button>
+        <JsonViewer data={input} />
       </div>
     );
   }

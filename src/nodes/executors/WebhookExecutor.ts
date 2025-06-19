@@ -1,12 +1,16 @@
-export async function runWebhook(config: Record<string, unknown>) {
+import type { Item } from '../../types/workflow';
+
+export async function runWebhook(config: Record<string, unknown>): Promise<Item[]> {
+  let payload: any;
   if (config.useMockData && config.mockRequest) {
     const text = String(config.mockRequest);
     try {
-      return JSON.parse(text);
+      payload = JSON.parse(text);
     } catch {
-      return text;
+      payload = text;
     }
+  } else {
+    payload = { status: 'received' };
   }
-  // Placeholder implementation representing a real request
-  return { status: 'received' };
+  return [{ json: payload }];
 }

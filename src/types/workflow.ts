@@ -1,5 +1,9 @@
 import type { Node, Edge } from "reactflow";
 
+export interface Item {
+  json: any;
+}
+
 export type NodeType =
   | "httpRequest"
   | "delay"
@@ -58,9 +62,9 @@ export interface WorkflowState {
   pendingConnection: PendingConnection | null;
   nodeToAdd: NodeType | null;
   draggingNodeId: string | null;
-  nodeResults: Record<string, unknown>;
+  nodeResults: Record<string, Item[]>;
   errorResults: Record<string, unknown>;
-  nodeInputs: Record<string, unknown>;
+  nodeInputs: Record<string, Item[]>;
   nodeStatus: Record<string, 'pending' | 'success' | 'error'>;
 }
 
@@ -83,9 +87,9 @@ export interface WorkflowStore extends WorkflowState {
   setDraggingNodeId: (id: string | null) => void;
   addVariable: (name: string) => void;
   removeVariable: (name: string) => void;
-  setNodeResult: (nodeId: string, result: unknown) => void;
+  setNodeResult: (nodeId: string, result: Item[]) => void;
   setNodeError: (nodeId: string, error: unknown) => void;
-  setNodeInput: (nodeId: string, input: unknown) => void;
+  setNodeInput: (nodeId: string, input: Item[]) => void;
   setNodeStatus: (
     nodeId: string,
     status: 'pending' | 'success' | 'error'

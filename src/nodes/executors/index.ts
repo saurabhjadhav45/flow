@@ -1,9 +1,13 @@
-import type { NodeType } from '../../types/workflow';
+import type { NodeType, Item } from '../../types/workflow';
 import { runWebhook } from './WebhookExecutor';
 import { runHttpRequest } from './HttpRequestExecutor';
 import { runFunction } from './FunctionExecutor';
 
-export async function runNode(type: NodeType, config: any, input: any) {
+export async function runNode(
+  type: NodeType,
+  config: any,
+  input: Item[]
+): Promise<Item[]> {
   switch (type) {
     case 'webhook':
       return runWebhook(config);

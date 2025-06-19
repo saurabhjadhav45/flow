@@ -1,4 +1,4 @@
-import type { WorkflowEdge, WorkflowNode, NodeType } from '../types/workflow';
+import type { WorkflowEdge, WorkflowNode, NodeType, Item } from '../types/workflow';
 
 function topologicalSort(nodes: WorkflowNode[], edges: WorkflowEdge[]): WorkflowNode[] {
   const indegree = new Map<string, number>();
@@ -36,28 +36,29 @@ function topologicalSort(nodes: WorkflowNode[], edges: WorkflowEdge[]): Workflow
 function getInputsForNode(
   node: WorkflowNode,
   edges: WorkflowEdge[],
-  results: Record<string, unknown>
+  results: Record<string, Item[]>
 ) {
   const incoming = edges.filter((e) => e.target === node.id);
-  const inputs: Record<string, unknown> = {};
+  const items: Item[] = [];
   for (const edge of incoming) {
-    inputs[edge.sourceHandle || edge.source] = results[edge.source];
+    const arr = results[edge.source];
+    if (Array.isArray(arr)) items.push(...arr);
   }
-  return inputs;
+  return items;
 }
 
 export async function executeWorkflow(
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
   getNodeConfig: (node: WorkflowNode) => any,
-  runNode: (type: NodeType, config: any, input: any) => Promise<any>,
-  setNodeResult: (id: string, result: any) => void,
+  runNode: (type: NodeType, config: any, input: Item[]) => Promise<Item[]>,
+  setNodeResult: (id: string, result: Item[]) => void,
   setNodeError: (id: string, error: any) => void,
-  setNodeInput: (id: string, input: any) => void,
+  setNodeInput: (id: string, input: Item[]) => void,
   setNodeStatus: (id: string, status: 'pending' | 'success' | 'error') => void
 ) {
   const sorted = topologicalSort(nodes, edges);
-  const results: Record<string, unknown> = {};
+  const results: Record<string, Item[]> = {};
   for (const node of sorted) {
     const input = getInputsForNode(node, edges, results);
     setNodeInput(node.id, input);

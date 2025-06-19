@@ -67,10 +67,9 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
           type="file"
           onChange={handleFileChange}
           className="w-full px-3 py-2 border border-gray-600 rounded-md"
-          value={undefined}
         />
-        {data.fileName && (
-          <div className="mt-2 text-xs text-gray-700">Selected file: {data.fileName as string}</div>
+        {Boolean(data.fileName) && (
+          <div className="mt-2 text-xs text-gray-700">Selected file: {String(data.fileName)}</div>
         )}
       </div>
     </div>

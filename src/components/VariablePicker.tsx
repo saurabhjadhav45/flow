@@ -18,10 +18,6 @@ export default function VariablePicker({ onSelect, label }: VariablePickerProps)
     }
   };
 
-  if (!variables.length) {
-    return null;
-  }
-
   return (
     <div className="mt-2">
       {label && (
@@ -37,11 +33,15 @@ export default function VariablePicker({ onSelect, label }: VariablePickerProps)
         <option value="" disabled>
           Insert variable...
         </option>
-        {variables.map((v) => (
-          <option key={v} value={v}>
-            {v}
-          </option>
-        ))}
+        {variables.length === 0 ? (
+          <option disabled>No variables available</option>
+        ) : (
+          variables.map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))
+        )}
       </select>
     </div>
   );

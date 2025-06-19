@@ -120,7 +120,7 @@ function DraggableNode({ nodeType }: { nodeType: NodeTypeItem }) {
         <h3 className="font-medium text-gray-900 dark:text-gray-100">
           {nodeType.label}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500 dark:text-gray-400 break-words max-h-12 overflow-auto">
           {nodeType.description}
         </p>
       </div>

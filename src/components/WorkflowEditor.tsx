@@ -31,6 +31,7 @@ import FunctionNode from "./nodes/FunctionNode";
 import FunctionItemNode from "./nodes/FunctionItemNode";
 import EmailNode from "./nodes/EmailNode";
 import AirtableNode from "./nodes/AirtableNode";
+import { ErrorBoundary } from "./ErrorBoundary";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
@@ -51,6 +52,8 @@ function getDefaultData(type: NodeType) {
       prodUrl: `https://example.com/webhook/${id}`,
       notes: "",
       displayNote: false,
+      mockRequest: "{}",
+      useMockData: false,
     };
   }
 
@@ -105,24 +108,34 @@ function getDefaultData(type: NodeType) {
 }
 
 const nodeTypes: NodeTypes = {
-  httpRequest: HttpRequestNode,
-  delay: DelayNode,
+  httpRequest: withErrorBoundary(HttpRequestNode),
+  delay: withErrorBoundary(DelayNode),
   // setVariable: StyledNode,
   // condition: StyledNode,
-  webhook: WebhookNode,
-  code: CodeNode,
-  set: SetNode,
-  merge: MergeNode,
-  if: IfNode,
-  function: FunctionNode,
-  functionItem: FunctionItemNode,
-  email: EmailNode,
-  airtable: AirtableNode,
+  webhook: withErrorBoundary(WebhookNode),
+  code: withErrorBoundary(CodeNode),
+  set: withErrorBoundary(SetNode),
+  merge: withErrorBoundary(MergeNode),
+  if: withErrorBoundary(IfNode),
+  function: withErrorBoundary(FunctionNode),
+  functionItem: withErrorBoundary(FunctionItemNode),
+  email: withErrorBoundary(EmailNode),
+  airtable: withErrorBoundary(AirtableNode),
 };
 
 const edgeTypes = {
   buttonedge: ButtonEdge,
 };
+
+function withErrorBoundary<T>(Component: React.ComponentType<T>) {
+  return function Wrapper(props: T) {
+    return (
+      <ErrorBoundary>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+}
 
 export function WorkflowEditor() {
   const {
@@ -136,6 +149,7 @@ export function WorkflowEditor() {
     setPendingConnection,
     openSidebar,
     closeSidebar,
+    updateNode,
     nodeToAdd,
     setNodeToAdd,
     setDraggingNodeId,
@@ -203,8 +217,11 @@ export function WorkflowEditor() {
           return node;
         })
       );
+      updateNode(nodeId, {
+        data: { ...((useWorkflowStore.getState().nodes.find((n) => n.id === nodeId)?.data) ?? {}), ...newData },
+      });
     },
-    [setNodes]
+    [setNodes, updateNode]
   );
 
   useEffect(() => {
@@ -338,6 +355,15 @@ export function WorkflowEditor() {
   const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
   }, []);
+
+  const onNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      if (selectedNodeId !== null) {
+        setSelectedNodeId(node.id);
+      }
+    },
+    [selectedNodeId]
+  );
 
   const onPaneClick = useCallback(() => {
     setSelectedNodeId(null);
@@ -529,6 +555,7 @@ export function WorkflowEditor() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
       >
         <Background />

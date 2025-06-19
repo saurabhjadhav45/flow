@@ -3,6 +3,7 @@ import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
+import NodeResult from "./NodeResult";
 import {
   FiGlobe,
   FiClock,
@@ -23,7 +24,17 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
     (state) => state.setPendingConnection
   );
   const deleteNode = useWorkflowStore((state) => state.deleteNode);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
   const [hovered, setHovered] = useState(false);
+
+  const borderColor =
+    status === 'error'
+      ? '#f87171'
+      : status === 'success'
+      ? '#4ade80'
+      : status === 'pending'
+      ? '#facc15'
+      : '#D1D5DB';
 
   const IconMap = {
     httpRequest: FiGlobe,
@@ -57,8 +68,8 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
       style={{ position: "relative" }}
     >
       <div
-        className="relative bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 shadow"
-        style={{ position: "relative" }}
+        className="relative bg-white dark:bg-gray-800 border rounded-md px-3 py-2 shadow"
+        style={{ position: 'relative', border: `2px solid ${borderColor}` }}
       >
         <Handle
           type="target"
@@ -100,6 +111,7 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
       </div>
       <div className="text-xs mt-1 text-gray-800 dark:text-gray-100 text-center">
         {data.label}
+        <NodeResult id={id} />
       </div>
     </div>
   );

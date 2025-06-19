@@ -4,10 +4,12 @@ import type { NodeProps } from "reactflow";
 import { FiLink, FiPlus, FiZap, FiTrash2 } from "react-icons/fi";
 import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
+import NodeResult from "./NodeResult";
 
 function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const [darkMode, setDarkMode] = React.useState(false);
   const isListening = (data as { isListening?: boolean })?.isListening;
+  const useMockData = (data as { useMockData?: boolean })?.useMockData;
 
   const colors = {
     background: darkMode ? "#1e2235" : "#fff",
@@ -17,8 +19,16 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
       : "0 1px 4px rgba(0,0,0,0.1)",
     text: darkMode ? "#FFFFFF" : "#333333",
   };
-
   const edges = useWorkflowStore((state) => state.edges);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
+  const borderColor =
+    status === 'error'
+      ? '#f87171'
+      : status === 'success'
+      ? '#4ade80'
+      : status === 'pending'
+      ? '#facc15'
+      : colors.border;
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore(
@@ -49,9 +59,12 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
     >
       <div
         className={`flex items-center p-4 shadow-lg border-1 bg-[${colors.background}] rounded-r-sm rounded-l-3xl`}
-        style={{ position: "relative" }}
+        style={{ position: "relative", border: `2px solid ${borderColor}` }}
       >
         <FiLink className="w-6 h-6 text-blue-600" />
+        {useMockData && (
+          <span className="absolute -left-1 -top-1 bg-yellow-300 text-[6px] px-1 rounded">Mock</span>
+        )}
         {isListening && (
           <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />
         )}
@@ -80,12 +93,13 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
         )}
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
-        <div className="font-medium text-[8px]">Webhook</div>
+        <div className="font-medium text-[8px]">{data.label}</div>
         {data.description && (
-          <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+          <div className="text-[6px] text-gray-500 whitespace-pre-wrap break-words max-h-[40px] overflow-auto">
             {data.description}
           </div>
         )}
+        <NodeResult id={id} />
       </div>
 
       <Handle

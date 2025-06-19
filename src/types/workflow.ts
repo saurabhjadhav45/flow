@@ -1,5 +1,9 @@
 import type { Node, Edge } from "reactflow";
 
+export interface Item {
+  json: any;
+}
+
 export type NodeType =
   | "httpRequest"
   | "delay"
@@ -20,6 +24,12 @@ export interface WorkflowNodeData {
   description?: string;
   config: Record<string, unknown>;
   type: NodeType;
+  /** Webhook mock payload */
+  mockRequest?: string;
+  /** Whether to inject mock data instead of waiting for real requests */
+  useMockData?: boolean;
+  /** Internal flag when listening for test events */
+  isListening?: boolean;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData> & {
@@ -52,6 +62,10 @@ export interface WorkflowState {
   pendingConnection: PendingConnection | null;
   nodeToAdd: NodeType | null;
   draggingNodeId: string | null;
+  nodeResults: Record<string, Item[]>;
+  errorResults: Record<string, unknown>;
+  nodeInputs: Record<string, Item[]>;
+  nodeStatus: Record<string, 'pending' | 'success' | 'error'>;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -73,4 +87,12 @@ export interface WorkflowStore extends WorkflowState {
   setDraggingNodeId: (id: string | null) => void;
   addVariable: (name: string) => void;
   removeVariable: (name: string) => void;
+  setNodeResult: (nodeId: string, result: Item[]) => void;
+  setNodeError: (nodeId: string, error: unknown) => void;
+  setNodeInput: (nodeId: string, input: Item[]) => void;
+  setNodeStatus: (
+    nodeId: string,
+    status: 'pending' | 'success' | 'error'
+  ) => void;
+  clearResults: () => void;
 }

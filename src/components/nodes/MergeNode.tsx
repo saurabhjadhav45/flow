@@ -39,7 +39,7 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     }
   }, [darkMode]);
 
-  const inputCount = (data as any).inputCount || 2;
+  const inputCount = (data as { inputCount?: number }).inputCount || 2;
   const step = 100 / (inputCount + 1);
   const [hovered, setHovered] = React.useState(false);
 

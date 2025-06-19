@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface SetSettingsProps {
   data: Record<string, unknown>;

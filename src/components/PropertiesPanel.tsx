@@ -115,25 +115,8 @@ export default function PropertiesPanel({
       }
     }
 
-    const fetchWithMock = async (
-      requestUrl: string,
-      options?: RequestInit,
-    ): Promise<Response> => {
-      if (requestUrl === 'https://jsonplaceholder.typicode.com/posts') {
-        const mockData = [
-          { id: 1, title: 'Mock Post 1' },
-          { id: 2, title: 'Mock Post 2' },
-        ];
-        return new Response(JSON.stringify(mockData), {
-          headers: { 'Content-Type': 'application/json' },
-          status: 200,
-        });
-      }
-      return fetch(requestUrl, options);
-    };
-
     try {
-      const res = await fetchWithMock(url, { method, headers, body });
+      const res = await fetch(url, { method, headers, body });
       const json = await res.json();
       setTestOutput(json);
     } catch (err) {

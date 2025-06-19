@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useThemeStore } from '../store/themeStore';
 import { initializeNodeId } from '../utils/getNodeId';
+import type { WorkflowNode } from '../types/workflow';
 import { setupEdges } from '../utils/setupEdges';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
@@ -71,7 +72,7 @@ export function Toolbar() {
               nodes: workflow.nodes,
               edges: edgesWithHandlers,
             });
-            initializeNodeId(workflow.nodes || []);
+            initializeNodeId((workflow.nodes as WorkflowNode[]) || []);
           } catch {
             alert('Invalid workflow file');
           }

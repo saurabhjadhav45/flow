@@ -454,8 +454,11 @@ export default function PropertiesPanel({
             </div>
             <div className="p-4 border-t border-gray-100">
               <button
-                className="px-3 py-2 bg-blue-500 text-white rounded"
+                className={`px-3 py-2 rounded text-white ${
+                  isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
+                }`}
                 onClick={handleTestNode}
+                disabled={!isValid}
               >
                 Test Node
               </button>

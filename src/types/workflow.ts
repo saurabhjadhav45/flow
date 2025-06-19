@@ -43,6 +43,8 @@ export interface PendingConnection {
 export interface WorkflowState {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
+  /** List of variables available for expression pickers */
+  variables: string[];
   selectedNode: string | null;
   undoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
@@ -69,4 +71,6 @@ export interface WorkflowStore extends WorkflowState {
   setPendingConnection: (connection: PendingConnection | null) => void;
   setNodeToAdd: (type: NodeType | null) => void;
   setDraggingNodeId: (id: string | null) => void;
+  addVariable: (name: string) => void;
+  removeVariable: (name: string) => void;
 }

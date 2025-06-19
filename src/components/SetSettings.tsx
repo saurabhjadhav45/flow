@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface SetSettingsProps {
   data: Record<string, unknown>;
@@ -54,6 +55,11 @@ export default function SetSettings({ data, onChange, onValidationChange }: SetS
               onChange={(e) => handleMappingChange(idx, 'value', e.target.value)}
               placeholder="Value"
               className="flex-1 px-2 py-1 border border-gray-600 rounded-md"
+            />
+            <VariablePicker
+              onSelect={(v) =>
+                handleMappingChange(idx, 'value', map.value + v)
+              }
             />
             <button
               onClick={() => removeMapping(idx)}

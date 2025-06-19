@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface EmailSettingsProps {
   data: Record<string, unknown>;
@@ -137,6 +138,11 @@ export default function EmailSettings({ data, onChange, onValidationChange }: Em
             onChange={(e) => onChange('subject', e.target.value)}
             className="w-full px-3 py-2 border border-gray-600 rounded-md"
           />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('subject', ((data.subject as string) || '') + v)
+            }
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-2">
@@ -147,6 +153,11 @@ export default function EmailSettings({ data, onChange, onValidationChange }: Em
             value={(data.body as string) || ''}
             onChange={(e) => onChange('body', e.target.value)}
             className="w-full h-24 px-3 py-2 border border-gray-600 rounded-md"
+          />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('body', ((data.body as string) || '') + v)
+            }
           />
         </div>
         <div>
@@ -159,6 +170,11 @@ export default function EmailSettings({ data, onChange, onValidationChange }: Em
             value={(data.attachments as string) || ''}
             onChange={(e) => onChange('attachments', e.target.value)}
             className="w-full px-3 py-2 border border-gray-600 rounded-md"
+          />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('attachments', ((data.attachments as string) || '') + v)
+            }
           />
         </div>
       </fieldset>

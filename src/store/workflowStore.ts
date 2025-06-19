@@ -4,6 +4,7 @@ import type { WorkflowStore } from '../types/workflow';
 const initialState = {
   nodes: [],
   edges: [],
+  variables: [],
   selectedNode: null,
   undoStack: [],
   redoStack: [],
@@ -87,4 +88,12 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   setPendingConnection: (connection) => set({ pendingConnection: connection }),
   setNodeToAdd: (type) => set({ nodeToAdd: type }),
   setDraggingNodeId: (id) => set({ draggingNodeId: id }),
+  addVariable: (name) =>
+    set((state) =>
+      state.variables.includes(name)
+        ? {}
+        : { variables: [...state.variables, name] }
+    ),
+  removeVariable: (name) =>
+    set((state) => ({ variables: state.variables.filter((v) => v !== name) })),
 }));

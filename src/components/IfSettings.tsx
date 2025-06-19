@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface IfSettingsProps {
   data: Record<string, unknown>;
@@ -78,6 +79,20 @@ export default function IfSettings({ data, onChange, onValidationChange }: IfSet
             >
               Remove
             </button>
+            <div className="flex w-full gap-2 mt-1">
+              <VariablePicker
+                label="Left"
+                onSelect={(v) =>
+                  handleConditionChange(idx, 'left', c.left + v)
+                }
+              />
+              <VariablePicker
+                label="Right"
+                onSelect={(v) =>
+                  handleConditionChange(idx, 'right', c.right + v)
+                }
+              />
+            </div>
           </div>
         ))}
         <button onClick={addCondition} className="px-2 py-1 text-xs bg-blue-500 text-white rounded">

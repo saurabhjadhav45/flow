@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface HttpRequestSettingsProps {
   data: Record<string, unknown>;
@@ -51,6 +52,9 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             placeholder="https://api.example.com/endpoint"
             className="w-full px-3 py-2  border border-gray-600 rounded-md"
           />
+          <VariablePicker
+            onSelect={(v) => onChange('url', ((data.url as string) || '') + v)}
+          />
         </div>
       </fieldset>
 
@@ -67,6 +71,11 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             placeholder='{"Content-Type": "application/json"}'
             className="w-full h-24 px-3 py-2  border border-gray-600 rounded-md  font-mono text-sm"
           />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('headers', ((data.headers as string) || '') + v)
+            }
+          />
         </div>
       </fieldset>
 
@@ -82,6 +91,11 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             onChange={(e) => onChange('body', e.target.value)}
             placeholder="{name: 'John Doe'}"
             className="w-full h-32 px-3 py-2  border border-gray-600 rounded-md font-mono text-sm"
+          />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('body', ((data.body as string) || '') + v)
+            }
           />
         </div>
         <div>

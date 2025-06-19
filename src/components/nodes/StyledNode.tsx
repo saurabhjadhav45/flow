@@ -2,6 +2,7 @@ import React, { useEffect, memo } from "react";
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import type { WorkflowNodeData } from "../../types/workflow";
+import NodeResult from "./NodeResult";
 import {
   FiGlobe,
   FiClock,
@@ -126,6 +127,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
             {data.description}
           </div>
         )}
+        <NodeResult id={id} />
       </div>
 
       {/*

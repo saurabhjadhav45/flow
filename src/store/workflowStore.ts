@@ -19,6 +19,8 @@ const initialState = {
   pendingConnection: null,
   nodeToAdd: null,
   draggingNodeId: null,
+  nodeResults: {},
+  errorResults: {},
 };
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
@@ -106,4 +108,13 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     set((state: WorkflowState) => ({
       variables: state.variables.filter((v: string) => v !== name),
     })),
+  setNodeResult: (nodeId: string, result: unknown) =>
+    set((state: WorkflowState) => ({
+      nodeResults: { ...state.nodeResults, [nodeId]: result },
+    })),
+  setNodeError: (nodeId: string, error: unknown) =>
+    set((state: WorkflowState) => ({
+      errorResults: { ...state.errorResults, [nodeId]: error },
+    })),
+  clearResults: () => set({ nodeResults: {}, errorResults: {} }),
 }));

@@ -52,6 +52,8 @@ export interface WorkflowState {
   pendingConnection: PendingConnection | null;
   nodeToAdd: NodeType | null;
   draggingNodeId: string | null;
+  nodeResults: Record<string, unknown>;
+  errorResults: Record<string, unknown>;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -73,4 +75,7 @@ export interface WorkflowStore extends WorkflowState {
   setDraggingNodeId: (id: string | null) => void;
   addVariable: (name: string) => void;
   removeVariable: (name: string) => void;
+  setNodeResult: (nodeId: string, result: unknown) => void;
+  setNodeError: (nodeId: string, error: unknown) => void;
+  clearResults: () => void;
 }

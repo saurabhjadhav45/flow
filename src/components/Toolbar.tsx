@@ -1,10 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useThemeStore } from '../store/themeStore';
 import { initializeNodeId } from '../utils/getNodeId';
 import type { WorkflowNode } from '../types/workflow';
 import { setupEdges } from '../utils/setupEdges';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import { executeWorkflow } from '../utils/executeWorkflow';
+import { runNode } from '../nodes/executors';
 
 export function Toolbar() {
   const {
@@ -83,6 +85,28 @@ export function Toolbar() {
     input.click();
   }, [deleteEdge, openSidebar, setPendingConnection]);
 
+  const setNodeResult = useWorkflowStore((s) => s.setNodeResult);
+  const setNodeError = useWorkflowStore((s) => s.setNodeError);
+  const clearResults = useWorkflowStore((s) => s.clearResults);
+  const [running, setRunning] = useState(false);
+
+  const handleRun = useCallback(async () => {
+    setRunning(true);
+    clearResults();
+    try {
+      await executeWorkflow(
+        nodes,
+        edges,
+        (n) => n.data,
+        runNode,
+        setNodeResult,
+        setNodeError
+      );
+    } finally {
+      setRunning(false);
+    }
+  }, [nodes, edges, clearResults, setNodeResult, setNodeError]);
+
   return (
     <div className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -107,10 +131,11 @@ export function Toolbar() {
       </div>
       <div className="flex items-center space-x-2">
         <button
-          className="btn btn-secondary opacity-50 cursor-not-allowed"
-          disabled
+          className={`btn btn-secondary ${running ? 'opacity-50 cursor-wait' : ''}`}
+          onClick={handleRun}
+          disabled={running}
         >
-          Run
+          {running ? 'Running...' : 'Run'}
         </button>
         <button onClick={toggleTheme} className="btn btn-secondary">
           {theme === 'dark' ? <FiSun /> : <FiMoon />}

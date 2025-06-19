@@ -7,6 +7,7 @@ import {
   FiTrash2
 } from "react-icons/fi";
 import { useWorkflowStore } from "../../store/workflowStore";
+import NodeResult from "./NodeResult";
 
 export default function HttpRequestNode({ id, data, selected}: NodeProps) {
   const [darkMode, setDarkMode] = React.useState(false);
@@ -100,6 +101,7 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
               </span>
             )}
           </div>
+          <NodeResult id={id} />
         </div>
 
       <Handle

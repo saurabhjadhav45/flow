@@ -4,6 +4,7 @@ import type { NodeProps } from "reactflow";
 import { FiLink, FiPlus, FiZap, FiTrash2 } from "react-icons/fi";
 import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
+import NodeResult from "./NodeResult";
 
 function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const [darkMode, setDarkMode] = React.useState(false);
@@ -86,6 +87,7 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
             {data.description}
           </div>
         )}
+        <NodeResult id={id} />
       </div>
 
       <Handle

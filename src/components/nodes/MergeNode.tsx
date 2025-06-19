@@ -4,6 +4,7 @@ import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
 import { FiGitMerge, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
+import NodeResult from './NodeResult';
 
 interface MergeNodeData extends WorkflowNodeData {
   inputCount?: number;
@@ -98,6 +99,7 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
             {data.description}
           </div>
         )}
+        <NodeResult id={id} />
       </div>
 
       <Handle

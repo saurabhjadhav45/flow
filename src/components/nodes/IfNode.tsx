@@ -4,6 +4,7 @@ import type { NodeProps } from 'reactflow';
 import type { WorkflowNodeData } from '../../types/workflow';
 import { FiGitBranch, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useWorkflowStore } from '../../store/workflowStore';
+import NodeResult from './NodeResult';
 
 interface IfNodeProps extends NodeProps<WorkflowNodeData> {
   darkMode?: boolean;
@@ -89,6 +90,7 @@ function IfNode({ id, data, darkMode = false }: IfNodeProps) {
             {data.description}
           </div>
         )}
+        <NodeResult id={id} />
       </div>
 
       <Handle

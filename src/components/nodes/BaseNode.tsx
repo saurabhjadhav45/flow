@@ -3,6 +3,7 @@ import { Handle, Position } from "reactflow";
 import type { NodeProps } from "reactflow";
 import type { WorkflowNodeData } from "../../types/workflow";
 import { useWorkflowStore } from "../../store/workflowStore";
+import NodeResult from "./NodeResult";
 import {
   FiGlobe,
   FiClock,
@@ -100,6 +101,7 @@ function BaseNode({ id, data }: NodeProps<WorkflowNodeData>) {
       </div>
       <div className="text-xs mt-1 text-gray-800 dark:text-gray-100 text-center">
         {data.label}
+        <NodeResult id={id} />
       </div>
     </div>
   );

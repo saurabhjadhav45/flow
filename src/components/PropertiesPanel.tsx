@@ -22,6 +22,10 @@ export default function PropertiesPanel({
   onClose,
 }: PropertiesPanelProps) {
   const [formData, setFormData] = useState(node.data);
+  // Combined validity of child settings components
+  const [isValid, setIsValid] = useState(true);
+  // Error for the HTTP request URL field
+  const [urlError, setUrlError] = useState('');
 
   const handleLabelChange = (value: string) => {
     const newData = { ...formData, label: value };
@@ -43,7 +47,23 @@ export default function PropertiesPanel({
 
   useEffect(() => {
     setFormData(node.data);
+    setIsValid(true);
+    setUrlError('');
   }, [node]);
+
+  // Validate HTTP request URL
+  // Validate the HTTP request URL whenever it or the node type changes
+  useEffect(() => {
+    if (node.type === 'httpRequest') {
+      if (!(formData.url as string)?.trim()) {
+        setUrlError('URL is required');
+        setIsValid(false);
+      } else {
+        setUrlError('');
+        setIsValid(true);
+      }
+    }
+  }, [node.type, formData.url]);
 
   // Sync fileInputs with formData.files when panel opens or node changes
   useEffect(() => {
@@ -62,6 +82,15 @@ export default function PropertiesPanel({
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });
+  };
+
+  // Triggered by "Test Node" button; prevents testing when invalid
+  const handleTestNode = () => {
+    if (!isValid) {
+      alert('Please fix validation errors before testing.');
+      return;
+    }
+    alert('Testing node...');
   };
 
   // Handle multiple file input for HTTP request with key names (UI-based)
@@ -142,8 +171,11 @@ export default function PropertiesPanel({
           value={formData.url || ""}
           onChange={(e) => handleInputChange("url", e.target.value)}
           placeholder="https://api.example.com/endpoint"
-          className="w-full px-3 py-2  border border-gray-600 rounded-md"
+          className={`w-full px-3 py-2 border rounded-md ${urlError ? 'border-red-500' : 'border-gray-600'}`}
         />
+        {urlError && (
+          <p className="text-red-500 text-xs mt-1">{urlError}</p>
+        )}
       </div>
 
       <div>
@@ -221,24 +253,70 @@ export default function PropertiesPanel({
       case "httpRequest":
         return renderHttpRequestProperties();
       case "webhook":
-        return <WebhookSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <WebhookSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "code":
       case "function":
       case "functionItem":
-        return <CodeSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <CodeSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "set":
-        return <SetSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <SetSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "delay":
-        return <DelaySettings data={formData} onChange={handleInputChange} />;
+        return (
+          <DelaySettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "merge":
-        return <MergeSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <MergeSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "if":
-        return <IfSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <IfSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "email":
-        return <EmailSettings data={formData} onChange={handleInputChange} />;
+        return (
+          <EmailSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
+        );
       case "airtable":
         return (
-          <AirtableSettings data={formData} onChange={handleInputChange} />
+          <AirtableSettings
+            data={formData}
+            onChange={handleInputChange}
+            onValidationChange={setIsValid}
+          />
         );
       default:
         return <div className="text-gray-400">No properties available</div>;
@@ -377,6 +455,17 @@ export default function PropertiesPanel({
             </div>
             <div className="flex-1 p-4 overflow-y-auto">
               {renderProperties()}
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <button
+                className={`px-3 py-2 rounded text-white ${
+                  isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
+                }`}
+                onClick={handleTestNode}
+                disabled={!isValid}
+              >
+                Test Node
+              </button>
             </div>
           </>
         )}

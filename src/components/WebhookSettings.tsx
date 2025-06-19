@@ -1,11 +1,22 @@
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface WebhookSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function WebhookSettings({ data, onChange }: WebhookSettingsProps) {
+export default function WebhookSettings({ data, onChange, onValidationChange }: WebhookSettingsProps) {
+  // Error shown when the required path field is empty
+  const [pathError, setPathError] = useState('');
+
+  // Validate path on change so parent knows when the form is ready
+  useEffect(() => {
+    const valid = (data.path as string)?.trim().length > 0;
+    setPathError(valid ? '' : 'Path is required');
+    onValidationChange?.(valid);
+  }, [data.path, onValidationChange]);
   return (
     <div className="space-y-4 text-left">
       <fieldset className="space-y-3">
@@ -53,10 +64,13 @@ export default function WebhookSettings({ data, onChange }: WebhookSettingsProps
             <FiInfo className="inline-block ml-1" title="Relative request path" />
           </label>
           <input
-            className="w-full border px-2 py-1"
+            className={`w-full border px-2 py-1 ${pathError ? 'border-red-500' : ''}`}
             value={data.path as string || ''}
             onChange={(e) => onChange('path', e.target.value)}
           />
+          {pathError && (
+            <p className="text-red-500 text-xs mt-1">{pathError}</p>
+          )}
         </div>
       </fieldset>
 

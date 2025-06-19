@@ -1,13 +1,25 @@
 
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface SetSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function SetSettings({ data, onChange }: SetSettingsProps) {
+export default function SetSettings({ data, onChange, onValidationChange }: SetSettingsProps) {
   const mappings = (data.mappings as Array<{ field: string; value: string }> | undefined) || [];
+
+  // Validation error shown when any mapping row is incomplete
+  const [error, setError] = useState('');
+
+  // Ensure all mapping rows include both field and value
+  useEffect(() => {
+    const valid = mappings.every((m) => m.field.trim() && m.value.trim());
+    setError(valid ? '' : 'Mappings require field and value');
+    onValidationChange?.(valid);
+  }, [mappings, onValidationChange]);
 
   const handleMappingChange = (index: number, key: 'field' | 'value', value: string) => {
     const newMappings = mappings.map((m, i) => (i === index ? { ...m, [key]: value } : m));
@@ -54,6 +66,7 @@ export default function SetSettings({ data, onChange }: SetSettingsProps) {
         <button onClick={addMapping} className="px-2 py-1 text-xs bg-blue-500 text-white rounded">
           Add Field
         </button>
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       </fieldset>
 
       <fieldset className="space-y-2">

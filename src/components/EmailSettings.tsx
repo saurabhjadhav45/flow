@@ -1,12 +1,28 @@
 
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface EmailSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function EmailSettings({ data, onChange }: EmailSettingsProps) {
+export default function EmailSettings({ data, onChange, onValidationChange }: EmailSettingsProps) {
+  // Individual error messages for each required field
+  const [errors, setErrors] = useState({ smtpHost: '', from: '', to: '' });
+
+  // Validate required message and server fields
+  useEffect(() => {
+    const newErrors = {
+      smtpHost: (data.smtpHost as string)?.trim() ? '' : 'Required',
+      from: (data.from as string)?.trim() ? '' : 'Required',
+      to: (data.to as string)?.trim() ? '' : 'Required',
+    };
+    setErrors(newErrors);
+    // Inform parent whether all fields are valid
+    onValidationChange?.(!Object.values(newErrors).some(Boolean));
+  }, [data.smtpHost, data.from, data.to, onValidationChange]);
   return (
     <div className="space-y-4 text-left">
       <fieldset className="space-y-4">
@@ -20,8 +36,11 @@ export default function EmailSettings({ data, onChange }: EmailSettingsProps) {
             type="text"
             value={(data.smtpHost as string) || ''}
             onChange={(e) => onChange('smtpHost', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.smtpHost ? 'border-red-500' : 'border-gray-600'}`}
           />
+          {errors.smtpHost && (
+            <p className="text-red-500 text-xs mt-1">{errors.smtpHost}</p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -86,8 +105,11 @@ export default function EmailSettings({ data, onChange }: EmailSettingsProps) {
             type="text"
             value={(data.from as string) || ''}
             onChange={(e) => onChange('from', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.from ? 'border-red-500' : 'border-gray-600'}`}
           />
+          {errors.from && (
+            <p className="text-red-500 text-xs mt-1">{errors.from}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-2">
@@ -98,8 +120,11 @@ export default function EmailSettings({ data, onChange }: EmailSettingsProps) {
             type="text"
             value={(data.to as string) || ''}
             onChange={(e) => onChange('to', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.to ? 'border-red-500' : 'border-gray-600'}`}
           />
+          {errors.to && (
+            <p className="text-red-500 text-xs mt-1">{errors.to}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-2">

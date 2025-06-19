@@ -1,12 +1,24 @@
 
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface CodeSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function CodeSettings({ data, onChange }: CodeSettingsProps) {
+export default function CodeSettings({ data, onChange, onValidationChange }: CodeSettingsProps) {
+  // Error text indicates when the code field is empty
+  const [codeError, setCodeError] = useState('');
+
+  // Simple validation: ensure a code snippet is provided
+  useEffect(() => {
+    const valid = Boolean((data.code as string)?.trim());
+    setCodeError(valid ? '' : 'Code is required');
+    // Send validity state to parent component
+    onValidationChange?.(valid);
+  }, [data.code, onValidationChange]);
   return (
     <div className="space-y-4 text-left">
       <fieldset className="space-y-4">
@@ -52,8 +64,11 @@ export default function CodeSettings({ data, onChange }: CodeSettingsProps) {
           <textarea
             value={(data.code as string) || ''}
             onChange={(e) => onChange('code', e.target.value)}
-            className="w-full h-32 px-3 py-2 border border-gray-600 rounded-md font-mono text-sm"
+            className={`w-full h-32 px-3 py-2 border rounded-md font-mono text-sm ${codeError ? 'border-red-500' : 'border-gray-600'}`}
           />
+          {codeError && (
+            <p className="text-red-500 text-xs mt-1">{codeError}</p>
+          )}
         </div>
       </fieldset>
     </div>

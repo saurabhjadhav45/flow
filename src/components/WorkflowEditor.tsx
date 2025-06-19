@@ -31,6 +31,7 @@ import FunctionNode from "./nodes/FunctionNode";
 import FunctionItemNode from "./nodes/FunctionItemNode";
 import EmailNode from "./nodes/EmailNode";
 import AirtableNode from "./nodes/AirtableNode";
+import { ErrorBoundary } from "./ErrorBoundary";
 import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
@@ -105,24 +106,34 @@ function getDefaultData(type: NodeType) {
 }
 
 const nodeTypes: NodeTypes = {
-  httpRequest: HttpRequestNode,
-  delay: DelayNode,
+  httpRequest: withErrorBoundary(HttpRequestNode),
+  delay: withErrorBoundary(DelayNode),
   // setVariable: StyledNode,
   // condition: StyledNode,
-  webhook: WebhookNode,
-  code: CodeNode,
-  set: SetNode,
-  merge: MergeNode,
-  if: IfNode,
-  function: FunctionNode,
-  functionItem: FunctionItemNode,
-  email: EmailNode,
-  airtable: AirtableNode,
+  webhook: withErrorBoundary(WebhookNode),
+  code: withErrorBoundary(CodeNode),
+  set: withErrorBoundary(SetNode),
+  merge: withErrorBoundary(MergeNode),
+  if: withErrorBoundary(IfNode),
+  function: withErrorBoundary(FunctionNode),
+  functionItem: withErrorBoundary(FunctionItemNode),
+  email: withErrorBoundary(EmailNode),
+  airtable: withErrorBoundary(AirtableNode),
 };
 
 const edgeTypes = {
   buttonedge: ButtonEdge,
 };
+
+function withErrorBoundary<T>(Component: React.ComponentType<T>) {
+  return function Wrapper(props: T) {
+    return (
+      <ErrorBoundary>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+}
 
 export function WorkflowEditor() {
   const {

@@ -132,7 +132,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
         <div className="font-medium text-[8px]">{data.label}</div>
         {data.description && (
-          <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+          <div className="text-[6px] text-gray-500 whitespace-pre-wrap break-words max-h-[40px] overflow-auto">
             {data.description}
           </div>
         )}

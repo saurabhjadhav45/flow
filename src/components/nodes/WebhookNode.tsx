@@ -18,6 +18,8 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
       : "0 1px 4px rgba(0,0,0,0.1)",
     text: darkMode ? "#FFFFFF" : "#333333",
   };
+  const edges = useWorkflowStore((state) => state.edges);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
   const borderColor =
     status === 'error'
       ? '#f87171'
@@ -26,9 +28,6 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
       : status === 'pending'
       ? '#facc15'
       : colors.border;
-
-  const edges = useWorkflowStore((state) => state.edges);
-  const status = useWorkflowStore((s) => s.nodeStatus[id]);
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore(
@@ -92,7 +91,7 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
         <div className="font-medium text-[8px]">{data.label}</div>
         {data.description && (
-          <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+          <div className="text-[6px] text-gray-500 whitespace-pre-wrap break-words max-h-[40px] overflow-auto">
             {data.description}
           </div>
         )}

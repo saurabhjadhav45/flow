@@ -22,6 +22,8 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
       : "0 1px 4px rgba(0,0,0,0.1)",
     text: darkMode ? "#fff" : "#333",
   };
+  const edges = useWorkflowStore((state) => state.edges);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
   const borderColor =
     status === 'error'
       ? '#f87171'
@@ -30,9 +32,6 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
       : status === 'pending'
       ? '#facc15'
       : colors.border;
-
-  const edges = useWorkflowStore((state) => state.edges);
-  const status = useWorkflowStore((s) => s.nodeStatus[id]);
     const openSidebar = useWorkflowStore((state) => state.openSidebar);
     const setPendingConnection = useWorkflowStore(
       (state) => state.setPendingConnection
@@ -96,7 +95,7 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+4px)] text-center w-full">
           <div className="font-medium text-[8px]">{data.label}</div>
           {data.description && (
-            <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
+            <div className="text-[6px] text-gray-500 whitespace-pre-wrap break-words max-h-[40px] overflow-auto">
               {data.description}
             </div>
           )}

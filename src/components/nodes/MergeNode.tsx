@@ -43,7 +43,10 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     }
   }, [darkMode]);
 
+
   const inputCount = data.inputCount ?? 2;
+  const nodeHeight = 50 + (inputCount - 2) * 20;
+
   const step = 100 / (inputCount + 1);
   const [hovered, setHovered] = React.useState(false);
 
@@ -51,7 +54,7 @@ function MergeNode({ id, data, darkMode = false }: MergeNodeProps) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ position: 'relative' }}
+      style={{ position: 'relative', height: nodeHeight }}
     >
       {Array.from({ length: inputCount }, (_, i) => (
         <Handle

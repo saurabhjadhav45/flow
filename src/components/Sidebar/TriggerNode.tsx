@@ -1,10 +1,11 @@
 import { useNodesStore } from '../../store/nodes';
+import type { TriggerConfig } from '../../types/nodes';
 
 export default function TriggerNode({ id }: { id: string }) {
   const node = useNodesStore((s) => s.nodes.find((n) => n.id === id));
   const update = useNodesStore((s) => s.update);
   if (!node) return null;
-  const cfg = node.config as Record<string, any>;
+  const cfg = node.config as TriggerConfig;
 
   return (
     <div className="space-y-4">

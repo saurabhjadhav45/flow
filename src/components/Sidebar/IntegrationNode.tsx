@@ -1,12 +1,13 @@
 import { Disclosure } from '@headlessui/react';
 import { FiChevronDown } from 'react-icons/fi';
 import { useNodesStore } from '../../store/nodes';
+import type { IntegrationConfig } from '../../types/nodes';
 
 export default function IntegrationNode({ id }: { id: string }) {
   const node = useNodesStore((s) => s.nodes.find((n) => n.id === id));
   const update = useNodesStore((s) => s.update);
   if (!node) return null;
-  const cfg = node.config as Record<string, any>;
+  const cfg = node.config as IntegrationConfig;
 
   return (
     <div className="space-y-4">

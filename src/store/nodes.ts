@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Node, NodeType } from '../types/nodes';
+import type { Node } from '../types/nodes';
 
 interface NodesState {
   nodes: Node[];

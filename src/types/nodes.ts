@@ -21,9 +21,44 @@ export interface Tab {
   label: string;
 }
 
-export interface NodeConfig {
-  [key: string]: unknown;
+export interface IntegrationConfig {
+  method: string;
+  url: string;
+  auth: string;
+  pagination?: string;
+  batching?: string;
 }
+
+export interface ModelConfig {
+  model: string;
+  threshold: number;
+  mock?: boolean;
+}
+
+export interface RuleConfig {
+  dataType: string;
+  operator: string;
+  value: string;
+}
+
+export interface ActionConfig {
+  to: string;
+  subject: string;
+  body: string;
+}
+
+export interface TriggerConfig {
+  path: string;
+  method: string;
+  auth: string;
+}
+
+export type NodeConfig =
+  | IntegrationConfig
+  | ModelConfig
+  | RuleConfig
+  | ActionConfig
+  | TriggerConfig;
 
 export interface Node {
   id: string;

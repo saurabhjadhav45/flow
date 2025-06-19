@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { FiSettings, FiArrowLeft } from 'react-icons/fi';
 import type { Node } from 'reactflow';
 import WebhookSettings from './WebhookSettings';
-import HttpRequestSettings from './HttpRequestSettings';
 import CodeSettings from './CodeSettings';
 import SetSettings from './SetSettings';
 import DelaySettings from './DelaySettings';
@@ -37,7 +36,7 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     }
   }, [formData.files]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
     onUpdateNode(node.id, { [field]: value });
@@ -90,43 +89,7 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     }
   };
 
-  const conditionOperators = [
-    { value: 'equals', label: 'Equals' },
-    { value: 'not_equals', label: 'Not Equals' },
-    { value: 'contains', label: 'Contains' },
-    { value: 'not_contains', label: 'Not Contains' },
-    { value: 'greater', label: 'Greater Than' },
-    { value: 'less', label: 'Less Than' },
-    { value: 'starts_with', label: 'Starts With' },
-    { value: 'ends_with', label: 'Ends With' },
-  ];
-
-  // For n8n-like conditions: array of { field, operator, value }
-  const ifConditions: Array<{ field: string; operator: string; value: string }> = formData.config?.conditions || [
-    { field: '', operator: 'equals', value: '' },
-  ];
-
-  const updateIfCondition = (idx: number, key: 'field' | 'operator' | 'value', value: string) => {
-    const newConditions = [...ifConditions];
-    newConditions[idx] = { ...newConditions[idx], [key]: value };
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
-
-  const addIfCondition = () => {
-    const newConditions = [...ifConditions, { field: '', operator: 'equals', value: '' }];
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
-
-  const removeIfCondition = (idx: number) => {
-    const newConditions = ifConditions.filter((_, i) => i !== idx);
-    const newConfig = { ...formData.config, conditions: newConditions };
-    setFormData({ ...formData, config: newConfig });
-    onUpdateNode(node.id, { config: newConfig });
-  };
+  // Example IF node configuration helpers (unused placeholder)
 
   const renderHttpRequestProperties = () => (
     <div className="space-y-4 text-left">
@@ -208,44 +171,6 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     </div>
   );
 
-  const renderIfNodeProperties = () => (
-    <div className="space-y-4 text-left">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
-        <div className="space-y-2">
-          {ifConditions.map((cond, idx) => (
-            <div key={idx} className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={cond.field}
-                onChange={e => updateIfCondition(idx, 'field', e.target.value)}
-                placeholder="Field"
-                className="border border-gray-500 rounded p-1 input w-1/3"
-              />
-              <select
-                value={cond.operator}
-                onChange={e => updateIfCondition(idx, 'operator', e.target.value)}
-                className="border border-gray-500 rounded p-1  input w-1/3"
-              >
-                {conditionOperators.map(op => (
-                  <option key={op.value} value={op.value}>{op.label}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={cond.value}
-                onChange={e => updateIfCondition(idx, 'value', e.target.value)}
-                placeholder="Value"
-                className="border border-gray-500 rounded p-1 input w-1/3"
-              />
-              <button type="button" onClick={() => removeIfCondition(idx)} className="text-red-500 text-xs">✕</button>
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={addIfCondition} className="!bg-violet-500 mt-2 px-2 py-1 text-white rounded text-xs">Add Condition</button>
-      </div>
-    </div>
-  );
 
   const renderProperties = () => {
     switch (node.type) {

@@ -2,10 +2,18 @@ import { useCallback } from 'react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useThemeStore } from '../store/themeStore';
 import { initializeNodeId } from '../utils/getNodeId';
+import { setupEdges } from '../utils/setupEdges';
 import { FiSun, FiMoon } from 'react-icons/fi';
 
 export function Toolbar() {
-  const { nodes, edges, clearWorkflow } = useWorkflowStore();
+  const {
+    nodes,
+    edges,
+    clearWorkflow,
+    openSidebar,
+    setPendingConnection,
+    deleteEdge,
+  } = useWorkflowStore();
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const theme = useThemeStore((state) => state.theme);
 
@@ -46,9 +54,22 @@ export function Toolbar() {
           try {
             const workflow = JSON.parse(event.target?.result as string);
             // TODO: Validate workflow structure
+            const edgesWithHandlers = setupEdges(workflow.edges || [], {
+              onAdd: ({ source, sourceHandle, target, edgeId }) => {
+                setPendingConnection({
+                  source,
+                  sourceHandle,
+                  target,
+                  edgeId,
+                });
+                openSidebar();
+              },
+              onDelete: deleteEdge,
+            });
+
             useWorkflowStore.setState({
               nodes: workflow.nodes,
-              edges: workflow.edges,
+              edges: edgesWithHandlers,
             });
             initializeNodeId(workflow.nodes || []);
           } catch {
@@ -59,7 +80,7 @@ export function Toolbar() {
       }
     };
     input.click();
-  }, []);
+  }, [deleteEdge, openSidebar, setPendingConnection]);
 
   return (
     <div className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">

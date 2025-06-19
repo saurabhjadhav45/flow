@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { FiSettings, FiArrowLeft } from 'react-icons/fi';
-import type { Node } from 'reactflow';
-import WebhookSettings from './WebhookSettings';
-import HttpRequestSettings from './HttpRequestSettings';
-import CodeSettings from './CodeSettings';
-import SetSettings from './SetSettings';
-import DelaySettings from './DelaySettings';
-import MergeSettings from './MergeSettings';
-import IfSettings from './IfSettings';
-import EmailSettings from './EmailSettings';
-import AirtableSettings from './AirtableSettings';
+import React, { useEffect, useState } from "react";
+import { FiSettings, FiX } from "react-icons/fi";
+import type { Node } from "reactflow";
+import WebhookSettings from "./WebhookSettings";
+import CodeSettings from "./CodeSettings";
+import SetSettings from "./SetSettings";
+import DelaySettings from "./DelaySettings";
+import MergeSettings from "./MergeSettings";
+import IfSettings from "./IfSettings";
+import EmailSettings from "./EmailSettings";
+import AirtableSettings from "./AirtableSettings";
 
 interface PropertiesPanelProps {
   node: Node;
@@ -17,7 +16,11 @@ interface PropertiesPanelProps {
   onClose: () => void;
 }
 
-export default function PropertiesPanel({ node, onUpdateNode, onClose }: PropertiesPanelProps) {
+export default function PropertiesPanel({
+  node,
+  onUpdateNode,
+  onClose,
+}: PropertiesPanelProps) {
   const [formData, setFormData] = useState(node.data);
 
   useEffect(() => {
@@ -44,10 +47,12 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
   };
 
   // Handle multiple file input for HTTP request with key names (UI-based)
-  const [fileInputs, setFileInputs] = useState<Array<{ key: string; file?: File }>>([]);
+  const [fileInputs, setFileInputs] = useState<
+    Array<{ key: string; file?: File }>
+  >([]);
 
   const handleAddFileInput = () => {
-    setFileInputs([...fileInputs, { key: '' }]);
+    setFileInputs([...fileInputs, { key: "" }]);
   };
 
   const handleRemoveFileInput = (idx: number) => {
@@ -91,22 +96,30 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
   };
 
   const conditionOperators = [
-    { value: 'equals', label: 'Equals' },
-    { value: 'not_equals', label: 'Not Equals' },
-    { value: 'contains', label: 'Contains' },
-    { value: 'not_contains', label: 'Not Contains' },
-    { value: 'greater', label: 'Greater Than' },
-    { value: 'less', label: 'Less Than' },
-    { value: 'starts_with', label: 'Starts With' },
-    { value: 'ends_with', label: 'Ends With' },
+    { value: "equals", label: "Equals" },
+    { value: "not_equals", label: "Not Equals" },
+    { value: "contains", label: "Contains" },
+    { value: "not_contains", label: "Not Contains" },
+    { value: "greater", label: "Greater Than" },
+    { value: "less", label: "Less Than" },
+    { value: "starts_with", label: "Starts With" },
+    { value: "ends_with", label: "Ends With" },
   ];
 
   // For n8n-like conditions: array of { field, operator, value }
-  const ifConditions: Array<{ field: string; operator: string; value: string }> = formData.config?.conditions || [
-    { field: '', operator: 'equals', value: '' },
+  const ifConditions: Array<{
+    field: string;
+    operator: string;
+    value: string;
+  }> = formData.config?.conditions || [
+    { field: "", operator: "equals", value: "" },
   ];
 
-  const updateIfCondition = (idx: number, key: 'field' | 'operator' | 'value', value: string) => {
+  const updateIfCondition = (
+    idx: number,
+    key: "field" | "operator" | "value",
+    value: string
+  ) => {
     const newConditions = [...ifConditions];
     newConditions[idx] = { ...newConditions[idx], [key]: value };
     const newConfig = { ...formData.config, conditions: newConditions };
@@ -115,7 +128,10 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
   };
 
   const addIfCondition = () => {
-    const newConditions = [...ifConditions, { field: '', operator: 'equals', value: '' }];
+    const newConditions = [
+      ...ifConditions,
+      { field: "", operator: "equals", value: "" },
+    ];
     const newConfig = { ...formData.config, conditions: newConditions };
     setFormData({ ...formData, config: newConfig });
     onUpdateNode(node.id, { config: newConfig });
@@ -131,10 +147,12 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
   const renderHttpRequestProperties = () => (
     <div className="space-y-4 text-left">
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">Method</label>
+        <label className="block text-sm font-medium text-gray-600 mb-2">
+          Method
+        </label>
         <select
-          value={formData.method || 'GET'}
-          onChange={(e) => handleInputChange('method', e.target.value)}
+          value={formData.method || "GET"}
+          onChange={(e) => handleInputChange("method", e.target.value)}
           className="w-full px-3 py-2  border border-gray-600 rounded-md"
         >
           <option value="GET">GET</option>
@@ -146,38 +164,46 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">URL</label>
+        <label className="block text-sm font-medium text-gray-600 mb-2">
+          URL
+        </label>
         <input
           type="text"
-          value={formData.url || ''}
-          onChange={(e) => handleInputChange('url', e.target.value)}
+          value={formData.url || ""}
+          onChange={(e) => handleInputChange("url", e.target.value)}
           placeholder="https://api.example.com/endpoint"
           className="w-full px-3 py-2  border border-gray-600 rounded-md"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">Headers (JSON)</label>
+        <label className="block text-sm font-medium text-gray-600 mb-2">
+          Headers (JSON)
+        </label>
         <textarea
           value={formData.headers}
-          onChange={(e) => handleInputChange('headers', e.target.value)}
+          onChange={(e) => handleInputChange("headers", e.target.value)}
           placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
           className="w-full h-24 px-3 py-2  border border-gray-600 rounded-md  font-mono text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">Body</label>
+        <label className="block text-sm font-medium text-gray-600 mb-2">
+          Body
+        </label>
         <textarea
-          value={formData.body || ''}
-          onChange={(e) => handleInputChange('body', e.target.value)}
+          value={formData.body || ""}
+          onChange={(e) => handleInputChange("body", e.target.value)}
           placeholder="{name: 'John Doe', age: 30}"
           className="w-full h-32 px-3 py-2  border border-gray-600 rounded-md font-mono text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2">File Upload</label>
+        <label className="block text-sm font-medium text-gray-600 mb-2">
+          File Upload
+        </label>
         <div className="space-y-2">
           {fileInputs.map((input, idx) => (
             <div key={idx} className="flex items-center gap-2 mb-2">
@@ -185,97 +211,78 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
                 type="text"
                 placeholder="Key name"
                 value={input.key}
-                onChange={e => handleFileKeyChange(idx, e.target.value)}
+                onChange={(e) => handleFileKeyChange(idx, e.target.value)}
                 className="px-2 py-1 border border-gray-400 rounded w-1/3"
               />
               <label className="relative w-2/3">
                 <input
                   type="file"
-                  onChange={e => handleFileChange(idx, e.target.files?.[0])}
+                  onChange={(e) => handleFileChange(idx, e.target.files?.[0])}
                   className="px-2 py-1 border border-gray-400 rounded w-full opacity-0 absolute left-0 top-0 h-full cursor-pointer"
                   value={undefined}
                 />
                 <span className="block px-2 py-1 border border-gray-400 rounded w-full bg-white text-left cursor-pointer truncate">
-                  {input.file ? input.file.name : 'No file chosen'}
+                  {input.file ? input.file.name : "No file chosen"}
                 </span>
               </label>
-              <button type="button" onClick={() => handleRemoveFileInput(idx)} className="!bg-red-400 p-2 rounded text-white text-xs">Remove</button>
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={handleAddFileInput} className="!bg-violet-500 mt-2 px-3 py-2 bg-blue-500 text-white rounded text-xs">Add File</button>
-      </div>
-    </div>
-  );
-
-  const renderIfNodeProperties = () => (
-    <div className="space-y-4 text-left">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
-        <div className="space-y-2">
-          {ifConditions.map((cond, idx) => (
-            <div key={idx} className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={cond.field}
-                onChange={e => updateIfCondition(idx, 'field', e.target.value)}
-                placeholder="Field"
-                className="border border-gray-500 rounded p-1 input w-1/3"
-              />
-              <select
-                value={cond.operator}
-                onChange={e => updateIfCondition(idx, 'operator', e.target.value)}
-                className="border border-gray-500 rounded p-1  input w-1/3"
+              <button
+                type="button"
+                onClick={() => handleRemoveFileInput(idx)}
+                className="!bg-red-400 p-2 rounded text-white text-xs"
               >
-                {conditionOperators.map(op => (
-                  <option key={op.value} value={op.value}>{op.label}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={cond.value}
-                onChange={e => updateIfCondition(idx, 'value', e.target.value)}
-                placeholder="Value"
-                className="border border-gray-500 rounded p-1 input w-1/3"
-              />
-              <button type="button" onClick={() => removeIfCondition(idx)} className="text-red-500 text-xs">✕</button>
+                Remove
+              </button>
             </div>
           ))}
         </div>
-        <button type="button" onClick={addIfCondition} className="!bg-violet-500 mt-2 px-2 py-1 text-white rounded text-xs">Add Condition</button>
+        <button
+          type="button"
+          onClick={handleAddFileInput}
+          className="!bg-violet-500 mt-2 px-3 py-2 bg-blue-500 text-white rounded text-xs"
+        >
+          Add File
+        </button>
       </div>
     </div>
   );
 
   const renderProperties = () => {
     switch (node.type) {
-      case 'httpRequest':
+      case "httpRequest":
         return renderHttpRequestProperties();
-      case 'webhook':
+      case "webhook":
         return <WebhookSettings data={formData} onChange={handleInputChange} />;
-      case 'code':
-      case 'function':
-      case 'functionItem':
+      case "code":
+      case "function":
+      case "functionItem":
         return <CodeSettings data={formData} onChange={handleInputChange} />;
-      case 'set':
+      case "set":
         return <SetSettings data={formData} onChange={handleInputChange} />;
-      case 'delay':
+      case "delay":
         return <DelaySettings data={formData} onChange={handleInputChange} />;
-      case 'merge':
+      case "merge":
         return <MergeSettings data={formData} onChange={handleInputChange} />;
-      case 'if':
+      case "if":
         return <IfSettings data={formData} onChange={handleInputChange} />;
-      case 'email':
+      case "email":
         return <EmailSettings data={formData} onChange={handleInputChange} />;
-      case 'airtable':
-        return <AirtableSettings data={formData} onChange={handleInputChange} />;
+      case "airtable":
+        return (
+          <AirtableSettings data={formData} onChange={handleInputChange} />
+        );
       default:
         return <div className="text-gray-400">No properties available</div>;
     }
   };
 
-  const renderInputSection = () => {
-    if (node.type === 'webhook') {
+  // Add tab state
+  const [activeTab, setActiveTab] = useState<"input" | "properties" | "output">(
+    "properties"
+  );
+
+  // Render Input Tab Content
+  const renderInputTab = () => {
+    if (node.type === "webhook") {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center gap-3">
           <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
@@ -283,12 +290,13 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
           </h6>
           <button
             className="px-3 py-1 border rounded bg-blue-500 text-white"
-            onClick={() => handleInputChange('isListening', true)}
+            onClick={() => handleInputChange("isListening", true)}
           >
             Listen for test event
           </button>
           <p className="text-xs text-gray-500 px-2">
-            Once you've finished building your workflow, run it without having to click this button by using the production webhook URL.
+            Once you've finished building your workflow, run it without having
+            to click this button by using the production webhook URL.
           </p>
         </div>
       );
@@ -300,43 +308,88 @@ export default function PropertiesPanel({ node, onUpdateNode, onClose }: Propert
     );
   };
 
+  // Render Output Tab Content (placeholder)
+  const renderOutputTab = () => (
+    <div className="h-full flex flex-col items-center justify-center text-center gap-3">
+      <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
+        Output
+      </h6>
+      <p className="text-xs text-gray-500 px-2">
+        Output preview or configuration will appear here.
+      </p>
+    </div>
+  );
+
   return (
-    <div className="fixed inset-0 bg-[#444257bf] z-90" onClick={onClose}>
-      <span
-        className="text-white flex items-center gap-2 cursor-pointer absolute top-2 left-4 p-2"
-        onClick={onClose}
-      >
-        <FiArrowLeft className="w-5 h-5 text-white" />
-        Back to canvas
-      </span>
-      <div
-        className="p-6 flex items-center justify-center z-50 my-8 h-[calc(100%-64px)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="bg-[#f1f3f9] h-full  w-[30%] p-4 rounded-tl-lg flex items-center justify-center">
-          {renderInputSection()}
+    <div className="fixed top-0 right-0 h-full w-[480px] max-w-full z-50 bg-white shadow-2xl border-l border-gray-300 flex flex-col">
+      <div className="p-4 flex items-center justify-between bg-[#f1f3f9] border-b border-gray-200">
+        <div className="flex items-center gap-2">
+          <FiSettings className="w-5 h-5 text-blue-500" />
+          <h2 className="text-lg font-semibold text-gray-800">Properties</h2>
         </div>
-        <div className="w-96 rounded-lg border border-gray-300 flex flex-col w-[40%] h-[calc(100%+48px)]">
-          <div className="p-4 flex items-center justify-between bg-[#f1f3f9] rounded-tl-lg rounded-tr-lg">
-            <div className="flex items-center gap-2">
-              <FiSettings className="w-5 h-5 text-blue-500" />
-              <h2 className="text-lg font-semibold text-gray-800">Properties</h2>
-            </div>
-          </div>
-          <div className="flex-1 p-4 overflow-y-auto bg-white rounded-bl-lg rounded-br-lg">
-            <div className="mb-4">
-              <h3 className="font-medium text-gray-800 mb-2">Node: {formData.label}</h3>
+        <button
+          className="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-gray-900 px-2 py-1 rounded focus:outline-none"
+          onClick={onClose}
+        >
+          <FiX className="w-5 h-5" />
+          {/* <span className="hidden md:inline">Close</span> */}
+        </button>
+      </div>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 bg-white">
+        <button
+          className={`flex-1 py-2 px-4 text-sm font-medium ${
+            activeTab === "input"
+              ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
+              : "text-gray-600 hover:text-blue-600"
+          }`}
+          onClick={() => setActiveTab("input")}
+        >
+          Input
+        </button>
+        <button
+          className={`flex-1 py-2 px-4 text-sm font-medium ${
+            activeTab === "properties"
+              ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
+              : "text-gray-600 hover:text-blue-600"
+          }`}
+          onClick={() => setActiveTab("properties")}
+        >
+          Properties
+        </button>
+        <button
+          className={`flex-1 py-2 px-4 text-sm font-medium ${
+            activeTab === "output"
+              ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
+              : "text-gray-600 hover:text-blue-600"
+          }`}
+          onClick={() => setActiveTab("output")}
+        >
+          Output
+        </button>
+      </div>
+      {/* Tab Content */}
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        {activeTab === "input" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderInputTab()}</div>
+        )}
+        {activeTab === "properties" && (
+          <>
+            <div className="p-4 border-b border-gray-100">
+              <h3 className="font-medium text-gray-800 mb-2">
+                Node: {formData.label}
+              </h3>
               <p className="text-sm text-gray-400">ID: {node.id}</p>
             </div>
-            {renderProperties()}
-          </div>
-        </div>
-        <div className="bg-[#f1f3f9] h-full  w-[30%] p-4 rounded-tr-lg">
-          <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
-            Output
-          </h6>
-        </div>
+            <div className="flex-1 p-4 overflow-y-auto">
+              {renderProperties()}
+            </div>
+          </>
+        )}
+        {activeTab === "output" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderOutputTab()}</div>
+        )}
       </div>
     </div>
   );
-};
+}

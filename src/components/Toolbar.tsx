@@ -87,6 +87,8 @@ export function Toolbar() {
 
   const setNodeResult = useWorkflowStore((s) => s.setNodeResult);
   const setNodeError = useWorkflowStore((s) => s.setNodeError);
+  const setNodeInput = useWorkflowStore((s) => s.setNodeInput);
+  const setNodeStatus = useWorkflowStore((s) => s.setNodeStatus);
   const clearResults = useWorkflowStore((s) => s.clearResults);
   const [running, setRunning] = useState(false);
 
@@ -100,12 +102,22 @@ export function Toolbar() {
         (n) => n.data,
         runNode,
         setNodeResult,
-        setNodeError
+        setNodeError,
+        setNodeInput,
+        setNodeStatus
       );
     } finally {
       setRunning(false);
     }
-  }, [nodes, edges, clearResults, setNodeResult, setNodeError]);
+  }, [
+    nodes,
+    edges,
+    clearResults,
+    setNodeResult,
+    setNodeError,
+    setNodeInput,
+    setNodeStatus,
+  ]);
 
   return (
     <div className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">

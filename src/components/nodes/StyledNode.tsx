@@ -31,6 +31,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   // from this node.
   const edges = useWorkflowStore((state) => state.edges);
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore(
     (state) => state.setPendingConnection
@@ -49,6 +50,14 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     shadow: isDark ? "0 1px 4px rgba(0,0,0,0.5)" : "0 1px 4px rgba(0,0,0,0.1)",
     text: isDark ? "#FFFFFF" : "#333333",
   };
+  const borderColor =
+    status === 'error'
+      ? '#f87171'
+      : status === 'success'
+      ? '#4ade80'
+      : status === 'pending'
+      ? '#facc15'
+      : colors.border;
 
   useEffect(() => {
     if (!darkMode) {
@@ -92,7 +101,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
 
       <div
         className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}
-        style={{ position: "relative" }}
+        style={{ position: "relative", border: `2px solid ${borderColor}` }}
       >
         <Icon className="w-6 h-6 text-blue-600" />
         {hovered && (

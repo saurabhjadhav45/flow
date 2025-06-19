@@ -21,6 +21,8 @@ const initialState = {
   draggingNodeId: null,
   nodeResults: {},
   errorResults: {},
+  nodeInputs: {},
+  nodeStatus: {},
 };
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
@@ -111,10 +113,21 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   setNodeResult: (nodeId: string, result: unknown) =>
     set((state: WorkflowState) => ({
       nodeResults: { ...state.nodeResults, [nodeId]: result },
+      nodeStatus: { ...state.nodeStatus, [nodeId]: 'success' },
     })),
   setNodeError: (nodeId: string, error: unknown) =>
     set((state: WorkflowState) => ({
       errorResults: { ...state.errorResults, [nodeId]: error },
+      nodeStatus: { ...state.nodeStatus, [nodeId]: 'error' },
     })),
-  clearResults: () => set({ nodeResults: {}, errorResults: {} }),
+  setNodeInput: (nodeId: string, input: unknown) =>
+    set((state: WorkflowState) => ({
+      nodeInputs: { ...state.nodeInputs, [nodeId]: input },
+    })),
+  setNodeStatus: (nodeId: string, status: 'pending' | 'success' | 'error') =>
+    set((state: WorkflowState) => ({
+      nodeStatus: { ...state.nodeStatus, [nodeId]: status },
+    })),
+  clearResults: () =>
+    set({ nodeResults: {}, errorResults: {}, nodeInputs: {}, nodeStatus: {} }),
 }));

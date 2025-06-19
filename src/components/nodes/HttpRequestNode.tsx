@@ -14,7 +14,7 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
 
   const method = data.method || 'GET';
 
-    const colors = {
+  const colors = {
     background: darkMode ? "#1e2235" : "#fff",
     border: darkMode ? "#fff" : "#C1C1C1",
     shadow: darkMode
@@ -22,8 +22,17 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
       : "0 1px 4px rgba(0,0,0,0.1)",
     text: darkMode ? "#fff" : "#333",
   };
+  const borderColor =
+    status === 'error'
+      ? '#f87171'
+      : status === 'success'
+      ? '#4ade80'
+      : status === 'pending'
+      ? '#facc15'
+      : colors.border;
 
   const edges = useWorkflowStore((state) => state.edges);
+  const status = useWorkflowStore((s) => s.nodeStatus[id]);
     const openSidebar = useWorkflowStore((state) => state.openSidebar);
     const setPendingConnection = useWorkflowStore(
       (state) => state.setPendingConnection
@@ -61,7 +70,7 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
         position={Position.Left}
         className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
       />
-      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}] ${selected ? 'custom-shadow':''}`} style={{ position: 'relative' }}>
+      <div className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}] ${selected ? 'custom-shadow':''}`} style={{ position: 'relative', border: `2px solid ${borderColor}` }}>
         <FiGlobe className="w-6 h-6 text-blue-600" />
         {hovered && (
           <FiTrash2
@@ -85,7 +94,7 @@ export default function HttpRequestNode({ id, data, selected}: NodeProps) {
         )}
       </div>
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+4px)] text-center w-full">
-          <div className="font-medium text-[8px]">HTTP Request</div>
+          <div className="font-medium text-[8px]">{data.label}</div>
           {data.description && (
             <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
               {data.description}

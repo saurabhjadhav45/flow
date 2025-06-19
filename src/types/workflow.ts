@@ -54,6 +54,8 @@ export interface WorkflowState {
   draggingNodeId: string | null;
   nodeResults: Record<string, unknown>;
   errorResults: Record<string, unknown>;
+  nodeInputs: Record<string, unknown>;
+  nodeStatus: Record<string, 'pending' | 'success' | 'error'>;
 }
 
 export interface WorkflowStore extends WorkflowState {
@@ -77,5 +79,10 @@ export interface WorkflowStore extends WorkflowState {
   removeVariable: (name: string) => void;
   setNodeResult: (nodeId: string, result: unknown) => void;
   setNodeError: (nodeId: string, error: unknown) => void;
+  setNodeInput: (nodeId: string, input: unknown) => void;
+  setNodeStatus: (
+    nodeId: string,
+    status: 'pending' | 'success' | 'error'
+  ) => void;
   clearResults: () => void;
 }

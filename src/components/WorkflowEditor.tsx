@@ -339,6 +339,15 @@ export function WorkflowEditor() {
     setSelectedNodeId(node.id);
   }, []);
 
+  const onNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      if (selectedNodeId !== null) {
+        setSelectedNodeId(node.id);
+      }
+    },
+    [selectedNodeId]
+  );
+
   const onPaneClick = useCallback(() => {
     setSelectedNodeId(null);
   }, []);
@@ -529,6 +538,7 @@ export function WorkflowEditor() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
       >
         <Background />

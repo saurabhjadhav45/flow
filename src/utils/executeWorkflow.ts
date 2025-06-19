@@ -52,19 +52,26 @@ export async function executeWorkflow(
   getNodeConfig: (node: WorkflowNode) => any,
   runNode: (type: NodeType, config: any, input: any) => Promise<any>,
   setNodeResult: (id: string, result: any) => void,
-  setNodeError: (id: string, error: any) => void
+  setNodeError: (id: string, error: any) => void,
+  setNodeInput: (id: string, input: any) => void,
+  setNodeStatus: (id: string, status: 'pending' | 'success' | 'error') => void
 ) {
   const sorted = topologicalSort(nodes, edges);
   const results: Record<string, unknown> = {};
   for (const node of sorted) {
     const input = getInputsForNode(node, edges, results);
+    setNodeInput(node.id, input);
+    setNodeStatus(node.id, 'pending');
     const config = getNodeConfig(node);
     try {
       const output = await runNode(node.type, config, input);
       results[node.id] = output;
       setNodeResult(node.id, output);
+      setNodeStatus(node.id, 'success');
     } catch (err) {
       setNodeError(node.id, err instanceof Error ? err.message : String(err));
+      setNodeStatus(node.id, 'error');
+      break;
     }
   }
   return results;

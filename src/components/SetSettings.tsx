@@ -11,8 +11,10 @@ interface SetSettingsProps {
 export default function SetSettings({ data, onChange, onValidationChange }: SetSettingsProps) {
   const mappings = (data.mappings as Array<{ field: string; value: string }> | undefined) || [];
 
+  // Validation error shown when any mapping row is incomplete
   const [error, setError] = useState('');
 
+  // Ensure all mapping rows include both field and value
   useEffect(() => {
     const valid = mappings.every((m) => m.field.trim() && m.value.trim());
     setError(valid ? '' : 'Mappings require field and value');

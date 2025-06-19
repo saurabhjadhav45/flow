@@ -9,8 +9,10 @@ interface EmailSettingsProps {
 }
 
 export default function EmailSettings({ data, onChange, onValidationChange }: EmailSettingsProps) {
+  // Individual error messages for each required field
   const [errors, setErrors] = useState({ smtpHost: '', from: '', to: '' });
 
+  // Validate required message and server fields
   useEffect(() => {
     const newErrors = {
       smtpHost: (data.smtpHost as string)?.trim() ? '' : 'Required',
@@ -18,6 +20,7 @@ export default function EmailSettings({ data, onChange, onValidationChange }: Em
       to: (data.to as string)?.trim() ? '' : 'Required',
     };
     setErrors(newErrors);
+    // Inform parent whether all fields are valid
     onValidationChange?.(!Object.values(newErrors).some(Boolean));
   }, [data.smtpHost, data.from, data.to, onValidationChange]);
   return (

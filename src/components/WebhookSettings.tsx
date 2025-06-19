@@ -8,8 +8,10 @@ interface WebhookSettingsProps {
 }
 
 export default function WebhookSettings({ data, onChange, onValidationChange }: WebhookSettingsProps) {
+  // Error shown when the required path field is empty
   const [pathError, setPathError] = useState('');
 
+  // Validate path on change so parent knows when the form is ready
   useEffect(() => {
     const valid = (data.path as string)?.trim().length > 0;
     setPathError(valid ? '' : 'Path is required');

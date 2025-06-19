@@ -9,6 +9,7 @@ interface MergeSettingsProps {
 }
 
 export default function MergeSettings({ data, onChange, onValidationChange }: MergeSettingsProps) {
+  // Merge node currently has no required fields but still reports validity
   useEffect(() => {
     onValidationChange?.(true);
   }, [onValidationChange]);

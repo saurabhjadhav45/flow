@@ -9,8 +9,10 @@ interface DelaySettingsProps {
 }
 
 export default function DelaySettings({ data, onChange, onValidationChange }: DelaySettingsProps) {
+  // Holds validation text when neither duration nor until is provided
   const [error, setError] = useState('');
 
+  // At least one of duration or until must be specified
   useEffect(() => {
     const valid = Boolean(data.duration) || Boolean((data.until as string)?.trim());
     setError(valid ? '' : 'Duration or Until is required');

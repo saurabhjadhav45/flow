@@ -9,8 +9,10 @@ interface AirtableSettingsProps {
 }
 
 export default function AirtableSettings({ data, onChange, onValidationChange }: AirtableSettingsProps) {
+  // Track validation errors for required fields so the parent can disable testing
   const [errors, setErrors] = useState({ apiKey: '', baseId: '', table: '' });
 
+  // Validate whenever relevant fields change
   useEffect(() => {
     const newErrors = {
       apiKey: (data.apiKey as string)?.trim() ? '' : 'Required',
@@ -18,6 +20,7 @@ export default function AirtableSettings({ data, onChange, onValidationChange }:
       table: (data.table as string)?.trim() ? '' : 'Required',
     };
     setErrors(newErrors);
+    // Notify parent of overall validity
     onValidationChange?.(!Object.values(newErrors).some(Boolean));
   }, [data.apiKey, data.baseId, data.table, onValidationChange]);
   return (

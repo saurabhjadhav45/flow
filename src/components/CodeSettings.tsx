@@ -9,11 +9,14 @@ interface CodeSettingsProps {
 }
 
 export default function CodeSettings({ data, onChange, onValidationChange }: CodeSettingsProps) {
+  // Error text indicates when the code field is empty
   const [codeError, setCodeError] = useState('');
 
+  // Simple validation: ensure a code snippet is provided
   useEffect(() => {
     const valid = Boolean((data.code as string)?.trim());
     setCodeError(valid ? '' : 'Code is required');
+    // Send validity state to parent component
     onValidationChange?.(valid);
   }, [data.code, onValidationChange]);
   return (

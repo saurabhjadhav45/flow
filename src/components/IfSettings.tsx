@@ -11,8 +11,10 @@ interface IfSettingsProps {
 export default function IfSettings({ data, onChange, onValidationChange }: IfSettingsProps) {
   const conditions = (data.conditions as Array<{ left: string; op: string; right: string }> | undefined) || [];
 
+  // Displayed when any condition row is incomplete
   const [error, setError] = useState('');
 
+  // Ensure each condition has both sides filled out
   useEffect(() => {
     const valid = conditions.every((c) => c.left.trim() && c.right.trim());
     setError(valid ? '' : 'All conditions require fields');

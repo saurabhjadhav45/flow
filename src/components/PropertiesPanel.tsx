@@ -22,7 +22,9 @@ export default function PropertiesPanel({
   onClose,
 }: PropertiesPanelProps) {
   const [formData, setFormData] = useState(node.data);
+  // Combined validity of child settings components
   const [isValid, setIsValid] = useState(true);
+  // Error for the HTTP request URL field
   const [urlError, setUrlError] = useState('');
 
   const handleLabelChange = (value: string) => {
@@ -50,6 +52,7 @@ export default function PropertiesPanel({
   }, [node]);
 
   // Validate HTTP request URL
+  // Validate the HTTP request URL whenever it or the node type changes
   useEffect(() => {
     if (node.type === 'httpRequest') {
       if (!(formData.url as string)?.trim()) {
@@ -81,6 +84,7 @@ export default function PropertiesPanel({
     onUpdateNode(node.id, { [field]: value });
   };
 
+  // Triggered by "Test Node" button; prevents testing when invalid
   const handleTestNode = () => {
     if (!isValid) {
       alert('Please fix validation errors before testing.');

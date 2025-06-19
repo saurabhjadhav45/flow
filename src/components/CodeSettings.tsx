@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface CodeSettingsProps {
   data: Record<string, unknown>;
@@ -65,6 +66,9 @@ export default function CodeSettings({ data, onChange, onValidationChange }: Cod
             value={(data.code as string) || ''}
             onChange={(e) => onChange('code', e.target.value)}
             className={`w-full h-32 px-3 py-2 border rounded-md font-mono text-sm ${codeError ? 'border-red-500' : 'border-gray-600'}`}
+          />
+          <VariablePicker
+            onSelect={(v) => onChange('code', ((data.code as string) || '') + v)}
           />
           {codeError && (
             <p className="text-red-500 text-xs mt-1">{codeError}</p>

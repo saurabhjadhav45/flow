@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface MergeSettingsProps {
   data: Record<string, unknown>;
@@ -43,6 +44,11 @@ export default function MergeSettings({ data, onChange, onValidationChange }: Me
             onChange={(e) => onChange('mergeFields', e.target.value)}
             placeholder="Comma separated fields"
             className="w-full px-3 py-2 border border-gray-600 rounded-md"
+          />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('mergeFields', ((data.mergeFields as string) || '') + v)
+            }
           />
         </div>
       </fieldset>

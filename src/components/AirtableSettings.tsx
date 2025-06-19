@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
+import VariablePicker from './VariablePicker';
 
 interface AirtableSettingsProps {
   data: Record<string, unknown>;
@@ -106,6 +107,11 @@ export default function AirtableSettings({ data, onChange, onValidationChange }:
             onChange={(e) => onChange('fields', e.target.value)}
             className="w-full h-24 px-3 py-2 border border-gray-600 rounded-md font-mono text-sm"
           />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('fields', ((data.fields as string) || '') + v)
+            }
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-2">
@@ -117,6 +123,11 @@ export default function AirtableSettings({ data, onChange, onValidationChange }:
             value={(data.filter as string) || ''}
             onChange={(e) => onChange('filter', e.target.value)}
             className="w-full px-3 py-2 border border-gray-600 rounded-md"
+          />
+          <VariablePicker
+            onSelect={(v) =>
+              onChange('filter', ((data.filter as string) || '') + v)
+            }
           />
         </div>
       </fieldset>

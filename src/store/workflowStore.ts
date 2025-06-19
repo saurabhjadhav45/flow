@@ -1,5 +1,12 @@
 import { create } from 'zustand';
-import type { WorkflowStore } from '../types/workflow';
+import type {
+  WorkflowStore,
+  WorkflowNode,
+  WorkflowEdge,
+  PendingConnection,
+  NodeType,
+  WorkflowState,
+} from '../types/workflow';
 
 const initialState = {
   nodes: [],
@@ -17,16 +24,16 @@ const initialState = {
 export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   ...initialState,
 
-  setNodes: (nodes) => set({ nodes }),
-  setEdges: (edges) => set({ edges }),
-  setSelectedNode: (nodeId) => set({ selectedNode: nodeId }),
+  setNodes: (nodes: WorkflowNode[]) => set({ nodes }),
+  setEdges: (edges: WorkflowEdge[]) => set({ edges }),
+  setSelectedNode: (nodeId: string | null) => set({ selectedNode: nodeId }),
 
-  addNode: (node) => {
+  addNode: (node: WorkflowNode) => {
     const { nodes } = get();
     set({ nodes: [...nodes, node] });
   },
 
-  updateNode: (nodeId, data) => {
+  updateNode: (nodeId: string, data: Partial<WorkflowNode>) => {
     const { nodes } = get();
     set({
       nodes: nodes.map((node) =>
@@ -35,7 +42,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     });
   },
 
-  deleteNode: (nodeId) => {
+  deleteNode: (nodeId: string) => {
     const { nodes, edges } = get();
     set({
       nodes: nodes.filter((node) => node.id !== nodeId),
@@ -45,12 +52,12 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     });
   },
 
-  addEdge: (edge) => {
+  addEdge: (edge: WorkflowEdge) => {
     const { edges } = get();
     set({ edges: [...edges, edge] });
   },
 
-  deleteEdge: (edgeId) => {
+  deleteEdge: (edgeId: string) => {
     const { edges } = get();
     set({ edges: edges.filter((edge) => edge.id !== edgeId) });
   },
@@ -85,15 +92,18 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
 
   openSidebar: () => set({ sidebarOpen: true }),
   closeSidebar: () => set({ sidebarOpen: false }),
-  setPendingConnection: (connection) => set({ pendingConnection: connection }),
-  setNodeToAdd: (type) => set({ nodeToAdd: type }),
-  setDraggingNodeId: (id) => set({ draggingNodeId: id }),
-  addVariable: (name) =>
-    set((state) =>
+  setPendingConnection: (connection: PendingConnection | null) =>
+    set({ pendingConnection: connection }),
+  setNodeToAdd: (type: NodeType | null) => set({ nodeToAdd: type }),
+  setDraggingNodeId: (id: string | null) => set({ draggingNodeId: id }),
+  addVariable: (name: string) =>
+    set((state: WorkflowState) =>
       state.variables.includes(name)
         ? {}
         : { variables: [...state.variables, name] }
     ),
-  removeVariable: (name) =>
-    set((state) => ({ variables: state.variables.filter((v) => v !== name) })),
+  removeVariable: (name: string) =>
+    set((state: WorkflowState) => ({
+      variables: state.variables.filter((v: string) => v !== name),
+    })),
 }));

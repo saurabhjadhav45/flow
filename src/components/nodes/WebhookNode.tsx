@@ -9,6 +9,7 @@ import NodeResult from "./NodeResult";
 function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
   const [darkMode, setDarkMode] = React.useState(false);
   const isListening = (data as { isListening?: boolean })?.isListening;
+  const useMockData = (data as { useMockData?: boolean })?.useMockData;
 
   const colors = {
     background: darkMode ? "#1e2235" : "#fff",
@@ -61,6 +62,9 @@ function WebhookNode({ id, data }: NodeProps<WorkflowNodeData>) {
         style={{ position: "relative", border: `2px solid ${borderColor}` }}
       >
         <FiLink className="w-6 h-6 text-blue-600" />
+        {useMockData && (
+          <span className="absolute -left-1 -top-1 bg-yellow-300 text-[6px] px-1 rounded">Mock</span>
+        )}
         {isListening && (
           <FiZap className="w-3 h-3 text-orange-500 absolute -right-1 -top-1" />
         )}

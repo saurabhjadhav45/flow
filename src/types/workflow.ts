@@ -20,6 +20,12 @@ export interface WorkflowNodeData {
   description?: string;
   config: Record<string, unknown>;
   type: NodeType;
+  /** Webhook mock payload */
+  mockRequest?: string;
+  /** Whether to inject mock data instead of waiting for real requests */
+  useMockData?: boolean;
+  /** Internal flag when listening for test events */
+  isListening?: boolean;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData> & {

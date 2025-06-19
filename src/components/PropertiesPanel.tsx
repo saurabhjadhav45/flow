@@ -370,12 +370,16 @@ export default function PropertiesPanel({
     if (node.type === "webhook") {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center gap-3">
+          {formData.useMockData && (
+            <p className="text-xs text-blue-600">Running with mock data</p>
+          )}
           <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
             Pull in events from Webhook
           </h6>
           <button
             className="px-3 py-1 border rounded bg-blue-500 text-white"
             onClick={() => handleInputChange("isListening", true)}
+            disabled={formData.useMockData}
           >
             Listen for test event
           </button>
@@ -423,20 +427,60 @@ export default function PropertiesPanel({
   };
 
   // Render Output Tab
-  const renderOutputsTab = () => (
-    <div className="h-full flex flex-col items-start gap-3">
-      <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
-        Outputs
-      </h6>
-      {runtimeError ? (
-        <p className="text-xs text-red-500">{String(runtimeError)}</p>
-      ) : output !== undefined ? (
-        <JsonViewer data={output} />
-      ) : (
-        <p className="text-xs text-gray-500 px-2">Execute this node to view data</p>
-      )}
-    </div>
-  );
+  const renderOutputsTab = () => {
+    if (node.type === "webhook") {
+      return (
+        <div className="h-full flex flex-col items-start gap-3 w-full">
+          <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
+            Outputs
+          </h6>
+          {runtimeError ? (
+            <p className="text-xs text-red-500">{String(runtimeError)}</p>
+          ) : output !== undefined ? (
+            <JsonViewer data={output} />
+          ) : (
+            <p className="text-xs text-gray-500 px-2">Execute this node to view data</p>
+          )}
+          <div className="mt-4 space-y-2 w-full">
+            <h6 className="text-sm font-medium">Mock Request Payload</h6>
+            <textarea
+              className="w-full border px-2 py-1 font-mono text-xs"
+              rows={4}
+              value={(formData.mockRequest as string) || ''}
+              onChange={(e) => handleInputChange('mockRequest', e.target.value)}
+            />
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={Boolean(formData.useMockData)}
+                onChange={(e) => {
+                  handleInputChange('useMockData', e.target.checked);
+                  if (e.target.checked) {
+                    handleInputChange('isListening', false);
+                  }
+                }}
+              />
+              Use Mock Data
+            </label>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="h-full flex flex-col items-start gap-3">
+        <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
+          Outputs
+        </h6>
+        {runtimeError ? (
+          <p className="text-xs text-red-500">{String(runtimeError)}</p>
+        ) : output !== undefined ? (
+          <JsonViewer data={output} />
+        ) : (
+          <p className="text-xs text-gray-500 px-2">Execute this node to view data</p>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="fixed top-0 right-0 h-full w-[480px] max-w-full z-50 bg-white shadow-2xl border-l border-gray-300 flex flex-col">

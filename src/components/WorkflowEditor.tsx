@@ -52,6 +52,8 @@ function getDefaultData(type: NodeType) {
       prodUrl: `https://example.com/webhook/${id}`,
       notes: "",
       displayNote: false,
+      mockRequest: "{}",
+      useMockData: false,
     };
   }
 
@@ -147,6 +149,7 @@ export function WorkflowEditor() {
     setPendingConnection,
     openSidebar,
     closeSidebar,
+    updateNode,
     nodeToAdd,
     setNodeToAdd,
     setDraggingNodeId,
@@ -214,8 +217,11 @@ export function WorkflowEditor() {
           return node;
         })
       );
+      updateNode(nodeId, {
+        data: { ...((useWorkflowStore.getState().nodes.find((n) => n.id === nodeId)?.data) ?? {}), ...newData },
+      });
     },
-    [setNodes]
+    [setNodes, updateNode]
   );
 
   useEffect(() => {

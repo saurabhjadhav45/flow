@@ -1,12 +1,17 @@
 
+import { useEffect } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface MergeSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function MergeSettings({ data, onChange }: MergeSettingsProps) {
+export default function MergeSettings({ data, onChange, onValidationChange }: MergeSettingsProps) {
+  useEffect(() => {
+    onValidationChange?.(true);
+  }, [onValidationChange]);
   return (
     <div className="space-y-4 text-left">
       <fieldset className="space-y-4">

@@ -1,13 +1,23 @@
 
+import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
 
 interface IfSettingsProps {
   data: Record<string, unknown>;
   onChange: (field: string, value: unknown) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function IfSettings({ data, onChange }: IfSettingsProps) {
+export default function IfSettings({ data, onChange, onValidationChange }: IfSettingsProps) {
   const conditions = (data.conditions as Array<{ left: string; op: string; right: string }> | undefined) || [];
+
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const valid = conditions.every((c) => c.left.trim() && c.right.trim());
+    setError(valid ? '' : 'All conditions require fields');
+    onValidationChange?.(valid);
+  }, [conditions, onValidationChange]);
 
   const handleConditionChange = (index: number, key: 'left' | 'op' | 'right', value: string) => {
     const newConditions = conditions.map((c, i) => (i === index ? { ...c, [key]: value } : c));
@@ -71,6 +81,9 @@ export default function IfSettings({ data, onChange }: IfSettingsProps) {
         <button onClick={addCondition} className="px-2 py-1 text-xs bg-blue-500 text-white rounded">
           Add Condition
         </button>
+        {error && (
+          <p className="text-red-500 text-xs mt-1">{error}</p>
+        )}
       </fieldset>
 
       <fieldset className="space-y-2">

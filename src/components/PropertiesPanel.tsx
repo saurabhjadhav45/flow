@@ -9,7 +9,7 @@ import MergeSettings from "./MergeSettings";
 import IfSettings from "./IfSettings";
 import EmailSettings from "./EmailSettings";
 import AirtableSettings from "./AirtableSettings";
-import JsonViewer from "./JsonViewer";
+import InteractiveJsonViewer from "./InteractiveJsonViewer";
 import { useWorkflowStore } from "../store/workflowStore";
 import { runNode } from "../runtime";
 
@@ -29,7 +29,6 @@ export default function PropertiesPanel({
   const [isValid, setIsValid] = useState(true);
   // Error for the HTTP request URL field
   const [urlError, setUrlError] = useState('');
-  const [testOutput, setTestOutput] = useState<unknown>(null);
   const inputItems =
     useWorkflowStore((state) => state.inputByNode[node.id] || []);
   const outputItems =
@@ -378,7 +377,7 @@ export default function PropertiesPanel({
             Parent node hasn’t run yet. Inputs that the parent node sends to this one will appear here. To map data in from previous nodes, use the mapping view.
           </p>
         ) : (
-          <JsonViewer data={inputItems} />
+          <InteractiveJsonViewer data={inputItems} />
         )}
         <button
           className={`self-start px-3 py-2 rounded text-white ${
@@ -401,24 +400,18 @@ export default function PropertiesPanel({
       </h6>
       <div className="w-full">
         <div className="text-xs font-semibold">Input ({inputItems.length})</div>
-        <JsonViewer data={inputItems} />
+        <InteractiveJsonViewer data={inputItems} />
       </div>
       <div className="w-full">
         <div className="text-xs font-semibold">Output ({outputItems.length})</div>
         {outputItems.length === 0 ? (
           <p className="text-xs text-gray-500">Execute this node to view data</p>
         ) : (
-          <JsonViewer data={outputItems} />
+          <InteractiveJsonViewer data={outputItems} />
         )}
       </div>
       {nodeError && (
         <div className="w-full text-red-600 text-xs">Error: {nodeError}</div>
-      )}
-      {testOutput && (
-        <div className="w-full">
-          <div className="text-xs font-semibold">Test Output</div>
-          <JsonViewer data={testOutput} />
-        </div>
       )}
     </div>
   );

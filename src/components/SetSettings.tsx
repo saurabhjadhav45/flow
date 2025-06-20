@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import VariablePicker from './VariablePicker';
+import ExpressionInput from './ExpressionInput';
 
 interface SetSettingsProps {
   data: Record<string, unknown>;
@@ -49,17 +49,9 @@ export default function SetSettings({ data, onChange, onValidationChange }: SetS
               placeholder="Field"
               className="flex-1 px-2 py-1 border border-gray-600 rounded-md"
             />
-            <input
-              type="text"
+            <ExpressionInput
               value={map.value}
-              onChange={(e) => handleMappingChange(idx, 'value', e.target.value)}
-              placeholder="Value"
-              className="flex-1 px-2 py-1 border border-gray-600 rounded-md"
-            />
-            <VariablePicker
-              onSelect={(v) =>
-                handleMappingChange(idx, 'value', map.value + v)
-              }
+              onChange={(v) => handleMappingChange(idx, 'value', v)}
             />
             <button
               onClick={() => removeMapping(idx)}

@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import VariablePicker from './VariablePicker';
+import ExpressionInput from './ExpressionInput';
 
 interface HttpRequestSettingsProps {
   data: Record<string, unknown>;
@@ -45,15 +45,10 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             URL
             <FiInfo className="inline-block ml-1" title="Request endpoint" />
           </label>
-          <input
-            type="text"
+          <ExpressionInput
             value={(data.url as string) || ''}
-            onChange={(e) => onChange('url', e.target.value)}
+            onChange={(v) => onChange('url', v)}
             placeholder="https://api.example.com/endpoint"
-            className="w-full px-3 py-2  border border-gray-600 rounded-md"
-          />
-          <VariablePicker
-            onSelect={(v) => onChange('url', ((data.url as string) || '') + v)}
           />
         </div>
       </fieldset>
@@ -65,16 +60,11 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             Headers (JSON)
             <FiInfo className="inline-block ml-1" title="Additional request headers" />
           </label>
-          <textarea
+          <ExpressionInput
             value={(data.headers as string) || ''}
-            onChange={(e) => onChange('headers', e.target.value)}
+            onChange={(v) => onChange('headers', v)}
             placeholder='{"Content-Type": "application/json"}'
-            className="w-full h-24 px-3 py-2  border border-gray-600 rounded-md  font-mono text-sm"
-          />
-          <VariablePicker
-            onSelect={(v) =>
-              onChange('headers', ((data.headers as string) || '') + v)
-            }
+            multiline
           />
         </div>
       </fieldset>
@@ -86,16 +76,11 @@ export default function HttpRequestSettings({ data, onChange }: HttpRequestSetti
             Body
             <FiInfo className="inline-block ml-1" title="Request payload" />
           </label>
-          <textarea
+          <ExpressionInput
             value={(data.body as string) || ''}
-            onChange={(e) => onChange('body', e.target.value)}
+            onChange={(v) => onChange('body', v)}
             placeholder="{name: 'John Doe'}"
-            className="w-full h-32 px-3 py-2  border border-gray-600 rounded-md font-mono text-sm"
-          />
-          <VariablePicker
-            onSelect={(v) =>
-              onChange('body', ((data.body as string) || '') + v)
-            }
+            multiline
           />
         </div>
         <div>

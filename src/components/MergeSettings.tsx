@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import VariablePicker from './VariablePicker';
+import ExpressionInput from './ExpressionInput';
 
 interface MergeSettingsProps {
   data: Record<string, unknown>;
@@ -38,17 +38,10 @@ export default function MergeSettings({ data, onChange, onValidationChange }: Me
             Fields
             <FiInfo className="inline-block ml-1" title="Fields to merge" />
           </label>
-          <input
-            type="text"
+          <ExpressionInput
             value={(data.mergeFields as string) || ''}
-            onChange={(e) => onChange('mergeFields', e.target.value)}
+            onChange={(v) => onChange('mergeFields', v)}
             placeholder="Comma separated fields"
-            className="w-full px-3 py-2 border border-gray-600 rounded-md"
-          />
-          <VariablePicker
-            onSelect={(v) =>
-              onChange('mergeFields', ((data.mergeFields as string) || '') + v)
-            }
           />
         </div>
       </fieldset>

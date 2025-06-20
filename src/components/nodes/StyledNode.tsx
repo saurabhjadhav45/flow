@@ -35,6 +35,10 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     (state) => state.setPendingConnection
   );
   const deleteNode = useWorkflowStore((state) => state.deleteNode);
+  const inputCount =
+    useWorkflowStore((state) => state.inputByNode[id]?.length) ?? 0;
+  const outputCount =
+    useWorkflowStore((state) => state.outputByNode[id]?.length) ?? 0;
   const hasOutgoing = edges.some((e) => e.source === id);
   const showPlus = !hasOutgoing && draggingNodeId !== id;
   const onAdd = (e: React.MouseEvent) => {
@@ -86,8 +90,17 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
       <Handle
         type="target"
         position={Position.Left}
-        className="w-3 h-3 bg-gray-400 border-2 border-gray-600"
-      />
+        className="w-3 h-3 bg-gray-400 border-2 border-gray-600 relative"
+      >
+        {inputCount > 0 && (
+          <span
+            className="absolute -top-2 -left-2 bg-blue-600 text-white rounded-full text-[6px] w-4 h-4 flex items-center justify-center"
+            title="Items received"
+          >
+            {inputCount}
+          </span>
+        )}
+      </Handle>
 
       <div
         className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}
@@ -153,8 +166,17 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
           justifyContent: "center",
           color: colors.text,
           fontSize: 14,
+          position: "relative",
         }}
       >
+        {outputCount > 0 && (
+          <span
+            className="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full text-[6px] w-4 h-4 flex items-center justify-center"
+            title="Items produced"
+          >
+            {outputCount}
+          </span>
+        )}
         {showPlus && (
           <>
             <div

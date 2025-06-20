@@ -10,6 +10,7 @@ import IfSettings from "./IfSettings";
 import EmailSettings from "./EmailSettings";
 import AirtableSettings from "./AirtableSettings";
 import JsonViewer from "./JsonViewer";
+import { useWorkflowStore } from "../store/workflowStore";
 
 interface PropertiesPanelProps {
   node: Node;
@@ -28,6 +29,10 @@ export default function PropertiesPanel({
   // Error for the HTTP request URL field
   const [urlError, setUrlError] = useState('');
   const [testOutput, setTestOutput] = useState<unknown>(null);
+  const inputItems =
+    useWorkflowStore((state) => state.inputByNode[node.id] || []);
+  const outputItems =
+    useWorkflowStore((state) => state.outputByNode[node.id] || []);
 
   const handleLabelChange = (value: string) => {
     const newData = { ...formData, label: value };
@@ -415,12 +420,19 @@ export default function PropertiesPanel({
       <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
         Output / Docs
       </h6>
-      {testOutput ? (
-        <JsonViewer data={testOutput} />
-      ) : (
-        <p className="text-xs text-gray-500 px-2">
-          Documentation preview or configuration will appear here.
-        </p>
+      <div className="w-full">
+        <div className="text-xs font-semibold">Input ({inputItems.length})</div>
+        <JsonViewer data={inputItems} />
+      </div>
+      <div className="w-full">
+        <div className="text-xs font-semibold">Output ({outputItems.length})</div>
+        <JsonViewer data={outputItems} />
+      </div>
+      {testOutput && (
+        <div className="w-full">
+          <div className="text-xs font-semibold">Test Output</div>
+          <JsonViewer data={testOutput} />
+        </div>
       )}
     </div>
   );

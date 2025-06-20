@@ -11,6 +11,7 @@ import EmailSettings from "./EmailSettings";
 import AirtableSettings from "./AirtableSettings";
 import JsonViewer from "./JsonViewer";
 import { useWorkflowStore } from "../store/workflowStore";
+import { runNode } from "../runtime";
 
 interface PropertiesPanelProps {
   node: Node;
@@ -33,6 +34,7 @@ export default function PropertiesPanel({
     useWorkflowStore((state) => state.inputByNode[node.id] || []);
   const outputItems =
     useWorkflowStore((state) => state.outputByNode[node.id] || []);
+  const nodeError = useWorkflowStore((state) => state.nodeErrors[node.id]);
 
   const handleLabelChange = (value: string) => {
     const newData = { ...formData, label: value };
@@ -91,44 +93,14 @@ export default function PropertiesPanel({
     onUpdateNode(node.id, { [field]: value });
   };
 
-  // Triggered by "Test Node" button
-  const handleTestNode = async () => {
+  // Triggered by "Run Node" button
+  const handleRunNode = async () => {
     if (!isValid) {
-      alert('Please fix validation errors before testing.');
+      alert('Please fix validation errors before running.');
       return;
     }
-
-    const method = (formData.method as string) || 'GET';
-    const url = (formData.url as string) ||
-      'https://jsonplaceholder.typicode.com/todos/1';
-
-    let headers: Record<string, string> = {};
-    try {
-      if (formData.headers) {
-        headers = JSON.parse(formData.headers as string);
-      }
-    } catch {
-      // ignore parse errors
-    }
-
-    let body: BodyInit | undefined;
-    if (formData.body && method !== 'GET') {
-      try {
-        body = JSON.stringify(JSON.parse(formData.body as string));
-      } catch {
-        body = String(formData.body);
-      }
-    }
-
-    try {
-      const res = await fetch(url, { method, headers, body });
-      const json = await res.json();
-      setTestOutput(json);
-    } catch (err) {
-      setTestOutput({ error: String(err) });
-    }
-
-    setActiveTab('docs');
+    await runNode(node.id);
+    setActiveTab('output');
   };
 
   // Handle multiple file input for HTTP request with key names (UI-based)
@@ -362,12 +334,12 @@ export default function PropertiesPanel({
   };
 
   // Add tab state
-  const [activeTab, setActiveTab] = useState<"parameters" | "settings" | "docs">(
-    "parameters"
+  const [activeTab, setActiveTab] = useState<"input" | "settings" | "output">(
+    "input"
   );
 
   // Render Input Tab Content
-  const renderParametersTab = () => {
+  const renderInputTab = () => {
     if (node.type === "webhook") {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center gap-3">
@@ -388,10 +360,10 @@ export default function PropertiesPanel({
             className={`mt-4 px-3 py-2 rounded text-white ${
               isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
             }`}
-            onClick={handleTestNode}
+            onClick={handleRunNode}
             disabled={!isValid}
           >
-            Test Node
+            Run Node
           </button>
         </div>
       );
@@ -399,26 +371,33 @@ export default function PropertiesPanel({
     return (
       <div className="flex flex-col gap-4">
         <h6 className="tracking-[3px] uppercase text-md text-left font-semibold text-[#909298]">
-          Parameters
+          Input
         </h6>
+        {inputItems.length === 0 ? (
+          <p className="text-xs text-gray-500">
+            Parent node hasn’t run yet. Inputs that the parent node sends to this one will appear here. To map data in from previous nodes, use the mapping view.
+          </p>
+        ) : (
+          <JsonViewer data={inputItems} />
+        )}
         <button
           className={`self-start px-3 py-2 rounded text-white ${
             isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
           }`}
-          onClick={handleTestNode}
+          onClick={handleRunNode}
           disabled={!isValid}
         >
-          Test Node
+          Run Node
         </button>
       </div>
     );
   };
 
-  // Render Docs/Output Tab
-  const renderDocsTab = () => (
+  // Render Output Tab
+  const renderOutputTab = () => (
     <div className="h-full flex flex-col items-start gap-3">
       <h6 className="tracking-[3px] uppercase text-md font-semibold text-[#909298]">
-        Output / Docs
+        Outputs
       </h6>
       <div className="w-full">
         <div className="text-xs font-semibold">Input ({inputItems.length})</div>
@@ -426,8 +405,15 @@ export default function PropertiesPanel({
       </div>
       <div className="w-full">
         <div className="text-xs font-semibold">Output ({outputItems.length})</div>
-        <JsonViewer data={outputItems} />
+        {outputItems.length === 0 ? (
+          <p className="text-xs text-gray-500">Execute this node to view data</p>
+        ) : (
+          <JsonViewer data={outputItems} />
+        )}
       </div>
+      {nodeError && (
+        <div className="w-full text-red-600 text-xs">Error: {nodeError}</div>
+      )}
       {testOutput && (
         <div className="w-full">
           <div className="text-xs font-semibold">Test Output</div>
@@ -480,13 +466,13 @@ export default function PropertiesPanel({
       <div className="flex border-b border-gray-200 bg-white">
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
-            activeTab === "parameters"
+            activeTab === "input"
               ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
               : "text-gray-600 hover:text-blue-600"
           }`}
-          onClick={() => setActiveTab("parameters")}
+          onClick={() => setActiveTab("input")}
         >
-          Parameters
+          Input
         </button>
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
@@ -500,28 +486,22 @@ export default function PropertiesPanel({
         </button>
         <button
           className={`flex-1 py-2 px-4 text-sm font-medium ${
-            activeTab === "docs"
+            activeTab === "output"
               ? "border-b-2 border-blue-500 text-blue-600 bg-gray-50"
               : "text-gray-600 hover:text-blue-600"
           }`}
-          onClick={() => setActiveTab("docs")}
+          onClick={() => setActiveTab("output")}
         >
-          Docs
+          Outputs
         </button>
       </div>
       {/* Tab Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
-        {activeTab === "parameters" && (
-          <div className="flex-1 p-4 overflow-y-auto">{renderParametersTab()}</div>
+        {activeTab === "input" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderInputTab()}</div>
         )}
         {activeTab === "settings" && (
           <>
-            <div className="p-4 border-b border-gray-100">
-              <h3 className="font-medium text-gray-800 mb-2">
-                Node: {formData.label}
-              </h3>
-              <p className="text-sm text-gray-400">ID: {node.id}</p>
-            </div>
             <div className="flex-1 p-4 overflow-y-auto">
               {renderProperties()}
             </div>
@@ -530,16 +510,16 @@ export default function PropertiesPanel({
                 className={`px-3 py-2 rounded text-white ${
                   isValid ? 'bg-blue-500' : 'bg-gray-400 cursor-not-allowed'
                 }`}
-                onClick={handleTestNode}
+                onClick={handleRunNode}
                 disabled={!isValid}
               >
-                Test Node
+                Run Node
               </button>
             </div>
           </>
         )}
-        {activeTab === "docs" && (
-          <div className="flex-1 p-4 overflow-y-auto">{renderDocsTab()}</div>
+        {activeTab === "output" && (
+          <div className="flex-1 p-4 overflow-y-auto">{renderOutputTab()}</div>
         )}
       </div>
     </div>

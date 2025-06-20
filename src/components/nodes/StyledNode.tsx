@@ -15,6 +15,7 @@ import {
   FiMail,
   FiGrid,
   FiTrash2,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { useWorkflowStore } from "../../store/workflowStore";
 
@@ -30,6 +31,8 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
   // from this node.
   const edges = useWorkflowStore((state) => state.edges);
   const draggingNodeId = useWorkflowStore((state) => state.draggingNodeId);
+  const status = useWorkflowStore((state) => state.nodeStatus[id] || 'idle');
+  const errorMsg = useWorkflowStore((state) => state.nodeErrors[id]);
   const openSidebar = useWorkflowStore((state) => state.openSidebar);
   const setPendingConnection = useWorkflowStore(
     (state) => state.setPendingConnection
@@ -52,6 +55,15 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
     shadow: isDark ? "0 1px 4px rgba(0,0,0,0.5)" : "0 1px 4px rgba(0,0,0,0.1)",
     text: isDark ? "#FFFFFF" : "#333333",
   };
+
+  const borderColor =
+    status === 'failed'
+      ? '#dc2626'
+      : status === 'success'
+      ? '#16a34a'
+      : status === 'pending'
+      ? '#fbbf24'
+      : colors.border;
 
   useEffect(() => {
     if (!darkMode) {
@@ -103,10 +115,13 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
       </Handle>
 
       <div
-        className={`flex items-center p-4 shadow-lg rounded-sm border-1 bg-[${colors.background}]`}
-        style={{ position: "relative" }}
+        className={`flex items-center p-4 shadow-lg rounded-sm bg-[${colors.background}]`}
+        style={{ position: "relative", border: `1px solid ${borderColor}` }}
       >
         <Icon className="w-6 h-6 text-blue-600" />
+        {status === 'failed' && (
+          <FiAlertCircle className="w-4 h-4 text-red-600 absolute -top-2 -right-2" title={errorMsg || 'Error'} />
+        )}
         {hovered && (
           <FiTrash2
             onClick={(e) => {
@@ -133,7 +148,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
       </div>
 
       <div className="flex-1 absolute bottom-0 translate-y-[calc(100%+2px)] text-center w-full">
-        <div className="font-medium text-[8px]">{data.label}</div>
+        <div className="font-medium text-[8px]">{data.label || data.type.charAt(0).toUpperCase() + data.type.slice(1)}</div>
         {data.description && (
           <div className="text-[6px] text-gray-500 whitespace-pre-wrap">
             {data.description}
@@ -156,7 +171,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
           width: 10,
           height: 10,
           borderRadius: "50%",
-          border: `2px solid ${colors.border}`,
+          border: `2px solid ${borderColor}`,
           background: colors.background,
           right: 0,
           top: "50%",
@@ -200,7 +215,7 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
                 transform: "translateY(-50%)",
                 width: 20,
                 height: 20,
-                border: `2px solid ${colors.border}`,
+                border: `2px solid ${borderColor}`,
                 borderRadius: 4,
                 padding: 2,
                 background: colors.background,

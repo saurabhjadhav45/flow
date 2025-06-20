@@ -14,6 +14,8 @@ const initialState = {
   variables: [],
   inputByNode: {},
   outputByNode: {},
+  nodeErrors: {},
+  nodeStatus: {},
   selectedNode: null,
   undoStack: [],
   redoStack: [],
@@ -117,5 +119,18 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   setOutputForNode: (nodeId: string, items: unknown[]) =>
     set((state: WorkflowState) => ({
       outputByNode: { ...state.outputByNode, [nodeId]: items },
+    })),
+
+  setNodeError: (nodeId: string, error: string | null) =>
+    set((state: WorkflowState) => ({
+      nodeErrors: { ...state.nodeErrors, [nodeId]: error },
+    })),
+
+  setNodeStatus: (
+    nodeId: string,
+    status: 'idle' | 'pending' | 'success' | 'failed',
+  ) =>
+    set((state: WorkflowState) => ({
+      nodeStatus: { ...state.nodeStatus, [nodeId]: status },
     })),
 }));

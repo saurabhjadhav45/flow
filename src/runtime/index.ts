@@ -9,7 +9,11 @@ export type Executor = (
 ) => Promise<unknown[]> | unknown[];
 
 import { useWorkflowStore } from '../store/workflowStore';
-import type { WorkflowNode, WorkflowEdge, NodeType } from '../types/workflow';
+import type {
+  WorkflowNode,
+  WorkflowEdge,
+  NodeType,
+} from '../types/workflow';
 import evaluateExpression from '../utils/evaluateExpression';
 
 function resolveConfig(
@@ -107,8 +111,19 @@ export async function runWorkflow(): Promise<void> {
   const state = useWorkflowStore.getState();
   const { nodes, edges } = state;
   const order = buildExecutionOrder(nodes, edges);
-  const { setInputForNode, setOutputForNode } = useWorkflowStore.getState();
+  const {
+    setInputForNode,
+    setOutputForNode,
+    setNodeError,
+    setNodeStatus,
+  } = useWorkflowStore.getState();
   const outputMap: Record<string, unknown[]> = {};
+
+  // reset statuses and errors
+  for (const n of nodes) {
+    setNodeError(n.id, null);
+    setNodeStatus(n.id, 'pending');
+  }
 
   for (const nodeId of order) {
     const node = nodes.find((n) => n.id === nodeId);
@@ -130,6 +145,64 @@ export async function runWorkflow(): Promise<void> {
     const executor = executors[node.type] as Executor | undefined;
 
     let output: unknown[] = [];
+    try {
+      if (!executor) {
+        output = input;
+      } else if (runPerItem) {
+        for (const item of input) {
+          const config = resolveConfig(dataRecord, item, input);
+          const res = await executor({ node, config, input: [item] });
+          output.push(...res);
+        }
+      } else {
+        const config = resolveConfig(dataRecord, input[0] || {}, input);
+        output = await executor({ node, config, input });
+      }
+      outputMap[nodeId] = output;
+      setOutputForNode(nodeId, output);
+      setNodeStatus(nodeId, 'success');
+    } catch (err) {
+      setNodeError(nodeId, String(err));
+      setNodeStatus(nodeId, 'failed');
+      setOutputForNode(nodeId, []);
+      // mark remaining nodes as idle
+      const remaining = order.slice(order.indexOf(nodeId) + 1);
+      for (const r of remaining) setNodeStatus(r, 'idle');
+      break;
+    }
+  }
+
+  // any nodes not run yet should be marked idle
+  const finalStatus = useWorkflowStore.getState().nodeStatus;
+  for (const n of nodes) {
+    if (!outputMap[n.id] && finalStatus[n.id] === 'pending') {
+      setNodeStatus(n.id, 'idle');
+    }
+  }
+}
+
+export async function runNode(nodeId: string): Promise<void> {
+  const state = useWorkflowStore.getState();
+  const node = state.nodes.find((n) => n.id === nodeId);
+  if (!node) return;
+  const {
+    setInputForNode,
+    setOutputForNode,
+    setNodeError,
+    setNodeStatus,
+  } = useWorkflowStore.getState();
+  const input = state.inputByNode[nodeId] || [];
+  setNodeStatus(nodeId, 'pending');
+  setNodeError(nodeId, null);
+
+  const dataRecord = node.data as Record<string, unknown>;
+  const runPerItem = dataRecord.runPerItem !== false;
+  const executor = executors[node.type] as Executor | undefined;
+
+  setInputForNode(nodeId, input);
+
+  let output: unknown[] = [];
+  try {
     if (!executor) {
       output = input;
     } else if (runPerItem) {
@@ -142,8 +215,11 @@ export async function runWorkflow(): Promise<void> {
       const config = resolveConfig(dataRecord, input[0] || {}, input);
       output = await executor({ node, config, input });
     }
-
-    outputMap[nodeId] = output;
     setOutputForNode(nodeId, output);
+    setNodeStatus(nodeId, 'success');
+  } catch (err) {
+    setOutputForNode(nodeId, []);
+    setNodeError(nodeId, String(err));
+    setNodeStatus(nodeId, 'failed');
   }
 }

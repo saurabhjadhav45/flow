@@ -49,6 +49,10 @@ export interface WorkflowState {
   inputByNode: Record<string, unknown[]>;
   /** Map of nodeId -> array of output items */
   outputByNode: Record<string, unknown[]>;
+  /** Map of nodeId -> error message */
+  nodeErrors: Record<string, string | null>;
+  /** Map of nodeId -> execution status */
+  nodeStatus: Record<string, 'idle' | 'pending' | 'success' | 'failed'>;
   selectedNode: string | null;
   undoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
   redoStack: Array<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>;
@@ -79,4 +83,9 @@ export interface WorkflowStore extends WorkflowState {
   removeVariable: (name: string) => void;
   setInputForNode: (nodeId: string, items: unknown[]) => void;
   setOutputForNode: (nodeId: string, items: unknown[]) => void;
+  setNodeError: (nodeId: string, error: string | null) => void;
+  setNodeStatus: (
+    nodeId: string,
+    status: 'idle' | 'pending' | 'success' | 'failed',
+  ) => void;
 }

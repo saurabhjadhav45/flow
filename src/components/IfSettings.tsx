@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import VariablePicker from './VariablePicker';
+import ExpressionInput from './ExpressionInput';
 
 interface IfSettingsProps {
   data: Record<string, unknown>;
@@ -42,12 +42,9 @@ export default function IfSettings({ data, onChange, onValidationChange }: IfSet
         <legend className="font-medium">Conditions</legend>
         {conditions.map((c, idx) => (
           <div key={idx} className="flex flex-wrap items-center gap-2 min-w-0">
-            <input
-              type="text"
+            <ExpressionInput
               value={c.left}
-              onChange={(e) => handleConditionChange(idx, 'left', e.target.value)}
-              placeholder="Field"
-              className="flex-1 min-w-0 px-2 py-1 border border-gray-600 rounded-md"
+              onChange={(v) => handleConditionChange(idx, 'left', v)}
             />
             <select
               value={c.op}
@@ -66,12 +63,9 @@ export default function IfSettings({ data, onChange, onValidationChange }: IfSet
               <option value="starts_with">starts with</option>
               <option value="ends_with">ends with</option>
             </select>
-            <input
-              type="text"
+            <ExpressionInput
               value={c.right}
-              onChange={(e) => handleConditionChange(idx, 'right', e.target.value)}
-              placeholder="Value"
-              className="flex-1 min-w-0 px-2 py-1 border border-gray-600 rounded-md"
+              onChange={(v) => handleConditionChange(idx, 'right', v)}
             />
             <button
               onClick={() => removeCondition(idx)}
@@ -79,20 +73,6 @@ export default function IfSettings({ data, onChange, onValidationChange }: IfSet
             >
               Remove
             </button>
-            <div className="flex w-full gap-2 mt-1">
-              <VariablePicker
-                label="Left"
-                onSelect={(v) =>
-                  handleConditionChange(idx, 'left', c.left + v)
-                }
-              />
-              <VariablePicker
-                label="Right"
-                onSelect={(v) =>
-                  handleConditionChange(idx, 'right', c.right + v)
-                }
-              />
-            </div>
           </div>
         ))}
         <button onClick={addCondition} className="px-2 py-1 text-xs bg-blue-500 text-white rounded">

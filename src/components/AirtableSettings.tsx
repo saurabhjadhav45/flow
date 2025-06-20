@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import VariablePicker from './VariablePicker';
+import ExpressionInput from './ExpressionInput';
 
 interface AirtableSettingsProps {
   data: Record<string, unknown>;
@@ -102,15 +102,10 @@ export default function AirtableSettings({ data, onChange, onValidationChange }:
             Fields (JSON)
             <FiInfo className="inline-block ml-1" title="Fields payload" />
           </label>
-          <textarea
+          <ExpressionInput
             value={(data.fields as string) || ''}
-            onChange={(e) => onChange('fields', e.target.value)}
-            className="w-full h-24 px-3 py-2 border border-gray-600 rounded-md font-mono text-sm"
-          />
-          <VariablePicker
-            onSelect={(v) =>
-              onChange('fields', ((data.fields as string) || '') + v)
-            }
+            onChange={(v) => onChange('fields', v)}
+            multiline
           />
         </div>
         <div>
@@ -118,16 +113,9 @@ export default function AirtableSettings({ data, onChange, onValidationChange }:
             Filter Formula
             <FiInfo className="inline-block ml-1" title="Airtable filter formula" />
           </label>
-          <input
-            type="text"
+          <ExpressionInput
             value={(data.filter as string) || ''}
-            onChange={(e) => onChange('filter', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md"
-          />
-          <VariablePicker
-            onSelect={(v) =>
-              onChange('filter', ((data.filter as string) || '') + v)
-            }
+            onChange={(v) => onChange('filter', v)}
           />
         </div>
       </fieldset>

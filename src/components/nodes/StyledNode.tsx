@@ -181,7 +181,6 @@ function StyledNode({ id, data, darkMode = false }: StyledNodeProps) {
           justifyContent: "center",
           color: colors.text,
           fontSize: 14,
-          position: "relative",
         }}
       >
         {outputCount > 0 && (

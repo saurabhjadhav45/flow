@@ -35,6 +35,7 @@ import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
 import { setupEdges } from "../utils/setupEdges";
+import getLayoutedElements from "../utils/getLayoutedElements";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
@@ -353,6 +354,17 @@ export function WorkflowEditor() {
     setStoreNodes(nodes as WorkflowNode[]);
   }, [nodes, setStoreNodes]);
 
+  const onLayout = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+      'LR',
+    );
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+    setStoreNodes(layoutedNodes as WorkflowNode[]);
+  }, [nodes, edges, setNodes, setEdges, setStoreNodes]);
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -543,6 +555,14 @@ export function WorkflowEditor() {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          onClick={onLayout}
+          className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded shadow text-sm"
+        >
+          Auto-Layout
+        </button>
+      </div>
       {nodes.length === 0 && (
         <button
           onClick={openSidebar}

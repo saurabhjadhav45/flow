@@ -8,6 +8,7 @@ import ReactFlow, {
   addEdge,
   type OnConnectStartParams,
   MarkerType,
+  Position,
 } from "reactflow";
 import type { Connection, ReactFlowInstance, NodeTypes, Node } from "reactflow";
 import "reactflow/dist/style.css";
@@ -38,6 +39,7 @@ import { setupEdges } from "../utils/setupEdges";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
+import dagre from "@dagrejs/dagre";
 
 function getDefaultData(type: NodeType) {
   if (type === "webhook") {
@@ -123,6 +125,42 @@ const nodeTypes: NodeTypes = {
 const edgeTypes = {
   buttonedge: ButtonEdge,
 };
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const nodeWidth = 172;
+const nodeHeight = 36;
+
+function getLayoutedElements(nodes: WorkflowNode[], edges: WorkflowEdge[], direction: 'LR' | 'TB' = 'LR') {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      targetPosition: isHorizontal ? Position.Left : Position.Top,
+      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+}
 
 export function WorkflowEditor() {
   const {
@@ -517,6 +555,17 @@ export function WorkflowEditor() {
     setEdges(hydrateEdges(initialEdges));
   }, [initialEdges, hydrateEdges, setEdges]);
 
+  const onLayout = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes as WorkflowNode[],
+      edges as WorkflowEdge[],
+      'LR',
+    );
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+    setStoreNodes(layoutedNodes as WorkflowNode[]);
+  }, [nodes, edges, setNodes, setEdges, setStoreNodes]);
+
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>
       <ReactFlow
@@ -553,6 +602,14 @@ export function WorkflowEditor() {
         </button>
       )}
       <GlobalAddButton />
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          onClick={onLayout}
+          className="px-2 py-1 bg-gray-200 rounded shadow"
+        >
+          Auto-Layout
+        </button>
+      </div>
       {selectedNode && (
         <PropertiesPanel
           node={selectedNode}

@@ -29,7 +29,6 @@ export default function PropertiesPanel({
   const [isValid, setIsValid] = useState(true);
   // Error for the HTTP request URL field
   const [urlError, setUrlError] = useState('');
-  const [testOutput, setTestOutput] = useState<unknown>(null);
   const inputItems =
     useWorkflowStore((state) => state.inputByNode[node.id] || []);
   const outputItems =
@@ -413,12 +412,6 @@ export default function PropertiesPanel({
       </div>
       {nodeError && (
         <div className="w-full text-red-600 text-xs">Error: {nodeError}</div>
-      )}
-      {testOutput && (
-        <div className="w-full">
-          <div className="text-xs font-semibold">Test Output</div>
-          <JsonViewer data={testOutput} />
-        </div>
       )}
     </div>
   );

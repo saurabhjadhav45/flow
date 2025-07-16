@@ -38,6 +38,7 @@ import { setupEdges } from "../utils/setupEdges";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
+import { getLayoutedElements } from "../utils/getLayoutedElements";
 
 function getDefaultData(type: NodeType) {
   if (type === "webhook") {
@@ -358,6 +359,17 @@ export function WorkflowEditor() {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const onLayout = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+      "LR",
+    );
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+    setStoreNodes(layoutedNodes as WorkflowNode[]);
+  }, [nodes, edges, setNodes, setEdges, setStoreNodes]);
+
   const onConnectStart = useCallback(
     (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
       connectStart.current = params;
@@ -552,6 +564,14 @@ export function WorkflowEditor() {
           <span className="mt-2 text-sm">Add first step…</span>
         </button>
       )}
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          onClick={onLayout}
+          className="px-2 py-1 bg-gray-200 rounded shadow"
+        >
+          Auto-Layout
+        </button>
+      </div>
       <GlobalAddButton />
       {selectedNode && (
         <PropertiesPanel

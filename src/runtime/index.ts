@@ -195,7 +195,7 @@ export async function runNode(nodeId: string): Promise<void> {
   setNodeStatus(nodeId, 'pending');
   setNodeError(nodeId, null);
 
-  const dataRecord = node.data as Record<string, unknown>;
+  const dataRecord = node.data as unknown as Record<string, unknown>;
   const runPerItem = dataRecord.runPerItem !== false;
   const executor = executors[node.type] as Executor | undefined;
 

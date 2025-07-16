@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -35,6 +35,7 @@ import GlobalAddButton from "./GlobalAddButton";
 import ButtonEdge from "./edges/ButtonEdge";
 import { getNodeId } from "../utils/getNodeId";
 import { setupEdges } from "../utils/setupEdges";
+import { getLayoutedElements } from "../utils/autoLayout";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
@@ -141,10 +142,19 @@ export function WorkflowEditor() {
     setDraggingNodeId,
   } = useWorkflowStore();
 
+  const initialLayout = useMemo(
+    () => getLayoutedElements(initialNodes, initialEdges),
+    [initialNodes, initialEdges]
+  );
+
+  useEffect(() => {
+    setStoreNodes(initialLayout.nodes as WorkflowNode[]);
+  }, [initialLayout.nodes, setStoreNodes]);
+
   const [nodes, setNodes, onNodesChange] =
-    useNodesState<WorkflowNodeData>(initialNodes);
+    useNodesState<WorkflowNodeData>(initialLayout.nodes);
   const [edges, setEdges, onEdgesChange] =
-    useEdgesState<WorkflowEdgeData>(initialEdges);
+    useEdgesState<WorkflowEdgeData>(initialLayout.edges);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
@@ -358,6 +368,16 @@ export function WorkflowEditor() {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const onLayout = useCallback(() => {
+    const { nodes: layouted, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+    );
+    setNodes([...layouted]);
+    setEdges([...layoutedEdges]);
+    setStoreNodes(layouted as WorkflowNode[]);
+  }, [nodes, edges, setEdges, setNodes, setStoreNodes]);
+
   const onConnectStart = useCallback(
     (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
       connectStart.current = params;
@@ -552,6 +572,12 @@ export function WorkflowEditor() {
           <span className="mt-2 text-sm">Add first step…</span>
         </button>
       )}
+      <button
+        onClick={onLayout}
+        className="btn btn-secondary absolute top-4 right-16 z-10"
+      >
+        Auto-Layout
+      </button>
       <GlobalAddButton />
       {selectedNode && (
         <PropertiesPanel

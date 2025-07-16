@@ -38,6 +38,7 @@ import { setupEdges } from "../utils/setupEdges";
 import { v4 as uuidv4 } from "uuid";
 import PropertiesPanel from "./PropertiesPanel";
 import HttpRequestNode from "./nodes/HttpRequestNode";
+import getLayoutedElements from "../utils/autoLayout";
 
 function getDefaultData(type: NodeType) {
   if (type === "webhook") {
@@ -358,6 +359,17 @@ export function WorkflowEditor() {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const onLayout = useCallback(() => {
+    const { nodes: newNodes, edges: newEdges } = getLayoutedElements(
+      nodes,
+      edges,
+      "LR",
+    );
+    setNodes(newNodes);
+    setEdges(newEdges as WorkflowEdge[]);
+    setStoreNodes(newNodes as WorkflowNode[]);
+  }, [nodes, edges, setNodes, setEdges, setStoreNodes]);
+
   const onConnectStart = useCallback(
     (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => {
       connectStart.current = params;
@@ -543,6 +555,14 @@ export function WorkflowEditor() {
         <Controls />
         <MiniMap />
       </ReactFlow>
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          onClick={onLayout}
+          className="px-2 py-1 bg-gray-200 rounded shadow"
+        >
+          Auto-Layout
+        </button>
+      </div>
       {nodes.length === 0 && (
         <button
           onClick={openSidebar}

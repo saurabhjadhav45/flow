@@ -142,19 +142,38 @@ export function WorkflowEditor() {
     setDraggingNodeId,
   } = useWorkflowStore();
 
+  // Use initialNodes and initialEdges directly for initial state; no auto-layout on mount
   const initialLayout = useMemo(
-    () => getLayoutedElements(initialNodes, initialEdges),
+    () => ({
+      nodes: Array.isArray(initialNodes) ? initialNodes : [],
+      edges: Array.isArray(initialEdges) ? initialEdges : [],
+    }),
     [initialNodes, initialEdges]
   );
 
   useEffect(() => {
-    setStoreNodes(initialLayout.nodes as WorkflowNode[]);
+    // Only update store nodes if they actually changed
+    const newNodes = initialLayout.nodes as WorkflowNode[];
+    // Only update store nodes if they actually changed
+    if (
+      Array.isArray(newNodes) &&
+      Array.isArray(initialNodes) &&
+      newNodes.length === initialNodes.length &&
+      newNodes.every(
+        (n, i) => JSON.stringify(n) === JSON.stringify(initialNodes[i])
+      )
+    ) {
+      return;
+    }
+    setStoreNodes(newNodes);
   }, [initialLayout.nodes, setStoreNodes]);
 
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState<WorkflowNodeData>(initialLayout.nodes);
-  const [edges, setEdges, onEdgesChange] =
-    useEdgesState<WorkflowEdgeData>(initialLayout.edges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNodeData>(
+    initialLayout.nodes
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdgeData>(
+    initialLayout.edges
+  );
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
   const connectStart = useRef<OnConnectStartParams | null>(null);
@@ -353,7 +372,7 @@ export function WorkflowEditor() {
     (_: React.MouseEvent, node: Node) => {
       if (selectedNodeId) setSelectedNodeId(node.id);
     },
-    [selectedNodeId],
+    [selectedNodeId]
   );
 
   const onPaneClick = useCallback(() => {
@@ -371,7 +390,7 @@ export function WorkflowEditor() {
   const onLayout = useCallback(() => {
     const { nodes: layouted, edges: layoutedEdges } = getLayoutedElements(
       nodes,
-      edges,
+      edges
     );
     setNodes([...layouted]);
     setEdges([...layoutedEdges]);
@@ -531,7 +550,20 @@ export function WorkflowEditor() {
 
   // Sync local state with Zustand store for node/edge deletion
   useEffect(() => {
-    setNodes(initialNodes);
+    // Only update nodes if they actually changed
+    setNodes((prevNodes) => {
+      if (
+        Array.isArray(prevNodes) &&
+        Array.isArray(initialNodes) &&
+        prevNodes.length === initialNodes.length &&
+        prevNodes.every(
+          (n, i) => JSON.stringify(n) === JSON.stringify(initialNodes[i])
+        )
+      ) {
+        return prevNodes;
+      }
+      return initialNodes as typeof prevNodes;
+    });
   }, [initialNodes, setNodes]);
   useEffect(() => {
     setEdges(hydrateEdges(initialEdges));
@@ -572,13 +604,17 @@ export function WorkflowEditor() {
           <span className="mt-2 text-sm">Add first step…</span>
         </button>
       )}
-      <button
-        onClick={onLayout}
-        className="btn btn-secondary absolute top-4 right-16 z-10"
-      >
-        Auto-Layout
-      </button>
-      <GlobalAddButton />
+      <div className="flex justify-end items-center absolute top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 z-10">
+        <GlobalAddButton />
+        <div className="absolute top-4 right-14 z-10">
+          <button
+            onClick={onLayout}
+            className="px-2 py-1 bg-gray-200 rounded shadow hover:bg-gray-300 transition-colors"
+          >
+            Auto-Layout
+          </button>
+        </div>
+      </div>
       {selectedNode && (
         <PropertiesPanel
           node={selectedNode}
